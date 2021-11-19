@@ -23,38 +23,34 @@ function makeGameObj(gameInfo) {
 		id: gameInfo.id,
 		name: gameInfo.name,
 		price: gameInfo.price,
-		categories: gameInfo.categories
 	};	
 }
 
-function do_fetch(uri) {
+async function do_fetch(uri) {
 	console.log(uri);
-	return fetch(uri)
-		.catch(err => {
-			throw errors.EXT_SVC_FAIL(err);
-		})
-		.then(res => {
-			if (res.ok) {
-				return res.json();
-			} else {
-				return res.json().then(errDesc => {
-					throw errors.EXT_SVC_FAIL({ res, errDesc });
-				});
-			}
-		});	
+	let res;
+	try {
+		res = await fetch(uri);
+	} catch (err) {
+		throw errors.EXT_SVC_FAIL(err);
+	}
+	if (res.ok) {
+		return res.json();
+	} else {
+		return res.json().then(errDesc => {
+			throw errors.EXT_SVC_FAIL({ res, errDesc });
+		});
+	}	
 }
 
-function findGame(query) {
+async function findGame(query) {
 	const search_uri = BOARD_GAME_ATLAS_BASE_URI + 'search?name=' + query + '&client_id=' + ATLAS_CLIENT_ID;
-	console.log(search_uri);
-	return do_fetch(search_uri)
-		.then(answer => {
-			if (answer.games && answer.games.length) {
-				return makeGameObj(answer.games[0]);
-			} else {
-				return null;
-			}
-		});
+	const answer = await do_fetch(search_uri);
+	if (answer.games && answer.games.length) {
+		return makeGameObj(answer.games[0]);
+	} else {
+		return null;
+	}
 }
 
 async function getPopularGames() {
@@ -71,11 +67,10 @@ async function getPopularGames() {
 	}
 }
 
-function getGameById(gameId) {
+async function getGameById(gameId) {
 	const game_uri = BOARD_GAME_ATLAS_BASE_URI + 'search?ids=' + gameId + '&limit=1&client_id=' + ATLAS_CLIENT_ID;
-	return do_fetch(game_uri).then(data => {
-		return makeGameObj(data.games[0]);
-	});
+	const data = await do_fetch(game_uri);
+	return makeGameObj(data.games[0]);
 }
 
 module.exports = {
