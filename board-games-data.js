@@ -18,6 +18,7 @@ function findId(info, type) {
 */
 
 function makeGameObj(gameInfo) {
+	console.log(gameInfo);
 	return {
 		id: gameInfo.id,
 		name: gameInfo.name,
@@ -72,7 +73,10 @@ async function getPopularGames() {
 
 function getGameById(gameId) {
 	const game_uri = BOARD_GAME_ATLAS_BASE_URI + 'search?ids=' + gameId + '&limit=1&client_id=' + ATLAS_CLIENT_ID;
-	return do_fetch(game_uri).then(makeGameObj);
+	return do_fetch(game_uri).then(data => {
+		console.log(data[0]);
+		return makeGameObj(data[0]);
+	});
 }
 
 module.exports = {

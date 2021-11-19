@@ -47,7 +47,7 @@ module.exports = function (services) {
 
 	async function addMyGameById(req, res) {
 		try {
-			const gameId = await req.body.gameId;
+			const gameId = req.body.gameId;
 			console.log(gameId);
 			const gameIdRes = await services.addGame(gameId);
 			res.json(gameIdRes);
@@ -86,7 +86,7 @@ module.exports = function (services) {
 
 	// Resource: /my/games
 	router.get('/my/games', getMyGames);
-	router.post('/my/games/:gameId', addMyGameById);
+	router.post('/my/games', addMyGameById);
 
 	// Resource: /my/games/<gameId>
 	router.get('/my/games/:gameId', getMyGameById);
