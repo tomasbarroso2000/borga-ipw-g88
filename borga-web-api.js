@@ -6,6 +6,20 @@ const errors = require('./app-errors');
 
 module.exports = function (services) {
 	
+	function onError(req, res, err) {
+		switch (err.name) {
+			case 'NOT_FOUND':
+				res.status(404);
+				break;
+			case 'EXT_SVC_FAIL':
+				res.status(502);
+				break;
+			default:
+				res.status(500);
+		}
+		res.json(err);
+	}
+
 	async function searchInGlobalGames(req, res) {
 		try {
 			if (req.query.q == undefined) {
@@ -33,8 +47,9 @@ module.exports = function (services) {
 
 	async function addMyGameById(req, res) {
 		try {
-			const gameId = req.body.gameId;
-			const gameIdRes = await services.addBook(gameId);
+			const gameId = await req.body.gameId;
+			console.log(gameId);
+			const gameIdRes = await services.addGame(gameId);
 			res.json(gameIdRes);
 		} catch (err) {
 			onError(req, res, err);
@@ -71,13 +86,11 @@ module.exports = function (services) {
 
 	// Resource: /my/games
 	router.get('/my/games', getMyGames);
-	router.post('/my/games', addMyGameById);
+	router.post('/my/games/:gameId', addMyGameById);
 
 	// Resource: /my/games/<gameId>
 	router.get('/my/games/:gameId', getMyGameById);
 	router.delete('/my/games/:gameId', deleteMyGameById);
-
-
 	
 	return router;
 }

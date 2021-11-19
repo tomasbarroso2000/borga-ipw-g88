@@ -85,9 +85,9 @@ async function tryServices() {
 async function main() {
 	try {
 		
-		await tryDataExtFind();
-		await tryDataExtGet();
-		await tryDataExtInt();
+		//await tryDataExtFind();
+		//await tryDataExtGet();
+		//await tryDataExtInt();
 		await tryServices();
 
 	} catch (err) {

@@ -71,7 +71,7 @@ async function getPopularGames() {
 }
 
 function getGameById(gameId) {
-	const game_uri = BOARD_GAME_ATLAS_BASE_URI + '/' + gameId;
+	const game_uri = BOARD_GAME_ATLAS_BASE_URI + 'search?ids=' + gameId + '&limit=1&client_id=' + ATLAS_CLIENT_ID;
 	return do_fetch(game_uri).then(makeGameObj);
 }
 

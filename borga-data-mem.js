@@ -9,6 +9,7 @@ const hasGame = async (gameId) => !!games[gameId];
 async function saveGame(gameObj) {
 	const gameId = gameObj.id;
 	games[gameId] = gameObj;
+	console.log(games);
 	return gameId;
 }
 
