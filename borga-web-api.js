@@ -69,7 +69,7 @@ module.exports = function (services) {
 	async function deleteMyGameById(req, res) {
 		try {
 			const gameId = req.params.gameId;
-			const gameIdRes = await services.delGame(gameId);
+			const gameIdRes = await services.deleteGame(gameId);
 			res.json(gameIdRes);
 		} catch (err) {
 			onError(req, res, err);
