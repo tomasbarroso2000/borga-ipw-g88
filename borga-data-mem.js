@@ -2,18 +2,33 @@
 
 const errors = require('./app-errors');
 
+const crypto = require('crypto');
+
 const games = {};
 
-const hasGame = async (gameId) => !!games[gameId];
+const tokens = {}; //associa tokens a users 
 
-async function saveGame(gameObj) {
+const users = {username: groups}; //associa usernames aos seus reo«petivos grupos
+
+function createUsers(username) {
+	if (!users.username) {
+		const newToken = crypto.randomUUID();
+		tokens[newToken] = username;
+	} else {
+		console.log("User already exists");
+	}
+}
+
+const hasGame = async (username, gameId) => !!games[gameId];
+
+async function saveGame(username, gameObj) {
 	const gameId = gameObj.id;
-	games[gameId] = gameObj;
+	groups[gameId] = gameObj;
 	console.log(games);
 	return gameId;
 }
 
-async function loadGame(gameId) {
+async function loadGame(username, gameId) {
 	const gameObj = games[gameId];
 	if (!gameObj) {
 		throw errors.NOT_FOUND({ id: gameId });
@@ -21,7 +36,7 @@ async function loadGame(gameId) {
 	return gameObj;
 }
 
-async function deleteGame(gameId) {
+async function deleteGame(username, gameId) {
 	const gameObj = games[gameId];
 	if (!gameObj) {
 		throw errors.NOT_FOUND({ id: gameId });
@@ -30,7 +45,7 @@ async function deleteGame(gameId) {
 	return gameId;
 }
 
-const listGames = async () => Object.values(games);
+const listGames = async (username) => Object.values(games);
 
 module.exports = {
 	hasGame,
