@@ -47,7 +47,7 @@ module.exports = function (services) {
 
 	async function addMyGameById(req, res) {
 		try {
-			const gameId = req.body.gameId;
+			const gameId = req.params.gameId;
 			console.log(gameId);
 			const gameIdRes = await services.addGame(gameId);
 			res.json(gameIdRes);
@@ -85,12 +85,12 @@ module.exports = function (services) {
 
 
 	// Resource: /my/games
-	router.get('/my/games', getMyGames);
-	router.post('/my/games', addMyGameById);
+	router.get('/my/games/get', getMyGames);
+	router.post('/my/games/add/:gameId', addMyGameById);
 
 	// Resource: /my/games/<gameId>
-	router.get('/my/games/:gameId', getMyGameById);
-	router.delete('/my/games/:gameId', deleteMyGameById);
+	router.get('/my/games/get/:gameId', getMyGameById);
+	router.delete('/my/games/delete/:gameId', deleteMyGameById);
 	
 	return router;
 }
