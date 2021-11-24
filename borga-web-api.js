@@ -1,7 +1,11 @@
 'use strict';
 
 const express = require('express');
+
 const errors = require('./app-errors');
+
+const openApiUi = require('swagger-ui-express');
+const openApiSpec = require('./docs/borga-spec.json');
 
 module.exports = function (services) {
 	
@@ -74,9 +78,13 @@ module.exports = function (services) {
 			onError(req, res, err);
 		}
 	}
-	
+
 	//middleware
 	const router = express.Router();
+
+	router.use('/docs', openApiUi.serve);
+	router.get('/docs', openApiUi.setup(openApiSpec));
+
 	router.use(express.json());
 
 	// Resource: /global/games

@@ -1,0 +1,439 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "BORGA",
+    "description": "Manage your game collection.",
+    "termsOfService": "http://swagger.io/terms/",
+    "version": "1.0.0"
+  },
+  "tags": [
+    {
+      "name": "AllGames",
+      "description": "All the games that we know about.",
+      "externalDocs": {
+        "description": "Based on",
+        "url": "https://www.boardgameatlas.com/"
+      }
+    },
+    {
+      "name": "MyGames",
+      "description": "The personal games collection"
+    }
+  ],
+  "paths": {
+    "/api/global/games": {
+      "get": {
+        "tags": [
+          "AllGames"
+        ],
+        "summary": "Find a game by query",
+        "description": "Uses Board Game Atlas API to find a game corresponding to the query. Valid queries are the same as specified for Game Board Atlas API. It will return the first result from Game Board Atlas' result set.",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "description": "Query to find a game",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A game has been found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No query indicated in the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No game found for the query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppError"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Game Board Atlas API is not responding",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/my/games": {
+      "get": {
+        "tags": [
+          "MyGames"
+        ],
+        "summary": "List all games in the personal collection",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The personal list of games",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameListResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing API token. The user is not authenticated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "MyGames"
+        ],
+        "summary": "Add a game to the personal collection",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Game id of a game to be added to the personal collection",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GameId"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The game is now in the collection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameAddedResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "A game with such id does not exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing API token. The user is not authenticated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppError"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Board Game Atlas API is not responding",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/my/games/{gameId}": {
+      "get": {
+        "tags": [
+          "MyGames"
+        ],
+        "summary": "Find game by ID in the personal collection",
+        "description": "Returns a single game",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "gameId",
+            "in": "path",
+            "description": "ID of game to return",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "74f9mzbw9Y"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Game found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing API token. The user is not authenticated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Game not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "MyGames"
+        ],
+        "summary": "Delete game by ID",
+        "description": "Deletes a game from the personal collection",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "gameId",
+            "in": "path",
+            "description": "ID of game to delete",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "74f9mzbw9Y"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Game deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameId"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing API token. The user is not authenticated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Game not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
+    "schemas": {
+      "AppErrorInfo": {
+        "description": "Additional information about the error",
+        "nullable": true,
+        "anyOf": [
+          {
+            "type": "object"
+          },
+          {
+            "type": "string"
+          },
+          {
+            "type": "integer"
+          },
+          {
+            "type": "number"
+          }
+        ],
+        "example": "..."
+      },
+      "AppError": {
+        "type": "object",
+        "description": "Application error",
+        "required": [
+          "code",
+          "name",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "number",
+            "format": "int32",
+            "description": "Internal error code",
+            "example": 1000
+          },
+          "name": {
+            "type": "string",
+            "description": "Internal error name",
+            "example": "FAIL"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error description message",
+            "example": "An error occurred"
+          },
+          "info": {
+            "$ref": "#/components/schemas/AppErrorInfo"
+          }
+        }
+      },
+      "GameAddedResponse": {
+        "type": "object",
+        "description": "Game successfully added to list",
+        "required": [
+          "gameId"
+        ],
+        "properties": {
+          "gameId": {
+            "type": "string"
+          },
+          "added": {
+            "type": "string",
+            "enum": [
+              "yes",
+              "no"
+            ]
+          }
+        }
+      },
+      "GameResponse": {
+        "type": "object",
+        "description": "Response with a game",
+        "properties": {
+          "game": {
+            "$ref": "#/components/schemas/Game"
+          }
+        }
+      },
+      "GameListResponse": {
+        "type": "object",
+        "description": "Response with a list of games",
+        "properties": {
+          "games": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Game"
+            }
+          }
+        }
+      },
+      "GameId": {
+        "type": "object",
+        "description": "Game id",
+        "required": [
+          "gameId"
+        ],
+        "properties": {
+          "gameId": {
+            "type": "string",
+            "description": "Internal game id",
+            "example": "74f9mzbw9Y"
+          }
+        }
+      },
+      "Game": {
+        "type": "object",
+        "description": "Game data",
+        "required": [
+          "id",
+          "name",
+          "price"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Internal game id",
+            "example": "74f9mzbw9Y"
+          },
+          "name": {
+            "type": "string",
+            "description": "The game title",
+            "example": "Exploding Kittens"
+          },
+          "price": {
+            "type": "string",
+            "description": "The price of the game",
+            "example": 9.99
+          }
+        }
+      }
+    }
+  }
+}
