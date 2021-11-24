@@ -1,7 +1,6 @@
 'use strict';
 
 const express = require('express');
-
 const errors = require('./app-errors');
 
 module.exports = function (services) {

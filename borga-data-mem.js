@@ -4,14 +4,20 @@ const errors = require('./app-errors');
 
 const crypto = require('crypto');
 
-const games = {};
+const games = {}; // o stor não tem isto
 
-const tokens = {}; //associa tokens a users 
+const tokens = {
+	'1365834658346586' : 'membroTeste'
+}; //associa tokens a users      
 
-const users = {username: groups}; //associa usernames aos seus reo«petivos grupos
+//associa usernames aos seus reospetivos grupos
+const users = {
+	'exemplo1' : { games: {} }
+}; 
+
 
 function createUsers(username) {
-	if (!users.username) {
+	if (!users[username]) {
 		const newToken = crypto.randomUUID();
 		tokens[newToken] = username;
 	} else {
@@ -19,17 +25,16 @@ function createUsers(username) {
 	}
 }
 
-const hasGame = async (username, gameId) => !!games[gameId];
+const hasGame = async (username, gameId) => !!users[username].groups[gameId];
 
 async function saveGame(username, gameObj) {
 	const gameId = gameObj.id;
-	groups[gameId] = gameObj;
-	console.log(games);
+	users[username].groups[gameId] = gameObj;
 	return gameId;
 }
 
 async function loadGame(username, gameId) {
-	const gameObj = games[gameId];
+	const gameObj = users[username].groups[gameId];
 	if (!gameObj) {
 		throw errors.NOT_FOUND({ id: gameId });
 	}
@@ -37,20 +42,25 @@ async function loadGame(username, gameId) {
 }
 
 async function deleteGame(username, gameId) {
-	const gameObj = games[gameId];
+	const gameObj = users[username].groups[gameId];
 	if (!gameObj) {
 		throw errors.NOT_FOUND({ id: gameId });
 	}
-	delete games[gameId];
+	delete users[username].groups[gameId];
 	return gameId;
 }
 
-const listGames = async (username) => Object.values(games);
+const listGames = async (username) => Object.values(users[username].groups);
+
+async function tokenToUsername(token){
+	return tokens[token];
+}
 
 module.exports = {
 	hasGame,
 	saveGame,
 	loadGame,
 	deleteGame,
-	listGames
+	listGames,
+	tokenToUsername
 };
