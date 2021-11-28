@@ -34,6 +34,22 @@ function createGroup(token, groupName, groupDesc){
 	return user[groupName];
 }
 
+function editGroup(token, oldGroupName, newGroupName, newGroupDesc) {
+	const username = tokens[token];
+	const user = users[username];
+	const group = user[oldGroupName];
+	delete user[oldGroupName];
+	if (user && group) {
+		if (newGroupDesc) {
+			group.description = newGroupDesc;
+		}
+		if (newGroupName) {
+			user[newGroupName] = group
+		} else user[oldGroupName] = group
+	}
+	return group
+}
+
 function createUsers(username) {
 	if (!users[username]) {
 		const newToken = crypto.randomUUID();
@@ -108,5 +124,6 @@ module.exports = {
 	listGames,
 	tokenToUsername,
 	createGroup,
-	getGroups
+	getGroups,
+	editGroup
 };

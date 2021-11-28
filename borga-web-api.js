@@ -5,7 +5,7 @@ const express = require('express');
 const errors = require('./app-errors');
 
 const openApiUi = require('swagger-ui-express');
-const openApiSpec = require('./docs/borga-spec.json');
+const openApiSpec = require('./docs/borga-api-spec.json');
 const { createGroup } = require('./borga-data-mem');
 
 module.exports = function (services) {
@@ -116,6 +116,19 @@ module.exports = function (services) {
 		}
 	}
 
+	async function editGroup(req, res) {
+		try {
+			const oldGroupName = req.body.old;
+			const newGroupName = req.body.new;
+			const newGroupDesc = req.body.desc;
+			const token = getBearerToken(req);
+			const groupRes = await services.editGroup(token, oldGroupName, newGroupName, newGroupDesc);
+			return res.json(groupRes);
+		} catch (err) {
+			onError(req, res, err);
+		}
+	}
+
 	//middleware
 	const router = express.Router();
 
@@ -137,10 +150,14 @@ module.exports = function (services) {
 	router.get('/my/games/get/:gameId', getMyGameById);
 	router.delete('/my/games/delete/:gameId', deleteMyGameById);*/
 
-	//Resource: /my/group/create
+	//Resource: /my/groups/
 	router.post('/my/groups/create', createGroup);
 	
 	router.get('/my/groups/get', getGroups);
+
+	//router.post('/my/groups/add', addGameToGroup); //falta implementar
+	router.put('/my/groups/edit', editGroup);
+	//router.delete('/my/groups/delete', deleteGameInGroup); //falta implementar
 	
 	return router;
 }

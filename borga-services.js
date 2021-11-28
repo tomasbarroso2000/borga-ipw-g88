@@ -90,6 +90,11 @@ module.exports = function(data_ext, data_int) {
 		return group;
 	}
 
+	async function editGroup(token, oldGroupName, newGroupName, newGroupDesc) {
+		const group = await data_int.editGroup(token, oldGroupName, newGroupName, newGroupDesc);
+		return group;
+	}
+
 	return {
 		searchGame,
 		addGame,
@@ -98,6 +103,7 @@ module.exports = function(data_ext, data_int) {
 		deleteGame,
 		getPopularGames: data_ext.getPopularGames, //temos de alterar
 		addGroup,
-		getGroups
+		getGroups,
+		editGroup
 	};
 };
