@@ -34,7 +34,7 @@ module.exports = function(data_ext, data_int) {
 				return { gameId: gameIdArg};
 			}
 			const game = await data_ext.getGameById(gameIdArg);
-			const gameIdRes= await data_int.saveGame(username, game);
+			const gameIdRes = await data_int.saveGame(username, game);
 			return { gameId: gameIdRes}
 		} catch (err) {
 			if(err.name === 'NOT_FOUND') {
@@ -68,6 +68,22 @@ module.exports = function(data_ext, data_int) {
 	}
 	
 
+	async function addGroup(token, groupName, groupDesc) {
+		const group = await data_int.createGroup(
+			token,
+			groupName,
+			groupDesc
+		)
+		return {group};
+	}
+
+	async function getGroups(token) {
+		const group = await data_int.getGroups(
+			token
+		)
+		return {group};
+	}
+
 	return {
 		searchGame,
 		addGame,
@@ -75,5 +91,7 @@ module.exports = function(data_ext, data_int) {
 		getGame,
 		deleteGame,
 		getPopularGames: data_ext.getPopularGames, //temos de alterar
+		addGroup,
+		getGroups
 	};
 };

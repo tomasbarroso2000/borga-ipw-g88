@@ -6,8 +6,20 @@ const errors = require('./app-errors');
 
 const openApiUi = require('swagger-ui-express');
 const openApiSpec = require('./docs/borga-spec.json');
+const { createGroup } = require('./borga-data-mem');
 
 module.exports = function (services) {
+
+	function getBearerToken(req) {
+		const auth = req.header('Authorization');
+		if (auth) {
+			const authData = auth.trim();
+			if (authData.substr(0,6).toLowerCase() === 'bearer') {
+				return authData.replace(/^bearer\s+/i, '');
+			}
+		}
+		return null;
+	}
 	
 	function onError(req, res, err) {
 		switch (err.name) {
@@ -41,7 +53,7 @@ module.exports = function (services) {
 
 	async function getMyGames(req, res) {
 		try {
-			const games = await services.getAllGames();
+			const games = await services.getAllGames(getBearerToken(req));
 			res.json(games);
 		} catch (err) {
 			onError(req, res, err);
@@ -50,9 +62,12 @@ module.exports = function (services) {
 
 	async function addMyGameById(req, res) {
 		try {
-			const gameId = req.params.gameId;
+			const gameId = req.body.gameId;
 			console.log(gameId);
-			const gameIdRes = await services.addGame(gameId);
+			const gameIdRes = await services.addGame(
+				getBearerToken(req),
+				gameId
+			);
 			res.json(gameIdRes);
 		} catch (err) {
 			onError(req, res, err);
@@ -79,6 +94,28 @@ module.exports = function (services) {
 		}
 	}
 
+	async function createGroup(req, res) {
+		try {
+			const groupName = req.body.groupName;
+			const groupDesc = req.body.desc;
+			const token = getBearerToken(req);
+			const groupRes = await services.addGroup(token, groupName, groupDesc);
+			res.json(groupRes);
+		} catch (err){
+			onError(req, res, err);
+		}
+	}
+
+	async function getGroups(req, res) {
+		try {
+			const token = getBearerToken(req);
+			const groupRes = await services.addGroup(token);
+			res.json(groupRes);
+		} catch (err){
+			onError(req, res, err);
+		}
+	}
+
 	//middleware
 	const router = express.Router();
 
@@ -87,17 +124,23 @@ module.exports = function (services) {
 
 	router.use(express.json());
 
+	/*
 	// Resource: /global/games
 	router.get('/global/games', searchInGlobalGames);
 
 
 	// Resource: /my/games
 	router.get('/my/games/get', getMyGames);
-	router.post('/my/games/add/:gameId', addMyGameById);
+	router.post('/my/games/add', addMyGameById);
 
 	// Resource: /my/games/<gameId>
 	router.get('/my/games/get/:gameId', getMyGameById);
-	router.delete('/my/games/delete/:gameId', deleteMyGameById);
+	router.delete('/my/games/delete/:gameId', deleteMyGameById);*/
+
+	//Resource: /my/group/create
+	router.post('/my/groups/create', createGroup);
+	
+	router.get('my/groups/get', getGroups);
 	
 	return router;
 }

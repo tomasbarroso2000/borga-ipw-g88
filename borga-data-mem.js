@@ -4,17 +4,30 @@ const errors = require('./app-errors');
 
 const crypto = require('crypto');
 
-const games = {}; // o stor não tem isto
+//const games = {}; // o stor não tem isto
 
 const tokens = {
 	'1365834658346586' : 'membroTeste'
 }; //associa tokens a users      
 
+/*
 //associa usernames aos seus reospetivos grupos
 const users = {
 	'exemplo1' : { games: {} }
-}; 
+};
+*/
 
+const users = {
+	'quimbarreiros' : { }
+}
+
+function createGroup(username, groupName, groupDesc){
+	const user = users[username];
+	const group = user[groupName];
+	if (user && !group) {
+		user[groupName] = {'Descrição' : groupDesc, 'Games' : []};
+	}
+}
 
 function createUsers(username) {
 	if (!users[username]) {
@@ -56,11 +69,20 @@ async function tokenToUsername(token){
 	return tokens[token];
 }
 
+async function getGroups(username) {
+	const user = users[username];
+	if (user) {
+		return user.groups;
+	}
+}
+
 module.exports = {
 	hasGame,
 	saveGame,
 	loadGame,
 	deleteGame,
 	listGames,
-	tokenToUsername
+	tokenToUsername,
+	createGroup,
+	getGroups
 };
