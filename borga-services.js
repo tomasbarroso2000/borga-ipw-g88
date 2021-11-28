@@ -19,22 +19,25 @@ module.exports = function(data_ext, data_int) {
 		if(!query) {
 			throw errorList.MISSING_PARAM('query');
 		}
-		const book = await data_ext.findGame(query);
-		return book
+		const game = await data_ext.findGame(query);
+		return game
 	}
 
 
-	async function addGame(token, gameIdArg) {
-		if(!gameIdArg){
-			throw errorList.MISSING_PARAM('gameId')
+	async function addGame(token, groupName, gameIdArg) {
+		if(!gameIdArg) {
+			throw errorList.MISSING_PARAM('gameId');
+		}
+		if(!groupName) {
+			throw errorList.MISSING_PARAM('groupName');
 		}
 		try{
 			const username = await getUsername(token)
-			if(await data_int.hasGame(username, gameIdArg)) {
+			if(await data_int.hasGame(username, groupName ,gameIdArg)) {
 				return { gameId: gameIdArg};
 			}
 			const game = await data_ext.getGameById(gameIdArg);
-			const gameIdRes = await data_int.saveGame(username, game);
+			const gameIdRes = await data_int.saveGame(username, groupName, game);
 			return { gameId: gameIdRes}
 		} catch (err) {
 			if(err.name === 'NOT_FOUND') {
@@ -44,27 +47,30 @@ module.exports = function(data_ext, data_int) {
 		}
 	}
 
-	async function getAllGames(token) {
-		const game = await data_int.listGames(
-			await getUsername(token)
+	async function getAllGames(token, groupName) {
+		const games = await data_int.listGames(
+			await getUsername(token),
+			groupName
 		);
-		return { game };
+		return games;
 	}
 
-	async function getGame(token, gameId) {
+	async function getGame(token, gameId, groupName) {
 		const game = data_int.loadGame(
 			await getUsername(token),
+			groupName,
 			gameId
 		);
-		return { game };
+		return game;
 	}
 
-	async function deleteGame(token, gameIdArg) {
+	async function deleteGame(token, groupName, gameIdArg) {
 		const gameId = await data_int.deleteBook(
 			await getUsername(token),
+			groupName,
 			gameIdArg
 		);
-		return { gameId };
+		return gameId;
 	}
 	
 
@@ -74,14 +80,14 @@ module.exports = function(data_ext, data_int) {
 			groupName,
 			groupDesc
 		)
-		return {group};
+		return group;
 	}
 
 	async function getGroups(token) {
 		const group = await data_int.getGroups(
 			token
 		)
-		return {group};
+		return group;
 	}
 
 	return {

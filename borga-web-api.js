@@ -37,13 +37,13 @@ module.exports = function (services) {
 
 	async function searchInGlobalGames(req, res) {
 		try {
-			if (req.query.q == undefined) {
+			if (req.query.search == undefined) {
 				console.log('Undefined query');
 				const popular = await services.getPopularGames();
 				res.json(popular);
 			} else {
 				console.log('Search game');
-				const game = await services.searchGame(req.query.q);
+				const game = await services.searchGame(req.query.search);
 				res.json(game);
 			}
 		} catch (err) {
@@ -96,7 +96,7 @@ module.exports = function (services) {
 
 	async function createGroup(req, res) {
 		try {
-			const groupName = req.body.groupName;
+			const groupName = req.body.group;
 			const groupDesc = req.body.desc;
 			const token = getBearerToken(req);
 			const groupRes = await services.addGroup(token, groupName, groupDesc);
@@ -109,8 +109,8 @@ module.exports = function (services) {
 	async function getGroups(req, res) {
 		try {
 			const token = getBearerToken(req);
-			const groupRes = await services.addGroup(token);
-			res.json(groupRes);
+			const groupRes = await services.getGroups(token);
+			return res.json(groupRes);
 		} catch (err){
 			onError(req, res, err);
 		}
@@ -124,11 +124,11 @@ module.exports = function (services) {
 
 	router.use(express.json());
 
-	/*
+	
 	// Resource: /global/games
 	router.get('/global/games', searchInGlobalGames);
 
-
+/*
 	// Resource: /my/games
 	router.get('/my/games/get', getMyGames);
 	router.post('/my/games/add', addMyGameById);
@@ -140,7 +140,7 @@ module.exports = function (services) {
 	//Resource: /my/group/create
 	router.post('/my/groups/create', createGroup);
 	
-	router.get('my/groups/get', getGroups);
+	router.get('/my/groups/get', getGroups);
 	
 	return router;
 }

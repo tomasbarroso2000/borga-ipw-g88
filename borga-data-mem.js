@@ -3,8 +3,9 @@
 const errors = require('./app-errors');
 
 const crypto = require('crypto');
+const errorList = require('./app-errors');
 
-//const games = {}; // o stor não tem isto
+const games = {};
 
 const tokens = {
 	'1365834658346586' : 'membroTeste'
@@ -18,15 +19,19 @@ const users = {
 */
 
 const users = {
-	'quimbarreiros' : { }
+	'membroTeste' : { }
 }
 
-function createGroup(username, groupName, groupDesc){
+function createGroup(token, groupName, groupDesc){
+	const username = tokens[token];
 	const user = users[username];
 	const group = user[groupName];
 	if (user && !group) {
-		user[groupName] = {'Descrição' : groupDesc, 'Games' : []};
+		user[groupName] = {'description' : groupDesc, 'games' : []};
+	} else {
+		console.log('Group already exists');
 	}
+	return user[groupName];
 }
 
 function createUsers(username) {
@@ -38,46 +43,65 @@ function createUsers(username) {
 	}
 }
 
-const hasGame = async (username, gameId) => !!users[username].groups[gameId];
+const hasGame = async (gameId) => games[gameId] != undefined;
 
-async function saveGame(username, gameObj) {
+const hasGroup = async (username, groupName) => users[username][groupName] != undefined;
+
+
+const hasGameInGroup = async (username, groupName, gameId) => users[username][groupName].games.any((elem) => {
+	return elem == gameId;
+});
+
+async function saveGame(username, groupName, gameObj) {
 	const gameId = gameObj.id;
-	users[username].groups[gameId] = gameObj;
+	if (hasGroup(username, groupName)) {
+		users[username][groupName].push(gameId);
+		if (!hasGame(gameId)) games.gameId = gameObj;
+	}
 	return gameId;
 }
 
-async function loadGame(username, gameId) {
-	const gameObj = users[username].groups[gameId];
-	if (!gameObj) {
+async function loadGame(username, groupName, gameId) {
+	const gameObj = games[gameId]
+	if (!hasGameInGroup(username, groupName, gameId)) {
 		throw errors.NOT_FOUND({ id: gameId });
 	}
 	return gameObj;
 }
 
-async function deleteGame(username, gameId) {
-	const gameObj = users[username].groups[gameId];
-	if (!gameObj) {
+async function deleteGame(username, groupName, gameId) {
+	if (!hasGameInGroup(username, groupName, gameId)) {
 		throw errors.NOT_FOUND({ id: gameId });
 	}
-	delete users[username].groups[gameId];
+	delete users[username][groupName][gameId];
 	return gameId;
 }
 
-const listGames = async (username) => Object.values(users[username].groups);
+const listGames = async (username, groupName) => {
+	const gameObjs = [];
+	users[username][groupName].array.forEach(element => {
+		gameObjs.push(games[element]);
+	});
+	return gameObjs
+}
 
 async function tokenToUsername(token){
 	return tokens[token];
 }
 
-async function getGroups(username) {
-	const user = users[username];
-	if (user) {
-		return user.groups;
+async function getGroups(token) {
+	const username = tokens[token];
+	const groups = users[username];
+	console.log(groups);
+	if (groups) {
+		return groups;
+	} else {
+		throw errorList.NOT_FOUND("Group doesn't exist");
 	}
 }
 
 module.exports = {
-	hasGame,
+	hasGame: hasGameInGroup,
 	saveGame,
 	loadGame,
 	deleteGame,
