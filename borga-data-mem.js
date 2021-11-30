@@ -34,6 +34,15 @@ function createGroup(token, groupName, groupDesc){
 	return user[groupName];
 }
 
+function deleteGroup(token, groupName){
+	const username = tokens[token];
+	const user = users[username];
+	if(user && user[groupName]){
+		delete user[groupName];
+	}	
+	return groupName;
+}
+
 function editGroup(token, oldGroupName, newGroupName, newGroupDesc) {
 	const username = tokens[token];
 	const user = users[username];
@@ -127,5 +136,6 @@ module.exports = {
 	tokenToUsername,
 	createGroup,
 	getGroups,
-	editGroup
+	editGroup,
+	deleteGroup
 };

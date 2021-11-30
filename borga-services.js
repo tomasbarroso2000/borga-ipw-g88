@@ -95,6 +95,10 @@ module.exports = function(data_ext, data_int) {
 		return group;
 	}
 
+	/* async function deleteGroup(token, groupName){
+		const group = await data_int.deleteGroup(token, groupName);
+	} */
+
 	return {
 		searchGame,
 		addGame,
@@ -104,6 +108,7 @@ module.exports = function(data_ext, data_int) {
 		getPopularGames: data_ext.getPopularGames, //temos de alterar
 		addGroup,
 		getGroups,
-		editGroup
+		editGroup,
+		deleteGroup: data_int.deleteGroup
 	};
 };

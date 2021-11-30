@@ -107,4 +107,4 @@ package-lock.json
 
 # Phase 2
 views/
-.borga-web-ui.js
+borga-web-ui.js

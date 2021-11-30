@@ -129,6 +129,17 @@ module.exports = function (services) {
 		}
 	}
 
+	async function deleteGroup(req, res) {
+		try{
+			const groupName = req.body.group;
+			const token = getBearerToken(req);
+			const groupRes = await services.deleteGroup(token, groupName)
+			return res.json(groupRes);
+		} catch (err) {
+			onError(req, res, err);
+		}
+	}
+
 	//middleware
 	const router = express.Router();
 
@@ -157,7 +168,7 @@ module.exports = function (services) {
 
 	//router.post('/my/groups/add', addGameToGroup); //falta implementar
 	router.put('/my/groups/edit', editGroup);
-	//router.delete('/my/groups/delete', deleteGameInGroup); //falta implementar
+	router.delete('/my/groups/delete', deleteGroup); 
 	
 	return router;
 }
