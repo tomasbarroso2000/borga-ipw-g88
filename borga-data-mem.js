@@ -68,11 +68,13 @@ const hasGameInGroup = async (username, groupName, gameId) => users[username][gr
 	return elem == gameId;
 });
 
+
 async function saveGame(username, groupName, gameObj) {
 	const gameId = gameObj.id;
-	if (hasGroup(username, groupName)) {
+	if (hasGroup(username, groupName) & !hasGameInGroup(username, groupName, gameId)){
 		users[username][groupName].push(gameId);
-		if (!hasGame(gameId)) games.gameId = gameObj;
+		if (!hasGame(gameId))
+			games[gameId] = gameObj;
 	}
 	return gameId;
 }

@@ -1,10 +1,10 @@
 {
-  "name": "aliche",
+  "name": "borga",
   "version": "1.0.0",
   "description": "",
   "main": "app-try.js",
   "scripts": {
-    "test": "node app-try.js",
+    "test": "jest",
     "start": "node borga-server.js"
   },
   "keywords": [],
