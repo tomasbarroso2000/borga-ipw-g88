@@ -79,10 +79,11 @@ function editGroup(username, oldGroupName, newGroupName, newGroupDesc) {
 	return group
 }
 
-function createUsers(username) {
+function createUser(username) {
 	if (!users[username]) {
 		const newToken = crypto.randomUUID();
 		tokens[newToken] = username;
+		users[username] = {};
 	} else {
 		console.log("User already exists");
 	}
@@ -92,25 +93,19 @@ async function saveGame(username, groupName, gameObj) {
 	const gameId = gameObj.id;
 	const user = users[username];
 	user[groupName].games.push(gameId);
-	if (!hasGame(gameId)) {
+	const has = await hasGame(gameId)
+	if (!has) {
 		games[gameId] = gameObj;
 	}
+	console.log(JSON.stringify(games));
 	return gameId;
 }
 
-async function loadGame(username, groupName, gameId) {
-	const gameObj = games[gameId]
-	if (!hasGameInGroup(username, groupName, gameId)) {
-		throw errors.NOT_FOUND({ id: gameId });
-	}
-	return gameObj;
-}
-
-async function deleteGame(username, groupName, gameId) {
-	if (!hasGameInGroup(username, groupName, gameId)) {
-		throw errors.NOT_FOUND({ id: gameId });
-	}
-	delete users[username][groupName][gameId];
+async function deleteGame(username, groupName, gameObj) {
+	const gameId = gameObj.id;
+	const user = users[username];
+	const games = user[groupName].games
+	games.splice(games.indexOf(gameId), 1);
 	return gameId;
 }
 
@@ -132,16 +127,32 @@ async function getGroups(username) {
 	}
 }
 
+async function getGroupInfo(username, groupName) {
+	const group = users[username][groupName];
+	const groupObj = {};
+	groupObj.name = groupName;
+	groupObj.description = group.description;
+	const gamesList = [];
+	group.games.forEach(async elem => {
+		console.log(elem);
+		const name = await games[elem].name;
+		console.log(name);
+		gamesList.push(name);
+	});
+	groupObj.games = gamesList;
+	return groupObj;
+}
+
 module.exports = {
 	hasGame: hasGameInGroup,
 	hasGroup,
 	saveGame,
-	loadGame,
 	deleteGame,
 	listGames,
 	tokenToUsername,
 	createGroup,
 	getGroups,
 	editGroup,
-	deleteGroup
+	deleteGroup,
+	getGroupInfo
 };

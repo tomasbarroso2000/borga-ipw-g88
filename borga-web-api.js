@@ -75,16 +75,6 @@ module.exports = function (services) {
 		}
 	}
 
-	async function getMyGameById(req, res) {
-		try {
-			const gameId = req.params.gameId;
-			const game = await services.getGame(gameId);
-			res.json(game);
-		} catch (err) {
-			onError(req, res, err);
-		}
-	}
-
 	async function deleteMyGameById(req, res) {
 		try {
 			const gameId = req.params.gameId;
@@ -102,6 +92,18 @@ module.exports = function (services) {
 			const game = req.body.game;
 			const token = getBearerToken(req);
 			const gameRes = await services.addGame(token, groupName, game);
+			res.json(gameRes);
+		} catch (err) {
+			onError(req, res, err);
+		}
+	}
+
+	async function deleteGameFromGroup(req, res) {
+		try {
+			const groupName = req.body.group;
+			const game = req.body.game;
+			const token = getBearerToken(req);
+			const gameRes = await services.deleteGame(token, groupName, game);
 			res.json(gameRes);
 		} catch (err) {
 			onError(req, res, err);
@@ -153,6 +155,16 @@ module.exports = function (services) {
 			onError(req, res, err);
 		}
 	}
+	async function getGroupInfo(req, res) {
+			try{
+				const groupName = req.body.group;
+				const token = getBearerToken(req);
+				const groupRes = await services.getGroupInfo(token, groupName)
+				return res.json(groupRes);
+			} catch (err) {
+				onError(req, res, err);
+			}
+	}
 
 	//middleware
 	const router = express.Router();
@@ -178,8 +190,11 @@ module.exports = function (services) {
 
 
 	//Resource: /my/groups/
+	router.get('/my/groups/info', getGroupInfo);
 
-	router.post('/my/groups/add', addGameToGroup);
+	router.delete('/my/groups/games/delete', deleteGameFromGroup);
+
+	router.post('/my/groups/games/add', addGameToGroup);
 
 	router.post('/my/groups/create', createGroup);
 	

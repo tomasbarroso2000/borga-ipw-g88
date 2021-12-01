@@ -1,12 +1,12 @@
 {
 	"info": {
-		"_postman_id": "335bf752-bcf2-4617-854c-e5d22f8c4c46",
+		"_postman_id": "40278d89-a863-442a-85e2-0ecdca26b13f",
 		"name": "borga-api-test",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "http://localhost:8888/api/my/groups/get",
+			"name": "Get all groups",
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -38,7 +38,7 @@
 			"response": []
 		},
 		{
-			"name": "http://localhost:8888/api/my/groups/delete",
+			"name": "Delete a group",
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -79,7 +79,7 @@
 			"response": []
 		},
 		{
-			"name": "http://localhost:8888/api/my/groups/create",
+			"name": "Edit a group",
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -95,7 +95,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"old\": \"teste_ola\",\r\n    \"new\": \"Edit done\",\r\n    \"desc\": \"IPW\"\r\n}",
+					"raw": "{\r\n    \"old\": \"teste\",\r\n    \"new\": \"Edit done\",\r\n    \"desc\": \"IPW\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -120,7 +120,7 @@
 			"response": []
 		},
 		{
-			"name": "http://localhost:8888/api/my/groups/create",
+			"name": "Create a group",
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -136,7 +136,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"group\": \"teste_ola\",\r\n    \"desc\": \"something_bad\"\r\n}",
+					"raw": "{\r\n    \"group\": \"teste\",\r\n    \"desc\": \"something_bad\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -155,6 +155,134 @@
 						"my",
 						"groups",
 						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add a game to a group",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "1365834658346586",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"group\" : \"teste\",\r\n    \"game\" : \"exploding kittens\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8888/api/my/groups/games/add",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"api",
+						"my",
+						"groups",
+						"games",
+						"add"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete a game from a group",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "1365834658346586",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"group\" : \"teste\",\r\n    \"game\" : \"clue\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8888/api/my/groups/games/delete",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"api",
+						"my",
+						"groups",
+						"games",
+						"delete"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get a group's info",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "1365834658346586",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"group\": \"teste\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8888/api/my/groups/info",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"api",
+						"my",
+						"groups",
+						"info"
 					]
 				}
 			},

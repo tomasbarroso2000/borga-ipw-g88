@@ -41,7 +41,6 @@ module.exports = function(data_ext, data_int) {
 			if(await data_int.hasGame(username, groupName, g.id)) {
 				throw errorList.FAIL("Game already exists");
 			}
-			console.log(g);
 			const gameRes = data_int.saveGame(username, groupName, g);
 			return gameRes;
 		} catch (err) {
@@ -71,14 +70,31 @@ module.exports = function(data_ext, data_int) {
 		return game;
 	}
 
-	async function deleteGame(token, groupName, gameIdArg) {
+	async function deleteGame(token, groupName, game) {
 		const username = await getUsername(token);
-		const gameId = await data_int.deleteBook(
-			username,
-			groupName,
-			gameIdArg
-		);
-		return gameId;
+		if(!groupName) {
+			throw errorList.MISSING_PARAM('group');
+		}
+		if(!game) {
+			throw errorList.MISSING_PARAM('game');
+		}
+		if(!data_int.hasGroup(username, groupName)){
+			throw errorList.NOT_FOUND("Group " + groupName + " doesn't exist");
+		}
+		try{
+			const g = await data_ext.findGame(game);
+
+			if(!await data_int.hasGame(username, groupName, g.id)) {
+				throw errorList.FAIL("Game doesn't exist");
+			}
+			const gameRes = data_int.deleteGame(username, groupName, g);
+			return gameRes;
+		} catch (err) {
+			if(err.name === 'NOT_FOUND') {
+				throw errorList.INVALID_PARAM("Invalid game: " + game + " : " + err);
+			}
+			throw err;
+		}
 	}
 	
 
@@ -106,6 +122,25 @@ module.exports = function(data_ext, data_int) {
 		return group;
 	}
 
+	async function getGroupInfo(token, groupName) {
+		const username = await getUsername(token);
+		if(!groupName) {
+			throw errorList.MISSING_PARAM('group');
+		}
+		if(!data_int.hasGroup(username, groupName)){
+			throw errorList.NOT_FOUND("Group " + groupName + " doesn't exist");
+		}
+		try {
+			const group = await data_int.getGroupInfo(username, groupName);
+			return group;
+		} catch (err) {
+			if(err.name === 'FAIL') {
+				throw errorList.INVALID_PARAM(err);
+			}
+			throw err;
+		}
+	}
+
 	/* async function deleteGroup(token, groupName){
 		const group = await data_int.deleteGroup(token, groupName);
 	} */
@@ -120,6 +155,7 @@ module.exports = function(data_ext, data_int) {
 		addGroup,
 		getGroups,
 		editGroup,
-		deleteGroup: data_int.deleteGroup
+		deleteGroup: data_int.deleteGroup,
+		getGroupInfo
 	};
 };
