@@ -1,7 +1,7 @@
 'use strict';
 
 const ATLAS_CLIENT_ID = process.env.ATLAS_CLIENT_ID;
-const errors = require('./app-errors');
+const errors = require('./borga-errors');
 const fetch = require('node-fetch');
 const BOARD_GAME_ATLAS_BASE_URI = 
 	'https://api.boardgameatlas.com/api/';
@@ -18,7 +18,7 @@ function findId(info, type) {
 */
 
 function makeGameObj(gameInfo) {
-	console.log(gameInfo);
+	//console.log(gameInfo);
 	return {
 		id: gameInfo.id,
 		name: gameInfo.name,
@@ -27,7 +27,7 @@ function makeGameObj(gameInfo) {
 }
 
 async function do_fetch(uri) {
-	console.log(uri);
+	//console.log(uri);
 	let res;
 	try {
 		res = await fetch(uri);

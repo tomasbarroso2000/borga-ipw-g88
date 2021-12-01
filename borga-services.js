@@ -1,6 +1,6 @@
 'use strict';
 
-const errorList = require("./app-errors");
+const errorList = require("./borga-errors");
 
 module.exports = function(data_ext, data_int) {
 	
@@ -24,40 +24,47 @@ module.exports = function(data_ext, data_int) {
 	}
 
 
-	async function addGame(token, groupName, gameIdArg) {
-		if(!gameIdArg) {
-			throw errorList.MISSING_PARAM('gameId');
-		}
+	async function addGame(token, groupName, game) {
+		const username = await getUsername(token);
 		if(!groupName) {
-			throw errorList.MISSING_PARAM('groupName');
+			throw errorList.MISSING_PARAM('group');
+		}
+		if(!game) {
+			throw errorList.MISSING_PARAM('game');
+		}
+		if(!data_int.hasGroup(username, groupName)){
+			throw errorList.NOT_FOUND("Group " + groupName + " doesn't exist");
 		}
 		try{
-			const username = await getUsername(token)
-			if(await data_int.hasGame(username, groupName ,gameIdArg)) {
-				return { gameId: gameIdArg};
+			const g = await data_ext.findGame(game);
+
+			if(await data_int.hasGame(username, groupName, g.id)) {
+				throw errorList.FAIL("Game already exists");
 			}
-			const game = await data_ext.getGameById(gameIdArg);
-			const gameIdRes = await data_int.saveGame(username, groupName, game);
-			return { gameId: gameIdRes}
+			console.log(g);
+			const gameRes = data_int.saveGame(username, groupName, g);
+			return gameRes;
 		} catch (err) {
 			if(err.name === 'NOT_FOUND') {
-				throw errorList.INVALID_PARAM({ gameId: gameIdArg, err });
+				throw errorList.INVALID_PARAM("Invalid game: " + game + " : " + err);
 			}
 			throw err;
 		}
 	}
 
 	async function getAllGames(token, groupName) {
+		const username = await getUsername(token);
 		const games = await data_int.listGames(
-			await getUsername(token),
+			username,
 			groupName
 		);
 		return games;
 	}
 
 	async function getGame(token, gameId, groupName) {
+		const username = await getUsername(token);
 		const game = data_int.loadGame(
-			await getUsername(token),
+			username,
 			groupName,
 			gameId
 		);
@@ -65,8 +72,9 @@ module.exports = function(data_ext, data_int) {
 	}
 
 	async function deleteGame(token, groupName, gameIdArg) {
+		const username = await getUsername(token);
 		const gameId = await data_int.deleteBook(
-			await getUsername(token),
+			username,
 			groupName,
 			gameIdArg
 		);
@@ -75,8 +83,9 @@ module.exports = function(data_ext, data_int) {
 	
 
 	async function addGroup(token, groupName, groupDesc) {
+		const username = await getUsername(token);
 		const group = await data_int.createGroup(
-			token,
+			username,
 			groupName,
 			groupDesc
 		)
@@ -84,14 +93,16 @@ module.exports = function(data_ext, data_int) {
 	}
 
 	async function getGroups(token) {
+		const username = await getUsername(token);
 		const group = await data_int.getGroups(
-			token
+			username
 		)
 		return group;
 	}
 
 	async function editGroup(token, oldGroupName, newGroupName, newGroupDesc) {
-		const group = await data_int.editGroup(token, oldGroupName, newGroupName, newGroupDesc);
+		const username = await getUsername(token);
+		const group = await data_int.editGroup(username, oldGroupName, newGroupName, newGroupDesc);
 		return group;
 	}
 
