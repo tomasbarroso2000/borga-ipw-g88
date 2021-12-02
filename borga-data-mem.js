@@ -23,7 +23,6 @@ const hasGroup = async (username, groupName) => !!users[username][groupName];
 
 const hasGameInGroup = async (username, groupName, gameId) => {
 	const user = users[username];
-	console.log(user[groupName].games.includes(gameId));
 	return user[groupName].games.includes(gameId);
 }
 
@@ -34,17 +33,6 @@ async function tokenToUsername(token){
 */
 
 const tokenToUsername = async (token) => tokens[token];
-
-/*function createGroup(username, groupName, groupDesc){
-	const user = users[username];
-	const group = user[groupName];
-	if (user && !group) {
-		user[groupName] = {'description' : groupDesc, 'games' : []};
-	} else {
-		console.log('Group already exists');
-	}
-	return user[groupName];
-}*/
 
 function createGroup(username, groupName, groupDesc){
 	const user = users[username];
@@ -84,6 +72,7 @@ function createUser(username) {
 		const newToken = crypto.randomUUID();
 		tokens[newToken] = username;
 		users[username] = {};
+		return {token: newToken, username: username};
 	} else {
 		console.log("User already exists");
 	}
@@ -93,11 +82,10 @@ async function saveGame(username, groupName, gameObj) {
 	const gameId = gameObj.id;
 	const user = users[username];
 	user[groupName].games.push(gameId);
-	const has = await hasGame(gameId)
+	const has = await hasGame(gameId);
 	if (!has) {
 		games[gameId] = gameObj;
 	}
-	console.log(JSON.stringify(games));
 	return gameId;
 }
 
@@ -109,17 +97,17 @@ async function deleteGame(username, groupName, gameObj) {
 	return gameId;
 }
 
-const listGames = async (username, groupName) => {
-	const gameObjs = [];
-	users[username][groupName].array.forEach(element => {
-		gameObjs.push(games[element]);
+const listGames = async (group) => {
+	const gamesList = [];
+	group.games.forEach(async elem => {
+		const name = await games[elem].name;
+		gamesList.push(name);
 	});
-	return gameObjs
+	return gamesList
 }
 
 async function getGroups(username) {
 	const groups = users[username];
-	console.log(groups);
 	if (groups) {
 		return groups;
 	} else {
@@ -129,27 +117,21 @@ async function getGroups(username) {
 
 async function getGroupInfo(username, groupName) {
 	const group = users[username][groupName];
-	const groupObj = {};
-	groupObj.name = groupName;
-	groupObj.description = group.description;
-	const gamesList = [];
-	group.games.forEach(async elem => {
-		console.log(elem);
-		const name = await games[elem].name;
-		console.log(name);
-		gamesList.push(name);
-	});
-	groupObj.games = gamesList;
+	const groupObj = {
+		name: groupName,
+		description: group.description,
+		games: await listGames(group)
+	};
 	return groupObj;
 }
 
 module.exports = {
-	hasGame: hasGameInGroup,
+	hasGameInGroup,
 	hasGroup,
 	saveGame,
 	deleteGame,
-	listGames,
 	tokenToUsername,
+	createUser,
 	createGroup,
 	getGroups,
 	editGroup,

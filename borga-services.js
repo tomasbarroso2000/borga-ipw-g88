@@ -32,16 +32,15 @@ module.exports = function(data_ext, data_int) {
 		if(!game) {
 			throw errorList.MISSING_PARAM('game');
 		}
-		if(!data_int.hasGroup(username, groupName)){
+		if(!await data_int.hasGroup(username, groupName)){
 			throw errorList.NOT_FOUND("Group " + groupName + " doesn't exist");
 		}
 		try{
-			const g = await data_ext.findGame(game);
-
-			if(await data_int.hasGame(username, groupName, g.id)) {
+			const gameObj = await data_ext.findGame(game); 
+			if(await data_int.hasGameInGroup(username, groupName, gameObj.id)) {
 				throw errorList.FAIL("Game already exists");
 			}
-			const gameRes = data_int.saveGame(username, groupName, g);
+			const gameRes = data_int.saveGame(username, groupName, gameObj);
 			return gameRes;
 		} catch (err) {
 			if(err.name === 'NOT_FOUND') {
@@ -49,15 +48,6 @@ module.exports = function(data_ext, data_int) {
 			}
 			throw err;
 		}
-	}
-
-	async function getAllGames(token, groupName) {
-		const username = await getUsername(token);
-		const games = await data_int.listGames(
-			username,
-			groupName
-		);
-		return games;
 	}
 
 	async function getGame(token, gameId, groupName) {
@@ -78,13 +68,13 @@ module.exports = function(data_ext, data_int) {
 		if(!game) {
 			throw errorList.MISSING_PARAM('game');
 		}
-		if(!data_int.hasGroup(username, groupName)){
+		if(!await data_int.hasGroup(username, groupName)){
 			throw errorList.NOT_FOUND("Group " + groupName + " doesn't exist");
 		}
 		try{
 			const g = await data_ext.findGame(game);
 
-			if(!await data_int.hasGame(username, groupName, g.id)) {
+			if(!await data_int.hasGameInGroup(username, groupName, g.id)) {
 				throw errorList.FAIL("Game doesn't exist");
 			}
 			const gameRes = data_int.deleteGame(username, groupName, g);
@@ -98,7 +88,7 @@ module.exports = function(data_ext, data_int) {
 	}
 	
 
-	async function addGroup(token, groupName, groupDesc) {
+	async function createGroup(token, groupName, groupDesc) {
 		const username = await getUsername(token);
 		const group = await data_int.createGroup(
 			username,
@@ -127,7 +117,7 @@ module.exports = function(data_ext, data_int) {
 		if(!groupName) {
 			throw errorList.MISSING_PARAM('group');
 		}
-		if(!data_int.hasGroup(username, groupName)){
+		if(!await data_int.hasGroup(username, groupName)){
 			throw errorList.NOT_FOUND("Group " + groupName + " doesn't exist");
 		}
 		try {
@@ -141,21 +131,34 @@ module.exports = function(data_ext, data_int) {
 		}
 	}
 
-	/* async function deleteGroup(token, groupName){
-		const group = await data_int.deleteGroup(token, groupName);
-	} */
+	async function deleteGroup(token, groupName) {
+		const username = await getUsername(token);
+		const group = await data_int.deleteGroup(
+			username,
+			groupName,
+		)	
+		return group;
+	}
+
+	async function getPopularGames() {
+		try{
+			return await data_ext.getPopularGames();
+		} catch(err) {
+			throw errorList.FAIL('Unnable to retrieve most popular games list')
+		}
+	}
 
 	return {
 		searchGame,
 		addGame,
-		getAllGames,
 		getGame,
 		deleteGame,
-		getPopularGames: data_ext.getPopularGames, //temos de alterar
-		addGroup,
+		getPopularGames, 
+		createGroup,
 		getGroups,
 		editGroup,
-		deleteGroup: data_int.deleteGroup,
-		getGroupInfo
+		deleteGroup,
+		getGroupInfo,
+		createUser: data_int.createUser
 	};
 };

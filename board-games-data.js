@@ -18,7 +18,6 @@ function findId(info, type) {
 */
 
 function makeGameObj(gameInfo) {
-	//console.log(gameInfo);
 	return {
 		id: gameInfo.id,
 		name: gameInfo.name,
@@ -27,7 +26,6 @@ function makeGameObj(gameInfo) {
 }
 
 async function do_fetch(uri) {
-	//console.log(uri);
 	let res;
 	try {
 		res = await fetch(uri);

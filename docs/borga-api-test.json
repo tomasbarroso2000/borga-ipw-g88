@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "40278d89-a863-442a-85e2-0ecdca26b13f",
+		"_postman_id": "1fde1129-91cf-4162-9152-d2118c6f9b7c",
 		"name": "borga-api-test",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -287,6 +287,67 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Get popular games",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8888/api/global/games",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"api",
+						"global",
+						"games"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create new user",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"xpto\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8888/api/users/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"api",
+						"users",
+						"create"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "default",
+			"value": "1365834658346586"
+		},
+		{
+			"key": "new user",
+			"value": "abd1e0c8-a36c-46b4-b157-d3df815f8844"
 		}
 	]
 }

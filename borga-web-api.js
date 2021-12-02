@@ -38,11 +38,9 @@ module.exports = function (services) {
 	async function searchInGlobalGames(req, res) {
 		try {
 			if (req.query.search == undefined) {
-				console.log('Undefined query');
 				const popular = await services.getPopularGames();
 				res.json(popular);
 			} else {
-				console.log('Search game');
 				const game = await services.searchGame(req.query.search);
 				res.json(game);
 			}
@@ -50,41 +48,6 @@ module.exports = function (services) {
 			res.status(500).json(err);
 		}
 	}
-
-	async function getMyGames(req, res) {
-		try {
-			const games = await services.getAllGames(getBearerToken(req));
-			res.json(games);
-		} catch (err) {
-			onError(req, res, err);
-		}
-	}
-
-	async function addMyGameById(req, res) {
-		try {
-
-			const gameId = req.body.gameId;
-			console.log(gameId);
-			const gameIdRes = await services.addGame(
-				getBearerToken(req),
-				gameId
-			);
-			res.json(gameIdRes);
-		} catch (err) {
-			onError(req, res, err);
-		}
-	}
-
-	async function deleteMyGameById(req, res) {
-		try {
-			const gameId = req.params.gameId;
-			const gameIdRes = await services.deleteGame(gameId);
-			res.json(gameIdRes);
-		} catch (err) {
-			onError(req, res, err);
-		}
-	}
-
 
 	async function addGameToGroup(req, res) {
 		try {
@@ -115,7 +78,7 @@ module.exports = function (services) {
 			const groupName = req.body.group;
 			const groupDesc = req.body.desc;
 			const token = getBearerToken(req);
-			const groupRes = await services.addGroup(token, groupName, groupDesc);
+			const groupRes = await services.createGroup(token, groupName, groupDesc);
 			res.json(groupRes);
 		} catch (err){
 			onError(req, res, err);
@@ -155,15 +118,26 @@ module.exports = function (services) {
 			onError(req, res, err);
 		}
 	}
+
 	async function getGroupInfo(req, res) {
-			try{
-				const groupName = req.body.group;
-				const token = getBearerToken(req);
-				const groupRes = await services.getGroupInfo(token, groupName)
-				return res.json(groupRes);
-			} catch (err) {
-				onError(req, res, err);
-			}
+		try{
+			const groupName = req.body.group;
+			const token = getBearerToken(req);
+			const groupRes = await services.getGroupInfo(token, groupName)
+			return res.json(groupRes);
+		} catch (err) {
+			onError(req, res, err);
+		}
+	}
+
+	async function createUser(req, res) {
+		try {
+			const username = req.body.username;
+			const userRes = await services.createUser(username);
+			return res.json(userRes);
+		} catch (err) {
+			onError(req, res, err);
+		}
 	}
 
 	//middleware
@@ -174,33 +148,18 @@ module.exports = function (services) {
 
 	router.use(express.json());
 
+	//Resource: /users
+	router.post('/users/create', createUser);
 	
-	// Resource: /global/games
+	//Resource: /global/games
 	router.get('/global/games', searchInGlobalGames);
 
-/*
-	// Resource: /my/games
-	router.get('/my/games/get', getMyGames);
-	router.post('/my/games/add', addMyGameById);
-
-	// Resource: /my/games/<gameId>
-	router.get('/my/games/get/:gameId', getMyGameById);
-	router.delete('/my/games/delete/:gameId', deleteMyGameById);*/
-
-
-
-	//Resource: /my/groups/
+	//Resource: /my/groups
 	router.get('/my/groups/info', getGroupInfo);
-
 	router.delete('/my/groups/games/delete', deleteGameFromGroup);
-
 	router.post('/my/groups/games/add', addGameToGroup);
-
 	router.post('/my/groups/create', createGroup);
-	
 	router.get('/my/groups/get', getGroups);
-
-	//router.post('/my/groups/add', addGameToGroup); //falta implementar
 	router.put('/my/groups/edit', editGroup);
 	router.delete('/my/groups/delete', deleteGroup); 
 	
