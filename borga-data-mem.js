@@ -89,8 +89,7 @@ async function saveGame(username, groupName, gameObj) {
 	return gameId;
 }
 
-async function deleteGame(username, groupName, gameObj) {
-	const gameId = gameObj.id;
+async function deleteGame(username, groupName, gameId) {
 	const user = users[username];
 	const games = user[groupName].games
 	games.splice(games.indexOf(gameId), 1);

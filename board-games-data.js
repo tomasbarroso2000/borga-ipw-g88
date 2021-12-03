@@ -41,8 +41,22 @@ async function do_fetch(uri) {
 	}	
 }
 
-async function findGame(query) {
+async function findGames(query) {
+	const gamesArray = [];
 	const search_uri = BOARD_GAME_ATLAS_BASE_URI + 'search?name=' + query + '&client_id=' + ATLAS_CLIENT_ID;
+	const answer = await do_fetch(search_uri);
+	if (answer.games && answer.games.length) {
+		answer.games.forEach(elem => {
+			gamesArray.push(makeGameObj(elem));
+		})
+		return gamesArray
+	} else {
+		return null;
+	}
+}
+
+async function findGameById(query) {
+	const search_uri = BOARD_GAME_ATLAS_BASE_URI + 'search?limit=1&ids=' + query + '&client_id=' + ATLAS_CLIENT_ID;
 	const answer = await do_fetch(search_uri);
 	if (answer.games && answer.games.length) {
 		return makeGameObj(answer.games[0]);
@@ -72,7 +86,8 @@ async function getGameById(gameId) {
 }
 
 module.exports = {
-	findGame,
+	findGames,
 	getPopularGames,
-	getGameById
+	getGameById, 
+	findGameById
 };

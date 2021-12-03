@@ -19,7 +19,7 @@ module.exports = function(data_ext, data_int) {
 		if(!query) {
 			throw errorList.MISSING_PARAM('query');
 		}
-		const game = await data_ext.findGame(query);
+		const game = await data_ext.findGames(query);
 		return game
 	}
 
@@ -36,7 +36,7 @@ module.exports = function(data_ext, data_int) {
 			throw errorList.NOT_FOUND("Group " + groupName + " doesn't exist");
 		}
 		try{
-			const gameObj = await data_ext.findGame(game); 
+			const gameObj = await data_ext.findGameById(game); 
 			if(await data_int.hasGameInGroup(username, groupName, gameObj.id)) {
 				throw errorList.FAIL("Game already exists");
 			}
@@ -72,12 +72,12 @@ module.exports = function(data_ext, data_int) {
 			throw errorList.NOT_FOUND("Group " + groupName + " doesn't exist");
 		}
 		try{
-			const g = await data_ext.findGame(game);
+			const gameObj = await data_ext.findGameById(game);
 
-			if(!await data_int.hasGameInGroup(username, groupName, g.id)) {
+			if(!await data_int.hasGameInGroup(username, groupName, gameObj.id)) {
 				throw errorList.FAIL("Game doesn't exist");
 			}
-			const gameRes = data_int.deleteGame(username, groupName, g);
+			const gameRes = data_int.deleteGame(username, groupName, gameObj.id);
 			return gameRes;
 		} catch (err) {
 			if(err.name === 'NOT_FOUND') {
