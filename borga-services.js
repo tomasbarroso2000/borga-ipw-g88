@@ -21,8 +21,15 @@ module.exports = function(data_ext, data_int) {
 		if(!query) {
 			throw responseCodes.MISSING_PARAM('query');
 		}
-		const game = await data_ext.findGames(query);
-		return game
+		try{
+			const game = await data_ext.findGames(query);
+			return game;
+		} catch(err) {
+			if(err.name === 'NOT_FOUND') {
+				throw errors.INVALID_PARAM("Invalid game: " + game + " : " + err);
+			}
+			throw err;
+		}
 	}
 
 
