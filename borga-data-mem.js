@@ -15,54 +15,57 @@ const users = {
 	'membroTeste' : { }
 }
 
-//const hasGame = async (gameId) => games[gameId] != undefined;
 const hasGame = async (gameId) => !!games[gameId];
 
-//const hasGroup = async (username, groupName) => users[username][groupName] != undefined;
-const hasGroup = async (username, groupName) => !!users[username][groupName];
+const hasGroup = async (username, groupId) => !!users[username][groupId];
 
-const hasGameInGroup = async (username, groupName, gameId) => {
+const hasGameInGroup = async (username, groupId, gameId) => {
 	const user = users[username];
-	return user[groupName].games.includes(gameId);
+	return user[groupId].games.includes(gameId);
 }
 
-/*
-async function tokenToUsername(token){
-	return tokens[token];
+function makeGroupId() {
+	const length = 8;
+    var result = '';
+    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+   	}
+   return result;
 }
-*/
 
 const tokenToUsername = async (token) => tokens[token];
 
 function createGroup(username, groupName, groupDesc){
+	let groupId = makeGroupId();
 	const user = users[username];
-	const group = user[groupName];
-	if (group) {
-		throw errors.FAIL('Group ' + groupName + ' already exists!');
+	while (user[groupId]) {
+		groupId = makeGroupId();
 	}
-	user[groupName] = {'description' : groupDesc, 'games' : []};
+	user[groupId] = {'name': groupName, 'description': groupDesc, 'games': []};
 	return successes.GROUP_CREATED('Group ' + groupName + ' created!');
 }
 
-function deleteGroup(username, groupName){
+function deleteGroup(username, groupId){
 	const user = users[username];
-	if(user && user[groupName]){
-		delete user[groupName];
+	const groupName = user[groupId].name;
+	if(user && user[groupId]){
+		delete user[groupId];
 	}	
 	return groupName;
 }
 
-function editGroup(username, oldGroupName, newGroupName, newGroupDesc) {
+function editGroup(username, groupId, newGroupName, newGroupDesc) {
 	const user = users[username];
-	const group = user[oldGroupName];
-	delete user[oldGroupName];
+	const group = user[groupId];
 	if (user && group) {
 		if (newGroupDesc) {
 			group.description = newGroupDesc;
 		}
 		if (newGroupName) {
-			user[newGroupName] = group
-		} else user[oldGroupName] = group
+			group.name = newGroupName;
+		}
 	}
 	return group
 }
@@ -78,10 +81,10 @@ function createUser(username) {
 	}
 }
 
-async function saveGame(username, groupName, gameObj) {
+async function saveGame(username, groupId, gameObj) {
 	const gameId = gameObj.id;
 	const user = users[username];
-	user[groupName].games.push(gameId);
+	user[groupId].games.push(gameId);
 	const has = await hasGame(gameId);
 	if (!has) {
 		games[gameId] = gameObj;
@@ -89,9 +92,9 @@ async function saveGame(username, groupName, gameObj) {
 	return gameId;
 }
 
-async function deleteGame(username, groupName, gameId) {
+async function deleteGame(username, groupId, gameId) {
 	const user = users[username];
-	const games = user[groupName].games
+	const games = user[groupId].games
 	games.splice(games.indexOf(gameId), 1);
 	return gameId;
 }
@@ -114,10 +117,10 @@ async function getGroups(username) {
 	}
 }
 
-async function getGroupInfo(username, groupName) {
-	const group = users[username][groupName];
+async function getGroupInfo(username, groupId) {
+	const group = users[username][groupId];
 	const groupObj = {
-		name: groupName,
+		name: group.name,
 		description: group.description,
 		games: await listGames(group)
 	};

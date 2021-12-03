@@ -75,8 +75,8 @@ module.exports = function (services) {
 
 	async function createGroup(req, res) {
 		try {
-			const groupName = req.body.group;
-			const groupDesc = req.body.desc;
+			const groupName = req.body.name;
+			const groupDesc = req.body.description;
 			const token = getBearerToken(req);
 			const groupRes = await services.createGroup(token, groupName, groupDesc);
 			res.json(groupRes);
@@ -97,9 +97,9 @@ module.exports = function (services) {
 
 	async function editGroup(req, res) {
 		try {
-			const oldGroupName = req.body.old;
-			const newGroupName = req.body.new;
-			const newGroupDesc = req.body.desc;
+			const oldGroupName = req.body.id;
+			const newGroupName = req.body.name;
+			const newGroupDesc = req.body.description;
 			const token = getBearerToken(req);
 			const groupRes = await services.editGroup(token, oldGroupName, newGroupName, newGroupDesc);
 			return res.json(groupRes);
@@ -110,7 +110,7 @@ module.exports = function (services) {
 
 	async function deleteGroup(req, res) {
 		try{
-			const groupName = req.body.group;
+			const groupName = req.body.id;
 			const token = getBearerToken(req);
 			const groupRes = await services.deleteGroup(token, groupName)
 			return res.json(groupRes);
