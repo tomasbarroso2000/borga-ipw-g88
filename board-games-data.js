@@ -1,7 +1,9 @@
 'use strict';
 
 const ATLAS_CLIENT_ID = process.env.ATLAS_CLIENT_ID;
-const errors = require('./borga-errors');
+const responseCodes = require('./borga-responseCodes');
+const errors = responseCodes.errorList;
+const successes = responseCodes.successList;
 const fetch = require('node-fetch');
 const BOARD_GAME_ATLAS_BASE_URI = 
 	'https://api.boardgameatlas.com/api/';

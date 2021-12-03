@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "1fde1129-91cf-4162-9152-d2118c6f9b7c",
+		"_postman_id": "18ec7752-dc66-42eb-89a3-52780c424a0f",
 		"name": "borga-api-test",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -54,7 +54,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"group\" : \"teste_ola\"\r\n}",
+					"raw": "{\r\n    \"id\" : \"zxgOaClm\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -95,7 +95,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"old\": \"teste\",\r\n    \"new\": \"Edit done\",\r\n    \"desc\": \"IPW\"\r\n}",
+					"raw": "{\r\n    \"id\": \"g7h6xJLA\",\r\n    \"name\": \"changed\",\r\n    \"description\": \"new description\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -136,7 +136,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"group\": \"teste\",\r\n    \"desc\": \"something_bad\"\r\n}",
+					"raw": "{\r\n    \"name\": \"teste\",\r\n    \"description\": \"something_bad\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -177,7 +177,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"group\" : \"teste\",\r\n    \"game\" : \"exploding kittens\"\r\n}",
+					"raw": "{\r\n    \"group\" : \"zJeTs91S\",\r\n    \"game\" : \"74f9mzbw9Y\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -219,7 +219,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"group\" : \"teste\",\r\n    \"game\" : \"clue\"\r\n}",
+					"raw": "{\r\n    \"group\" : \"zxgOaClm\",\r\n    \"game\" : \"74f9mzbw9Y\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -246,9 +246,6 @@
 		},
 		{
 			"name": "Get a group's info",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -262,17 +259,8 @@
 				},
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"group\": \"teste\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
 				"url": {
-					"raw": "http://localhost:8888/api/my/groups/info",
+					"raw": "http://localhost:8888/api/my/groups/zJeTs91S/info",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -282,6 +270,7 @@
 						"api",
 						"my",
 						"groups",
+						"zJeTs91S",
 						"info"
 					]
 				}
@@ -334,6 +323,33 @@
 						"api",
 						"users",
 						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get a game by name",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8888/api/global/games?search=exploding+kittens",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"api",
+						"global",
+						"games"
+					],
+					"query": [
+						{
+							"key": "search",
+							"value": "exploding+kittens"
+						}
 					]
 				}
 			},

@@ -2,7 +2,7 @@
 
 const express = require('express');
 
-const errors = require('./borga-errors');
+const responseCodes = require('./borga-responseCodes');
 
 const openApiUi = require('swagger-ui-express');
 const openApiSpec = require('./docs/borga-api-spec.json');
@@ -120,9 +120,9 @@ module.exports = function (services) {
 
 	async function getGroupInfo(req, res) {
 		try{
-			const groupName = req.body.group;
+			const groupId = req.params.groupId;
 			const token = getBearerToken(req);
-			const groupRes = await services.getGroupInfo(token, groupName)
+			const groupRes = await services.getGroupInfo(token, groupId)
 			return res.json(groupRes);
 		} catch (err) {
 			onError(req, res, err);
@@ -154,7 +154,7 @@ module.exports = function (services) {
 	router.get('/global/games', searchInGlobalGames);
 
 	//Resource: /my/groups
-	router.get('/my/groups/info', getGroupInfo);
+	router.get('/my/groups/:groupId/info', getGroupInfo);
 	router.delete('/my/groups/games/delete', deleteGameFromGroup);
 	router.post('/my/groups/games/add', addGameToGroup);
 	router.post('/my/groups/create', createGroup);

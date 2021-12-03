@@ -1,9 +1,9 @@
 'use strict';
 
-const errors = require('./borga-errors');
+const responseCodes = require('./borga-responseCodes');
+const errors = responseCodes.errorList;
+const successes = responseCodes.successList;
 const crypto = require('crypto');
-const errorList = require('./borga-errors');
-const successes = require('./borga-successes')
 
 const games = {};
 
@@ -113,7 +113,7 @@ async function getGroups(username) {
 	if (groups) {
 		return groups;
 	} else {
-		throw errorList.NOT_FOUND("Group doesn't exist");
+		throw errors.NOT_FOUND("Group doesn't exist");
 	}
 }
 
