@@ -6,7 +6,6 @@ const errors = require('./borga-errors');
 
 const openApiUi = require('swagger-ui-express');
 const openApiSpec = require('./docs/borga-api-spec.json');
-//const { createGroup } = require('./borga-data-mem');
 
 module.exports = function (services) {
 

@@ -6,17 +6,6 @@ const fetch = require('node-fetch');
 const BOARD_GAME_ATLAS_BASE_URI = 
 	'https://api.boardgameatlas.com/api/';
 
-
-/* denecessário (?)
-function findId(info, type) {
-	return info.industryIdentifiers &&
-		info.industryIdentifiers
-		.filter(iid => iid.type === type)
-		.map(iid => iid.identifier)
-		.concat(undefined)[0];
-}
-*/
-
 function makeGameObj(gameInfo) {
 	return {
 		id: gameInfo.id,

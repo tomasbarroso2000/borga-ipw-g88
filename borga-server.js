@@ -9,11 +9,9 @@ const data_ext = require('./board-games-data');
 const data_int = require('./borga-data-mem');
 const services = require('./borga-services')(data_ext, data_int);
 const webapi = require('./borga-web-api')(services);
-//const webui = require('./borga-web-ui')(services);
 
 const app = express();
 
 app.use('/api', webapi);
-//app.use('/', webui);
 
 app.listen(port);

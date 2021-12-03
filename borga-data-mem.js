@@ -5,7 +5,7 @@ const crypto = require('crypto');
 const errorList = require('./borga-errors');
 const successes = require('./borga-successes')
 
-const games = {};	//gameId: gameObj
+const games = {};
 
 const tokens = {
 	'1365834658346586' : 'membroTeste'
