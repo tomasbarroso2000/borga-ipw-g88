@@ -24,6 +24,8 @@ const hasGameInGroup = async (username, groupId, gameId) => {
 	return user[groupId].games.includes(gameId);
 }
 
+const tokenToUsername = async (token) => tokens[token];
+
 function makeGroupId() {
 	const length = 8;
     var result = '';
@@ -34,8 +36,6 @@ function makeGroupId() {
    	}
    return result;
 }
-
-const tokenToUsername = async (token) => tokens[token];
 
 function createGroup(username, groupName, groupDesc){
 	let groupId = makeGroupId();

@@ -58,10 +58,10 @@ module.exports = function (services) {
 
 	async function addGameToGroup(req, res) {
 		try {
-			const groupName = req.body.group;
+			const groupId = req.body.group;
 			const game = req.body.game;
 			const token = getBearerToken(req);
-			const gameRes = await services.addGame(token, groupName, game);
+			const gameRes = await services.addGame(token, groupId, game);
 			res.json(gameRes);
 		} catch (err) {
 			onError(req, res, err);
@@ -70,10 +70,10 @@ module.exports = function (services) {
 
 	async function deleteGameFromGroup(req, res) {
 		try {
-			const groupName = req.body.group;
+			const groupId = req.body.group;
 			const game = req.body.game;
 			const token = getBearerToken(req);
-			const gameRes = await services.deleteGame(token, groupName, game);
+			const gameRes = await services.deleteGame(token, groupId, game);
 			res.json(gameRes);
 		} catch (err) {
 			onError(req, res, err);
@@ -117,9 +117,9 @@ module.exports = function (services) {
 
 	async function deleteGroup(req, res) {
 		try{
-			const groupName = req.body.id;
+			const groupId = req.body.id;
 			const token = getBearerToken(req);
-			const groupRes = await services.deleteGroup(token, groupName)
+			const groupRes = await services.deleteGroup(token, groupId)
 			res.json(groupRes);
 		} catch (err) {
 			onError(req, res, err);
