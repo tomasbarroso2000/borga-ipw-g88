@@ -8,6 +8,10 @@
   },
   "tags": [
     {
+      "name": "Users",
+      "description": "User creation"
+    },
+    {
       "name": "AllGames",
       "description": "All the games that we know about.",
       "externalDocs": {
@@ -16,24 +20,70 @@
       }
     },
     {
+      "name": "MyGroups",
+      "description": "The personal groups of games"
+    },
+    {
       "name": "MyGames",
       "description": "The personal games collection"
     }
   ],
   "paths": {
+    "/users/create": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Create a user",
+        "description": "Creates a user and a token",
+        "requestBody": {
+          "description": "Username to be used",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Username"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "A user has been created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Game Board Atlas API is not responding",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/global/games": {
       "get": {
         "tags": [
           "AllGames"
         ],
         "summary": "Find a game by query",
-        "description": "Uses Board Game Atlas API to find a game corresponding to the query. Valid queries are the same as specified for Game Board Atlas API. It will return the first result from Game Board Atlas' result set.",
+        "description": "Uses Board Game Atlas API to find a game corresponding to the query. Valid queries are the same as specified for Game Board Atlas API. It will return a list of games with a matching name or a list of the most popular games if the query is empty.",
         "parameters": [
           {
-            "name": "q",
+            "name": "search",
             "in": "query",
             "description": "Query to find a game",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -46,16 +96,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/GameResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "No query indicated in the request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppError"
                 }
               }
             }
@@ -83,78 +123,35 @@
         }
       }
     },
-    "/api/my/games": {
-      "get": {
-        "tags": [
-          "MyGames"
-        ],
-        "summary": "List all games in the personal collection",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "The personal list of games",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GameListResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Missing API token. The user is not authenticated.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppError"
-                }
-              }
-            }
-          }
-        }
-      },
+    "/api/my/groups": {
       "post": {
         "tags": [
-          "MyGames"
+          "MyGroups"
         ],
-        "summary": "Add a game to the personal collection",
+        "summary": "Add a group to the personal collection",
         "security": [
           {
             "bearerAuth": []
           }
         ],
         "requestBody": {
-          "description": "Game id of a game to be added to the personal collection",
+          "description": "Properties of the group to be created",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/GameId"
+                "$ref": "#/components/schemas/Group"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "The game is now in the collection",
+            "description": "The group was created",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/GameAddedResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "A game with such id does not exist",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppError"
+                  "$ref": "#/components/schemas/GroupAddedResponse"
                 }
               }
             }
@@ -180,15 +177,101 @@
             }
           }
         }
-      }
-    },
-    "/api/my/games/{gameId}": {
+      },
       "get": {
         "tags": [
-          "MyGames"
+          "MyGroups"
         ],
-        "summary": "Find game by ID in the personal collection",
-        "description": "Returns a single game",
+        "summary": "List all groups in the personal collection",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The personal list of groups",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupListResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing API token. The user is not authenticated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "MyGroups"
+        ],
+        "summary": "Edit a group in the personal collection",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "The group's new properties",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditGroup"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The group was edited",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupEditedResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing API token. The user is not authenticated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Group not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/my/groups/{groupId}": {
+      "delete": {
+        "tags": [
+          "MyGroups"
+        ],
+        "summary": "Delete a group in the personal collection",
         "security": [
           {
             "bearerAuth": []
@@ -196,9 +279,124 @@
         ],
         "parameters": [
           {
+            "name": "groupId",
+            "in": "path",
+            "description": "ID of group to get the information from",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "zxgOaClm"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The group was deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupDeletedResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing API token. The user is not authenticated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Group not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/my/groups/{groupId}/info": {
+      "get": {
+        "tags": [
+          "MyGroups"
+        ],
+        "summary": "List all information o the requested group",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "groupId",
+            "in": "path",
+            "description": "ID of group to get the information from",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "zxgOaClm"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The information of the requested group",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing API token. The user is not authenticated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/my/groups/{groupId}/{gameId}": {
+      "delete": {
+        "tags": [
+          "MyGames"
+        ],
+        "summary": "Delete a game from a group by ID",
+        "description": "Deletes a game from a group",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "groupId",
+            "in": "path",
+            "description": "ID of group",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "zxgOaClm"
+          },
+          {
             "name": "gameId",
             "in": "path",
-            "description": "ID of game to return",
+            "description": "ID of game",
             "required": true,
             "schema": {
               "type": "string"
@@ -208,7 +406,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Game found",
+            "description": "Game deleted",
             "content": {
               "application/json": {
                 "schema": {
@@ -239,12 +437,12 @@
           }
         }
       },
-      "delete": {
+      "post": {
         "tags": [
           "MyGames"
         ],
-        "summary": "Delete game by ID",
-        "description": "Deletes a game from the personal collection",
+        "summary": "Add a game to a group by ID",
+        "description": "Adds a game from a group",
         "security": [
           {
             "bearerAuth": []
@@ -252,9 +450,19 @@
         ],
         "parameters": [
           {
+            "name": "groupId",
+            "in": "path",
+            "description": "ID of group",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "zxgOaClm"
+          },
+          {
             "name": "gameId",
             "in": "path",
-            "description": "ID of game to delete",
+            "description": "ID of game",
             "required": true,
             "schema": {
               "type": "string"
@@ -264,11 +472,11 @@
         ],
         "responses": {
           "200": {
-            "description": "Game deleted",
+            "description": "Game added",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/GameId"
+                  "$ref": "#/components/schemas/GameResponse"
                 }
               }
             }
@@ -354,22 +562,133 @@
           }
         }
       },
-      "GameAddedResponse": {
+      "UserResponse": {
         "type": "object",
-        "description": "Game successfully added to list",
+        "description": "User successfully created",
         "required": [
-          "gameId"
+          "token",
+          "username"
         ],
         "properties": {
-          "gameId": {
-            "type": "string"
-          },
-          "added": {
+          "token": {
             "type": "string",
-            "enum": [
-              "yes",
-              "no"
+            "example": "token"
+          },
+          "username": {
+            "type": "string",
+            "example": "UltimateGamer"
+          }
+        }
+      },
+      "GroupAddedResponse": {
+        "type": "object",
+        "description": "Group added successfully",
+        "required": [
+          "code",
+          "name",
+          "message",
+          "info"
+        ],
+        "properties": {
+          "code": {
+            "type": "integer",
+            "example": 1002
+          },
+          "name": {
+            "type": "string",
+            "example": "GROUP_CREATED"
+          },
+          "message": {
+            "type": "string",
+            "example": "Group created successfully"
+          },
+          "info": {
+            "type": "string",
+            "example": "Group Friday Night Games created!"
+          }
+        }
+      },
+      "GroupResponse": {
+        "type": "object",
+        "description": "Group edited successfully",
+        "required": [
+          "name",
+          "description",
+          "games"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Friday Night Games"
+          },
+          "description": {
+            "type": "string",
+            "example": "Games to play on a friday night"
+          },
+          "games": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "74f9mzbw9Y"
             ]
+          }
+        }
+      },
+      "GroupEditedResponse": {
+        "type": "object",
+        "description": "Group edited successfully",
+        "required": [
+          "code",
+          "name",
+          "message",
+          "info"
+        ],
+        "properties": {
+          "code": {
+            "type": "integer",
+            "example": 1004
+          },
+          "name": {
+            "type": "string",
+            "example": "GROUP_MODIFIED"
+          },
+          "message": {
+            "type": "string",
+            "example": "Group modified successfully"
+          },
+          "info": {
+            "type": "string",
+            "example": "Group Name: New Name | Group Description: New Description"
+          }
+        }
+      },
+      "GroupDeletedResponse": {
+        "type": "object",
+        "description": "Group edited successfully",
+        "required": [
+          "code",
+          "name",
+          "message",
+          "info"
+        ],
+        "properties": {
+          "code": {
+            "type": "integer",
+            "example": 1003
+          },
+          "name": {
+            "type": "string",
+            "example": "GROUP_DELETED"
+          },
+          "message": {
+            "type": "string",
+            "example": "Group deleted successfully"
+          },
+          "info": {
+            "type": "string",
+            "example": "Group Friday Night Games deleted"
           }
         }
       },
@@ -379,32 +698,6 @@
         "properties": {
           "game": {
             "$ref": "#/components/schemas/Game"
-          }
-        }
-      },
-      "GameListResponse": {
-        "type": "object",
-        "description": "Response with a list of games",
-        "properties": {
-          "games": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Game"
-            }
-          }
-        }
-      },
-      "GameId": {
-        "type": "object",
-        "description": "Game id",
-        "required": [
-          "gameId"
-        ],
-        "properties": {
-          "gameId": {
-            "type": "string",
-            "description": "Internal game id",
-            "example": "74f9mzbw9Y"
           }
         }
       },
@@ -431,6 +724,77 @@
             "type": "string",
             "description": "The price of the game",
             "example": 9.99
+          }
+        }
+      },
+      "Username": {
+        "type": "object",
+        "description": "Username to be used",
+        "required": [
+          "username"
+        ],
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "Username to be used",
+            "example": "UltimateGamer"
+          }
+        }
+      },
+      "Group": {
+        "type": "object",
+        "description": "Properties of the new group",
+        "required": [
+          "name",
+          "description"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Group name",
+            "example": "Friday Night Games"
+          },
+          "description": {
+            "type": "string",
+            "description": "Group description",
+            "example": "Games to play on a friday night"
+          }
+        }
+      },
+      "GroupListResponse": {
+        "type": "object",
+        "description": "All groups in the personal collection",
+        "example": {
+          "9VmVkqyB": {
+            "name": "Friday Night Games",
+            "description": "Games to play on a friday night",
+            "games": [
+              "74f9mzbw9Y"
+            ]
+          }
+        }
+      },
+      "EditGroup": {
+        "type": "object",
+        "description": "Group's new properties",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Group ID",
+            "example": "g7h6xJLA"
+          },
+          "name": {
+            "type": "string",
+            "description": "Group name",
+            "example": "Friday Night Games"
+          },
+          "description": {
+            "type": "string",
+            "description": "Group description",
+            "example": "Games to play on a friday night"
           }
         }
       }
