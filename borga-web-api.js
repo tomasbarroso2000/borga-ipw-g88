@@ -21,17 +21,25 @@ module.exports = function (services) {
 	}
 	
 	function onError(req, res, err) {
+		console.log('[ERROR]', err);
 		switch (err.name) {
-			case 'NOT_FOUND':
+			case 'NOT_FOUND': 
 				res.status(404);
 				break;
 			case 'EXT_SVC_FAIL':
 				res.status(502);
 				break;
+			case 'MISSING_PARAM': 
+			case 'INVALID_PARAM': 
+				res.status(400);
+				break;
+			case 'UNAUTHENTICATED': 
+				res.status(401);
+				break;
 			default:
-				res.status(500);
+				res.status(500);				
 		}
-		res.json(err);
+		res.json({ cause: err });
 	}
 
 	async function searchInGlobalGames(req, res) {
@@ -112,7 +120,7 @@ module.exports = function (services) {
 			const groupName = req.body.id;
 			const token = getBearerToken(req);
 			const groupRes = await services.deleteGroup(token, groupName)
-			return res.json(groupRes);
+			res.json(groupRes);
 		} catch (err) {
 			onError(req, res, err);
 		}

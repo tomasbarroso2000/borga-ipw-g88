@@ -49,11 +49,13 @@ function createGroup(username, groupName, groupDesc){
 
 function deleteGroup(username, groupId){
 	const user = users[username];
-	const groupName = user[groupId].name;
-	if(user && user[groupId]){
-		delete user[groupId];
-	}	
-	return groupName;
+	const group = user[groupId];
+	if(!group){
+		throw errors.FAIL("Group doesn't exist.");
+	}
+	const groupName = group.name;
+	delete user[groupId];
+	return successes.GROUP_DELETED("Group " + groupName + " deleted.");
 }
 
 function editGroup(username, groupId, newGroupName, newGroupDesc) {
