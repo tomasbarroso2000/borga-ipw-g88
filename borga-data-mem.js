@@ -51,7 +51,7 @@ function deleteGroup(username, groupId){
 	const user = users[username];
 	const group = user[groupId];
 	if(!group){
-		throw errors.FAIL("Group doesn't exist.");
+		throw errors.NOT_FOUND("Group doesn't exist.");
 	}
 	const groupName = group.name;
 	delete user[groupId];
@@ -61,26 +61,23 @@ function deleteGroup(username, groupId){
 function editGroup(username, groupId, newGroupName, newGroupDesc) {
 	const user = users[username];
 	const group = user[groupId];
-	if (user && group) {
-		if (newGroupDesc) {
-			group.description = newGroupDesc;
-		}
-		if (newGroupName) {
-			group.name = newGroupName;
-		}
+	if(!group){
+		throw errors.FAIL("Group doesn't exist.");
 	}
-	return group
+	group.description = newGroupDesc;
+	group.name = newGroupName;
+	return successes.GROUP_MODIFIED("Group Name: " + newGroupName + "| Group description: " + newGroupDesc);
 }
 
 function createUser(username) {
-	if (!users[username]) {
-		const newToken = crypto.randomUUID();
-		tokens[newToken] = username;
-		users[username] = {};
-		return {token: newToken, username: username};
-	} else {
-		console.log("User already exists");
+	const user = users[username];
+	if(user){
+		throw errors.FAIL("Username " + username + " already exists");
 	}
+	const newToken = crypto.randomUUID();
+	tokens[newToken] = username;
+	users[username] = {};
+	return successes.USER_ADDED("Username " + username + " added with token " + newToken);
 }
 
 async function saveGame(username, groupId, gameObj) {

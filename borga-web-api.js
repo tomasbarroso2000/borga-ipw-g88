@@ -58,8 +58,8 @@ module.exports = function (services) {
 
 	async function addGameToGroup(req, res) {
 		try {
-			const groupId = req.body.group;
-			const game = req.body.game;
+			const groupId = req.params.groupId;
+			const game = req.params.gameId;
 			const token = getBearerToken(req);
 			const gameRes = await services.addGame(token, groupId, game);
 			res.json(gameRes);
@@ -70,8 +70,8 @@ module.exports = function (services) {
 
 	async function deleteGameFromGroup(req, res) {
 		try {
-			const groupId = req.body.group;
-			const game = req.body.game;
+			const groupId = req.params.groupId;
+			const game = req.params.gameId;
 			const token = getBearerToken(req);
 			const gameRes = await services.deleteGame(token, groupId, game);
 			res.json(gameRes);
@@ -117,7 +117,7 @@ module.exports = function (services) {
 
 	async function deleteGroup(req, res) {
 		try{
-			const groupId = req.body.id;
+			const groupId = req.params.groupId;
 			const token = getBearerToken(req);
 			const groupRes = await services.deleteGroup(token, groupId)
 			res.json(groupRes);
@@ -165,11 +165,11 @@ module.exports = function (services) {
 	router.post('/my/groups', createGroup);
 	router.get('/my/groups', getGroups);
 	router.put('/my/groups', editGroup);
-	router.delete('/my/groups', deleteGroup); 
+	router.delete('/my/groups/:groupId', deleteGroup); 
 	router.get('/my/groups/:groupId/info', getGroupInfo);
 
-	router.delete('/my/groups/game', deleteGameFromGroup);
-	router.post('/my/groups/game', addGameToGroup);
+	router.delete('/my/groups/:groupId/:gameId', deleteGameFromGroup);
+	router.post('/my/groups/:groupId/:gameId', addGameToGroup);
 	
 	return router;
 }

@@ -89,6 +89,9 @@ module.exports = function(data_ext, data_int) {
 
 	async function createGroup(token, groupName, groupDesc) {
 		const username = await getUsername(token);
+		if(!groupName) {
+			throw errors.MISSING_PARAM('group');
+		}
 		const group = await data_int.createGroup(
 			username,
 			groupName,
@@ -107,6 +110,15 @@ module.exports = function(data_ext, data_int) {
 
 	async function editGroup(token, groupId, newGroupName, newGroupDesc) {
 		const username = await getUsername(token);
+		if(!groupId) {
+			throw errors.MISSING_PARAM('id');
+		}
+		if(!newGroupName) {
+			throw errors.MISSING_PARAM('name');
+		}
+		if(!newGroupDesc) {
+			throw errors.MISSING_PARAM('description');
+		}
 		const group = await data_int.editGroup(username, groupId, newGroupName, newGroupDesc);
 		return group;
 	}
