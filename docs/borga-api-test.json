@@ -21,7 +21,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8888/api/my/groups/get",
+					"raw": "http://localhost:8888/api/my/groups",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -30,8 +30,7 @@
 					"path": [
 						"api",
 						"my",
-						"groups",
-						"get"
+						"groups"
 					]
 				}
 			},
@@ -54,7 +53,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"id\" : \"zxgOaClm\"\r\n}",
+					"raw": "{\r\n    \"id\" : \"8jBi2I4S\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -62,7 +61,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8888/api/my/groups/delete",
+					"raw": "http://localhost:8888/api/my/groups",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -71,8 +70,7 @@
 					"path": [
 						"api",
 						"my",
-						"groups",
-						"delete"
+						"groups"
 					]
 				}
 			},
@@ -103,7 +101,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8888/api/my/groups/edit",
+					"raw": "http://localhost:8888/api/my/groups",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -112,8 +110,7 @@
 					"path": [
 						"api",
 						"my",
-						"groups",
-						"edit"
+						"groups"
 					]
 				}
 			},
@@ -136,7 +133,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"teste\",\r\n    \"description\": \"something_bad\"\r\n}",
+					"raw": "{\r\n    \"name\": \"teste\",\r\n    \"description\": \"something_good\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -144,7 +141,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8888/api/my/groups/create",
+					"raw": "http://localhost:8888/api/my/groups",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -153,8 +150,7 @@
 					"path": [
 						"api",
 						"my",
-						"groups",
-						"create"
+						"groups"
 					]
 				}
 			},
@@ -185,7 +181,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8888/api/my/groups/games/add",
+					"raw": "http://localhost:8888/api/my/groups/game",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -195,8 +191,7 @@
 						"api",
 						"my",
 						"groups",
-						"games",
-						"add"
+						"game"
 					]
 				}
 			},
@@ -227,7 +222,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8888/api/my/groups/games/delete",
+					"raw": "http://localhost:8888/api/my/groups/game",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -237,8 +232,7 @@
 						"api",
 						"my",
 						"groups",
-						"games",
-						"delete"
+						"game"
 					]
 				}
 			},
@@ -260,7 +254,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8888/api/my/groups/zJeTs91S/info",
+					"raw": "http://localhost:8888/api/my/groups/8jBi2I4S/info",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -270,7 +264,7 @@
 						"api",
 						"my",
 						"groups",
-						"zJeTs91S",
+						"8jBi2I4S",
 						"info"
 					]
 				}

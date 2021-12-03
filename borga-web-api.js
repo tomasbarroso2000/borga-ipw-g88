@@ -162,13 +162,14 @@ module.exports = function (services) {
 	router.get('/global/games', searchInGlobalGames);
 
 	//Resource: /my/groups
+	router.post('/my/groups', createGroup);
+	router.get('/my/groups', getGroups);
+	router.put('/my/groups', editGroup);
+	router.delete('/my/groups', deleteGroup); 
 	router.get('/my/groups/:groupId/info', getGroupInfo);
-	router.delete('/my/groups/games/delete', deleteGameFromGroup);
-	router.post('/my/groups/games/add', addGameToGroup);
-	router.post('/my/groups/create', createGroup);
-	router.get('/my/groups/get', getGroups);
-	router.put('/my/groups/edit', editGroup);
-	router.delete('/my/groups/delete', deleteGroup); 
+
+	router.delete('/my/groups/game', deleteGameFromGroup);
+	router.post('/my/groups/game', addGameToGroup);
 	
 	return router;
 }
