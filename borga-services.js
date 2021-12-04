@@ -90,7 +90,7 @@ module.exports = function(data_ext, data_int) {
 	async function createGroup(token, groupName, groupDesc) {
 		const username = await getUsername(token);
 		if(!groupName) {
-			throw errors.MISSING_PARAM('group');
+			throw errors.MISSING_PARAM('groupName');
 		}
 		const group = await data_int.createGroup(
 			username,

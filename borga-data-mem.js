@@ -12,7 +12,9 @@ const tokens = {
 };    
 
 const users = {
-	'membroTeste' : { }
+	'membroTeste' : { 
+		'12345' : { "name": "grupo_teste", "description": "grupo para testes" }
+	}
 }
 
 const hasGame = async (gameId) => !!games[gameId];
@@ -127,6 +129,7 @@ async function getGroupInfo(username, groupId) {
 }
 
 module.exports = {
+	users,
 	hasGameInGroup,
 	hasGroup,
 	saveGame,

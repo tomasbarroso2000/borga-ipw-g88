@@ -18,17 +18,21 @@ function makeGameObj(gameInfo) {
 }
 
 async function findGames(query) {
-	const gameId = queries[query];
+	const gameId = await queries[query];
 	return getGameById(gameId)
+}
+
+async function findGameById(query) {
+	return getGameById(query);
 }
 
 
 async function getGameById(gameId) {
-	const game = games[gameId];
+	const game = await games[gameId];
 	if(!game){
 		throw errors.errorList.NOT_FOUND(gameId);
 	}
-	return game;
+	return makeGameObj(game);
 }
 
 module.exports = {
