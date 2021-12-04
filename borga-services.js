@@ -19,7 +19,7 @@ module.exports = function(data_ext, data_int) {
 
 	async function searchGame(query) {
 		if(!query) {
-			throw responseCodes.MISSING_PARAM('query');
+			throw errors.MISSING_PARAM('query');
 		}
 		try{
 			const game = await data_ext.findGames(query);

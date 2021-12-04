@@ -6,11 +6,11 @@ const service_builder = require('../borga-services.js');
 
 const mock_data_ext = require('borga-games-data');
 
+const test_data_ext = require('../board-games-data')
+
 const test_data_int = require('../borga-data-mem');
 
-const tokens = {
-    '4chwViN4QHCTyTnUud88ww' : 'Tom Holland'
-}
+const testToken = '1365834658346586';
 
 const default_services = service_builder(
     mock_data_ext,
@@ -35,6 +35,13 @@ describe ('Search Tests', () => {
         } catch(err) {
             expect(err.name).toEqual('NOT_FOUND')
         }
+    });
+
+    test('search for existing game', async () => {
+        const services = default_services;
+        const res = await services.searchGame('exploding+kittens');
+        expect(res).toBeDefined();
+        expect(res.game).toEqual(mock_data_ext.games['74f9mzbw9Y'])
     });
 });
 
