@@ -38,5 +38,6 @@ async function getGameById(gameId) {
 module.exports = {
     games,
     findGames,
-    getGameById
+    getGameById,
+	findGameById
 }

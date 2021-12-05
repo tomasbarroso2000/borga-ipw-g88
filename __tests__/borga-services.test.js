@@ -89,7 +89,7 @@ describe('Group Related Tests', () => {
         const services = default_services;
         try{
             const group =  '123456';
-            const game = mock_data_ext.games['74f9mzbw9Y'];
+            const game = '74f9mzbw9Y';
             const sut = await services.addGame(testToken, group, game);
         } catch(err){
             expect(err.name).toEqual('FAIL');
