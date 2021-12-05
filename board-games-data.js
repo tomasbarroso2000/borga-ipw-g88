@@ -16,7 +16,7 @@ function makeGameObj(gameInfo) {
 	};	
 }
 
-async function do_fetch(uri) {
+/*async function do_fetch(uri) {
 	let res;
 	try {
 		res = await fetch(uri);
@@ -30,6 +30,33 @@ async function do_fetch(uri) {
 			throw errors.EXT_SVC_FAIL({ res, errDesc });
 		});
 	}	
+}*/
+
+function getStatusClass(statusCode) {
+	return ~~(statusCode / 100);
+}
+
+async function do_fetch(uri) {
+	let res;
+	try {
+		res = await fetch(uri);
+	} catch (err) {
+		throw errors.EXT_SVC_FAIL(err);
+	}
+	if (res.ok) {
+		return res.json();
+	} else {
+		if (res.status === 404) {
+			throw errors.NOT_FOUND(uri);
+		}
+		if (getStatusClass(res.status) === HTTP_SERVER_ERROR) {
+			return res.json()
+				.catch(err => err)
+				.then(info => { throw errors.EXT_SVC_FAIL(info); });
+		} else {
+			throw errors.FAIL(res);
+		}
+	}
 }
 
 async function findGames(query) {
@@ -52,7 +79,7 @@ async function findGameById(query) {
 	if (answer.games && answer.games.length) {
 		return makeGameObj(answer.games[0]);
 	} else {
-		return null;
+		throw errors.NOT_FOUND({ query });
 	}
 }
 

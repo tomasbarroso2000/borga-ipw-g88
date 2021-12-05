@@ -32,23 +32,16 @@ module.exports = function(data_ext, data_int) {
 		}
 	}
 
-
 	async function addGame(token, group, game) {
-		const username = await getUsername(token);
 		if(!group) {
 			throw errors.MISSING_PARAM('group');
 		}
 		if(!game) {
 			throw errors.MISSING_PARAM('game');
 		}
-		if(!await data_int.hasGroup(username, group)){
-			throw errors.NOT_FOUND("Group " + group + " doesn't exist");
-		}
 		try{
+			const username = await getUsername(token);
 			const gameObj = await data_ext.findGameById(game); 
-			if(await data_int.hasGameInGroup(username, group, gameObj.id)) {
-				throw errors.FAIL("Game already exists");
-			}
 			const gameRes = data_int.saveGame(username, group, gameObj);
 			return gameRes;
 		} catch (err) {
@@ -58,7 +51,7 @@ module.exports = function(data_ext, data_int) {
 			throw err;
 		}
 	}
-
+	
 	async function deleteGame(token, group, game) {
 		const username = await getUsername(token);
 		if(!group) {
@@ -67,30 +60,14 @@ module.exports = function(data_ext, data_int) {
 		if(!game) {
 			throw errors.MISSING_PARAM('game');
 		}
-		if(!await data_int.hasGroup(username, group)){
-			throw errors.NOT_FOUND("Group " + group + " doesn't exist");
-		}
-		try{
-			const gameObj = await data_ext.findGameById(game);
-
-			if(!await data_int.hasGameInGroup(username, group, gameObj.id)) {
-				throw errors.FAIL("Game doesn't exist");
-			}
-			const gameRes = data_int.deleteGame(username, group, gameObj.id);
-			return gameRes;
-		} catch (err) {
-			if(err.name === 'NOT_FOUND') {
-				throw errors.INVALID_PARAM("Invalid game: " + game + " : " + err);
-			}
-			throw err;
-		}
+		const gameRes = data_int.deleteGame(username, group, game);
+		return gameRes;
 	}
-	
 
 	async function createGroup(token, groupName, groupDesc) {
 		const username = await getUsername(token);
 		if(!groupName) {
-			throw errors.MISSING_PARAM('groupName');
+			throw errors.MISSING_PARAM('name');
 		}
 		const group = await data_int.createGroup(
 			username,
@@ -128,18 +105,8 @@ module.exports = function(data_ext, data_int) {
 		if(!groupId) {
 			throw errors.MISSING_PARAM('group');
 		}
-		if(!await data_int.hasGroup(username, groupId)){
-			throw errors.NOT_FOUND("Group " + groupId + " doesn't exist");
-		}
-		try {
-			const group = await data_int.getGroupInfo(username, groupId);
-			return group;
-		} catch (err) {
-			if(err.name === 'FAIL') {
-				throw errors.INVALID_PARAM(err);
-			}
-			throw err;
-		}
+		const group = await data_int.getGroupInfo(username, groupId);
+		return group;
 	}
 
 	async function deleteGroup(token, groupId) {
