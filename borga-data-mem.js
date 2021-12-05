@@ -45,7 +45,7 @@ function createGroup(username, groupName, groupDesc){
 		groupId = makeGroupId();
 	}
 	user[groupId] = {'name': groupName, 'description': groupDesc, 'games': []};
-	return successes.GROUP_CREATED('Group ' + groupName + ' created!');
+	return successes.GROUP_CREATED('Group ' + groupName + ' created');
 }
 
 async function deleteGroup(username, groupId){
@@ -53,11 +53,11 @@ async function deleteGroup(username, groupId){
 	const group = user[groupId];
 	const hasGroupInUser = await hasGroup(user, groupId);
 	if(!hasGroupInUser) {
-		throw errors.FAIL("Group doesn't exist.");
+		throw errors.FAIL("Group doesn't exist");
 	}
 	const groupName = group.name;
 	delete user[groupId];
-	return successes.GROUP_DELETED("Group " + groupName + " deleted.");
+	return successes.GROUP_DELETED("Group " + groupName + " deleted");
 }
 
 async function editGroup(username, groupId, newGroupName, newGroupDesc) {
@@ -65,14 +65,17 @@ async function editGroup(username, groupId, newGroupName, newGroupDesc) {
 	const group = user[groupId];
 	const hasGroupInUser = await hasGroup(user, groupId);
 	if(!hasGroupInUser) {
-		throw errors.FAIL("Group doesn't exist.");
+		throw errors.FAIL("Group doesn't exist");
 	}
 	group.description = newGroupDesc;
 	group.name = newGroupName;
-	return successes.GROUP_MODIFIED("Group Name: " + newGroupName + "| Group description: " + newGroupDesc);
+	return successes.GROUP_MODIFIED("Group Name: " + newGroupName + " | Group Description: " + newGroupDesc);
 }
 
 function createUser(username) {
+	if (!username) {
+		throw errors.MISSING_PARAM("Unspecified username");
+	}
 	const user = users[username];
 	if(user){
 		throw errors.FAIL("Username " + username + " already exists");
@@ -89,7 +92,7 @@ async function saveGame(username, groupId, gameObj) {
 	const gameId = gameObj.id;
 	const hasGroupInUser = await hasGroup(user, groupId);
 	if(!hasGroupInUser) {
-		throw errors.FAIL("Group doesn't exist.");
+		throw errors.FAIL("Group doesn't exist");
 	}
 	const hasGameInUserGroup = await hasGameInGroup(user, groupId, gameId);
 	if(hasGameInUserGroup) {
@@ -107,11 +110,11 @@ async function deleteGame(username, groupId, gameId) {
 	const user = users[username];
 	const hasGroupInUser = await hasGroup(user, groupId);
 	if(!hasGroupInUser) {
-		throw errors.FAIL("Group doesn't exist.");
+		throw errors.FAIL("Group doesn't exist");
 	}
 	const hasGameInUserGroup = await hasGameInGroup(user, groupId, gameId);
 	if(!hasGameInUserGroup) {
-		throw errors.FAIL("Game doesn't exist.");
+		throw errors.FAIL("Game doesn't exist");
 	}
 	const games = user[groupId].games;
 	games.splice(games.indexOf(gameId), 1);
@@ -139,7 +142,7 @@ async function getGroupInfo(username, groupId) {
 	const user = users[username];
 	const hasGroupInUser = await hasGroup(user, groupId);
 	if(!hasGroupInUser) {
-		throw errors.FAIL("Group doesn't exist.");
+		throw errors.FAIL("Group doesn't exist");
 	}
 	const group = user[groupId];
 	const groupObj = {

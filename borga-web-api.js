@@ -52,7 +52,7 @@ module.exports = function (services) {
 				res.json(game);
 			}
 		} catch (err) {
-			res.status(500).json(err);
+			onError(req, res, err);
 		}
 	}
 

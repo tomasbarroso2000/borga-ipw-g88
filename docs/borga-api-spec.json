@@ -29,7 +29,7 @@
     }
   ],
   "paths": {
-    "/users/create": {
+    "/api/users/create": {
       "post": {
         "tags": [
           "Users"
@@ -54,6 +54,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Username unspecified",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnspecifiedUsernameResponse"
                 }
               }
             }
@@ -91,11 +101,11 @@
         ],
         "responses": {
           "200": {
-            "description": "A game has been found",
+            "description": "Games have been found",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/GameResponse"
+                  "$ref": "#/components/schemas/GameArrayResponse"
                 }
               }
             }
@@ -152,6 +162,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/GroupAddedResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Parameter missing",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupNameMissingResponse"
                 }
               }
             }
@@ -370,7 +390,7 @@
         }
       }
     },
-    "/my/groups/{groupId}/{gameId}": {
+    "/api/my/groups/{groupId}/{gameId}": {
       "delete": {
         "tags": [
           "MyGames"
@@ -410,7 +430,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/GameResponse"
+                  "$ref": "#/components/schemas/GameRemovedResponse"
                 }
               }
             }
@@ -476,7 +496,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/GameResponse"
+                  "$ref": "#/components/schemas/GameAddedResponse"
                 }
               }
             }
@@ -545,7 +565,7 @@
             "type": "number",
             "format": "int32",
             "description": "Internal error code",
-            "example": 1000
+            "example": 2000
           },
           "name": {
             "type": "string",
@@ -564,19 +584,57 @@
       },
       "UserResponse": {
         "type": "object",
-        "description": "User successfully created",
+        "description": "User created successfully",
         "required": [
-          "token",
-          "username"
+          "code",
+          "name",
+          "message",
+          "info"
         ],
         "properties": {
-          "token": {
-            "type": "string",
-            "example": "token"
+          "code": {
+            "type": "integer",
+            "example": 1007
           },
-          "username": {
+          "name": {
             "type": "string",
-            "example": "UltimateGamer"
+            "example": "USER_ADDED"
+          },
+          "message": {
+            "type": "string",
+            "example": "User added successfully"
+          },
+          "info": {
+            "type": "string",
+            "example": "Username UltimateGamer added with token 9772f196-f6f6-45d9-8a9c-affede42a451"
+          }
+        }
+      },
+      "UnspecifiedUsernameResponse": {
+        "type": "object",
+        "description": "User created successfully",
+        "required": [
+          "code",
+          "name",
+          "message",
+          "info"
+        ],
+        "properties": {
+          "code": {
+            "type": "integer",
+            "example": 2003
+          },
+          "name": {
+            "type": "string",
+            "example": "MISSING_PARAM"
+          },
+          "message": {
+            "type": "string",
+            "example": "Required parameter missing"
+          },
+          "info": {
+            "type": "string",
+            "example": "Unspecified username"
           }
         }
       },
@@ -604,7 +662,7 @@
           },
           "info": {
             "type": "string",
-            "example": "Group Friday Night Games created!"
+            "example": "Group Friday Night Games created"
           }
         }
       },
@@ -664,6 +722,34 @@
           }
         }
       },
+      "GroupNameMissingResponse": {
+        "type": "object",
+        "description": "Group edited successfully",
+        "required": [
+          "code",
+          "name",
+          "message",
+          "info"
+        ],
+        "properties": {
+          "code": {
+            "type": "integer",
+            "example": 2003
+          },
+          "name": {
+            "type": "string",
+            "example": "MISSING_PARAM"
+          },
+          "message": {
+            "type": "string",
+            "example": "Required parameter missing"
+          },
+          "info": {
+            "type": "string",
+            "example": "name"
+          }
+        }
+      },
       "GroupDeletedResponse": {
         "type": "object",
         "description": "Group edited successfully",
@@ -692,12 +778,80 @@
           }
         }
       },
-      "GameResponse": {
+      "GameArrayResponse": {
+        "type": "array",
+        "description": "Response with games",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "example": "WVgc4bUL8N"
+            },
+            "name": {
+              "type": "string",
+              "example": "Clue"
+            },
+            "price": {
+              "type": "string",
+              "example": 7.45
+            }
+          }
+        }
+      },
+      "GameRemovedResponse": {
         "type": "object",
-        "description": "Response with a game",
+        "description": "Group edited successfully",
+        "required": [
+          "code",
+          "name",
+          "message",
+          "info"
+        ],
         "properties": {
-          "game": {
-            "$ref": "#/components/schemas/Game"
+          "code": {
+            "type": "integer",
+            "example": 1006
+          },
+          "name": {
+            "type": "string",
+            "example": "GAME_REMOVED"
+          },
+          "message": {
+            "type": "string",
+            "example": "Game removed from group successfully"
+          },
+          "info": {
+            "type": "string",
+            "example": "Game removed from group Friday Night Games"
+          }
+        }
+      },
+      "GameAddedResponse": {
+        "type": "object",
+        "description": "Group edited successfully",
+        "required": [
+          "code",
+          "name",
+          "message",
+          "info"
+        ],
+        "properties": {
+          "code": {
+            "type": "integer",
+            "example": 1005
+          },
+          "name": {
+            "type": "string",
+            "example": "GAME_ADDED"
+          },
+          "message": {
+            "type": "string",
+            "example": "Game added to group successfully"
+          },
+          "info": {
+            "type": "string",
+            "example": "Exploding Kittens added to Friday Night Games"
           }
         }
       },

@@ -9,12 +9,12 @@ function buildErrorList() {
 		};
 	}
 	
-	addError(1000, 'FAIL', "An error occurred");
-	addError(1001, 'EXT_SVC_FAIL', "External service failure");
-	addError(1002, 'NOT_FOUND', "The item does not exist");
-	addError(1003, 'MISSING_PARAM', 'Required parameter missing');
-	addError(1004, 'INVALID_PARAM', 'Invalid value for parameter');
-	addError(1005, 'UNAUTHENTICATED', 'Invalid or missing token');
+	addError(2000, 'FAIL', "An error occurred");
+	addError(2001, 'EXT_SVC_FAIL', "External service failure");
+	addError(2002, 'NOT_FOUND', "The item does not exist");
+	addError(2003, 'MISSING_PARAM', 'Required parameter missing');
+	addError(2004, 'INVALID_PARAM', 'Invalid value for parameter');
+	addError(2005, 'UNAUTHENTICATED', 'Invalid or missing token');
 	
 	return errors;
 }

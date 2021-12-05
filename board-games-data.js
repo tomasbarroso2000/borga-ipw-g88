@@ -16,22 +16,6 @@ function makeGameObj(gameInfo) {
 	};	
 }
 
-/*async function do_fetch(uri) {
-	let res;
-	try {
-		res = await fetch(uri);
-	} catch (err) {
-		throw errors.EXT_SVC_FAIL(err);
-	}
-	if (res.ok) {
-		return res.json();
-	} else {
-		return res.json().then(errDesc => {
-			throw errors.EXT_SVC_FAIL({ res, errDesc });
-		});
-	}	
-}*/
-
 function getStatusClass(statusCode) {
 	return ~~(statusCode / 100);
 }
@@ -69,7 +53,7 @@ async function findGames(query) {
 		})
 		return gamesArray
 	} else {
-		return null;
+		throw errors.NOT_FOUND({ query });
 	}
 }
 
@@ -93,7 +77,7 @@ async function getPopularGames() {
 		});
 		return gamesArray;
 	} else {
-		return null;
+		throw errors.NOT_FOUND({ query });
 	}
 }
 

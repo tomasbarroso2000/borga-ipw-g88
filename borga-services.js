@@ -26,7 +26,7 @@ module.exports = function(data_ext, data_int) {
 			return game;
 		} catch(err) {
 			if(err.name === 'NOT_FOUND') {
-				throw errors.INVALID_PARAM("Invalid game: " + game + " : " + err);
+				throw errors.INVALID_PARAM("Invalid game: " + query + " : " + err);
 			}
 			throw err;
 		}
