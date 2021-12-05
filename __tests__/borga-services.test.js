@@ -90,10 +90,9 @@ describe('Group Related Tests', () => {
         try{
             const group =  '123456';
             const game = mock_data_ext.games['74f9mzbw9Y'];
-            const token = '1365834658346586';
-            const sut = await services.addGame(token, group, game);
+            const sut = await services.addGame(testToken, group, game);
         } catch(err){
-            expect(err.name).toEqual('NOT_FOUND');
+            expect(err.name).toEqual('FAIL');
             return;
         }
     });
@@ -108,8 +107,7 @@ describe('Group Related Tests', () => {
                 name: 'jogo invalido',
                 price: 'gratis',
             };
-            const token = '1365834658346586';
-            const sut = await services.addGame(token, group, game);
+            const sut = await services.addGame(testToken, group, game);
         } catch(err){
             expect(err.name).toEqual('INVALID_PARAM');
             return;
@@ -119,66 +117,29 @@ describe('Group Related Tests', () => {
     test('delete a game from a nonexisting group', async() => {
         const services = default_services;
         try {
-            const token = '1365834658346586';
             const game = mock_data_ext.games['74f9mzbw9Y'];
             const group = '54321';
-            const sut = await services.deleteGame(token, group, game)
+            const sut = await services.deleteGame(testToken, group, game)
         } catch(err) {
-            expect(err.name).toEqual('NOT_FOUND')
+            expect(err.name).toEqual('FAIL')
         }
     });
 
     test('delete an invalid game from a group', async() => {
         const services = default_services;
         try {
-            const token = '1365834658346586';
             const game = {
                 id: '1234567',
                 name: 'jogo invalido',
                 price: 'gratis',
             };;
             const group = test_data_int.users.membroTeste[12345];
-            const sut = await services.deleteGame(token, group, game)
+            const sut = await services.deleteGame(testToken, group, game)
         } catch(err) {
-            expect(err.name).toEqual('NOT_FOUND')
+            expect(err.name).toEqual('FAIL')
         }
     });
 
-    test('create a group with an invalid token', async() => {
-        const services = default_services;
-        try{
-            const token = '1365834658346586';
-            const sut = await services.createGroup(token, undefined, 'groupDesc');
-        } catch(err) {
-            expect(err.name).toEqual('MISSING_PARAM');
-        }
-    });
-    
-    test('create a group with an invalid groupName', async() => {
-        const services = default_services;
-        try{
-            const sut = await services.createGroup('', 'groupName', 'groupDesc');
-        } catch(err) {
-            expect(err.name).toEqual('UNAUTHENTICATED');
-        }
-    });
-
-    test('get groups of a nonexisting user', async() => {
-        const services = default_services;
-        try{
-            const sut = await services.getGroups('123456789');
-        } catch(err) {
-            expect(err.name).toEqual('UNAUTHENTICATED');
-        }
-    });
-
-    test('get groups from an existing user', async() => {
-        const services = default_services;
-            const token = '1365834658346586';
-            const expectedGroup = test_data_int.users.membroTeste
-            const sut = await services.getGroups(token);
-            expect(sut).toEqual(expectedGroup);
-    });
 });
 
 
@@ -195,7 +156,7 @@ describe ('User Related Tests', () => {
 
     test('get the username of a user using the token', async () => {
         const services = default_services;
-        const username = await services.getUsername('1365834658346586');
+        const username = await services.getUsername(testToken);
         expect(username).toEqual('membroTeste');
     });
 
