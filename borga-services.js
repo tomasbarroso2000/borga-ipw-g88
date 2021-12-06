@@ -27,6 +27,9 @@ module.exports = function (data_ext, data_int) {
 			if (err.name === 'NOT_FOUND') {
 				throw errors.INVALID_PARAM("Invalid game: " + query + " : " + err);
 			}
+			if (err.name = 'EXT_SVC_FAIL') {
+				throw errors.EXT_SVC_FAIL('Board Game Atlas is not responding');
+			}
 			throw err;
 		}
 	}
@@ -38,14 +41,17 @@ module.exports = function (data_ext, data_int) {
 		if (!game) {
 			throw errors.MISSING_PARAM('game');
 		}
+		const username = await getUsername(token);
 		try {
-			const username = await getUsername(token);
 			const gameObj = await data_ext.findGameById(game);
 			const gameRes = data_int.saveGame(username, group, gameObj);
 			return gameRes;
 		} catch (err) {
 			if (err.name === 'NOT_FOUND') {
 				throw errors.INVALID_PARAM("Invalid game: " + game + " : " + err);
+			}
+			if (err.name = 'EXT_SVC_FAIL') {
+				throw errors.EXT_SVC_FAIL('Board Game Atlas is not responding');
 			}
 			throw err;
 		}
@@ -104,6 +110,9 @@ module.exports = function (data_ext, data_int) {
 
 	async function deleteGroup(token, groupId) {
 		const username = await getUsername(token);
+		if (!groupId) {
+			throw errors.MISSING_PARAM('groupId');
+		}
 		const group = await data_int.deleteGroup(
 			username,
 			groupId,
@@ -115,7 +124,7 @@ module.exports = function (data_ext, data_int) {
 		try {
 			return await data_ext.getPopularGames();
 		} catch (err) {
-			throw errors.FAIL('Unnable to retrieve most popular games list')
+			throw errors.EXT_SVC_FAIL('Board Game Atlas is not responding');
 		}
 	}
 

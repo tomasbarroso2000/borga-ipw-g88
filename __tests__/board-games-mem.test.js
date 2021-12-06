@@ -15,7 +15,7 @@ describe('Users Related Tests', () => {
         try {
             const sut = await mem.createUser('membroTeste');
         } catch (err) {
-            expect(err.name).toEqual('FAIL');
+            expect(err.name).toEqual('INVALID_PARAM');
         }
     });
 
@@ -32,7 +32,7 @@ describe('Users Related Tests', () => {
                 { "id": "74f9mzbw9Y", "name": "Exploding Kittens", "price": "19.82" }
             );
         } catch (err) {
-            expect(err.name).toEqual('FAIL');
+            expect(err.name).toEqual('NOT_FOUND');
         }
     });
 
@@ -53,7 +53,7 @@ describe('Users Related Tests', () => {
                 '74f9mzbw9Y'
             );
         } catch (err) {
-            expect(err.name).toEqual('FAIL');
+            expect(err.name).toEqual('NOT_FOUND');
         }
     });
 

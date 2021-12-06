@@ -59,17 +59,7 @@
             }
           },
           "400": {
-            "description": "Username unspecified",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UnspecifiedUsernameResponse"
-                }
-              }
-            }
-          },
-          "502": {
-            "description": "Game Board Atlas API is not responding",
+            "description": "Invalid username",
             "content": {
               "application/json": {
                 "schema": {
@@ -134,6 +124,39 @@
       }
     },
     "/api/my/groups": {
+      "get": {
+        "tags": [
+          "MyGroups"
+        ],
+        "summary": "List all groups in the personal collection",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The personal list of groups",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupListResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing API token. The user is not authenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppError"
+                }
+              }
+            }
+          }
+        }
+      },
       "post": {
         "tags": [
           "MyGroups"
@@ -167,17 +190,7 @@
             }
           },
           "400": {
-            "description": "Parameter missing",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GroupNameMissingResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Missing API token. The user is not authenticated.",
+            "description": "Invalid parameter",
             "content": {
               "application/json": {
                 "schema": {
@@ -186,41 +199,8 @@
               }
             }
           },
-          "502": {
-            "description": "Board Game Atlas API is not responding",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppError"
-                }
-              }
-            }
-          }
-        }
-      },
-      "get": {
-        "tags": [
-          "MyGroups"
-        ],
-        "summary": "List all groups in the personal collection",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "The personal list of groups",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GroupListResponse"
-                }
-              }
-            }
-          },
           "401": {
-            "description": "Missing API token. The user is not authenticated.",
+            "description": "Missing API token. The user is not authenticated",
             "content": {
               "application/json": {
                 "schema": {
@@ -263,8 +243,18 @@
               }
             }
           },
+          "400": {
+            "description": "Invalid parameter",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppError"
+                }
+              }
+            }
+          },
           "401": {
-            "description": "Missing API token. The user is not authenticated.",
+            "description": "Missing API token. The user is not authenticated",
             "content": {
               "application/json": {
                 "schema": {
@@ -320,8 +310,18 @@
               }
             }
           },
+          "400": {
+            "description": "Invalid parameter",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppError"
+                }
+              }
+            }
+          },
           "401": {
-            "description": "Missing API token. The user is not authenticated.",
+            "description": "Missing API token. The user is not authenticated",
             "content": {
               "application/json": {
                 "schema": {
@@ -348,7 +348,7 @@
         "tags": [
           "MyGroups"
         ],
-        "summary": "List all information o the requested group",
+        "summary": "List all information of the requested group",
         "security": [
           {
             "bearerAuth": []
@@ -377,8 +377,28 @@
               }
             }
           },
+          "400": {
+            "description": "Invalid parameter",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppError"
+                }
+              }
+            }
+          },
           "401": {
-            "description": "Missing API token. The user is not authenticated.",
+            "description": "Missing API token. The user is not authenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Group not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -391,72 +411,6 @@
       }
     },
     "/api/my/groups/{groupId}/{gameId}": {
-      "delete": {
-        "tags": [
-          "MyGames"
-        ],
-        "summary": "Delete a game from a group by ID",
-        "description": "Deletes a game from a group",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "groupId",
-            "in": "path",
-            "description": "ID of group",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "zxgOaClm"
-          },
-          {
-            "name": "gameId",
-            "in": "path",
-            "description": "ID of game",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "example": "74f9mzbw9Y"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Game deleted",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GameRemovedResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Missing API token. The user is not authenticated.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppError"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Game not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AppError"
-                }
-              }
-            }
-          }
-        }
-      },
       "post": {
         "tags": [
           "MyGames"
@@ -501,6 +455,16 @@
               }
             }
           },
+          "400": {
+            "description": "Invalid parameter",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppError"
+                }
+              }
+            }
+          },
           "401": {
             "description": "Missing API token. The user is not authenticated.",
             "content": {
@@ -512,7 +476,93 @@
             }
           },
           "404": {
-            "description": "Game not found",
+            "description": "Group or game not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppError"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Game Board Atlas API is not responding",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "MyGames"
+        ],
+        "summary": "Delete a game from a group by ID",
+        "description": "Deletes a game from a group",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "groupId",
+            "in": "path",
+            "description": "ID of group",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "zxgOaClm"
+          },
+          {
+            "name": "gameId",
+            "in": "path",
+            "description": "ID of game",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "74f9mzbw9Y"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Game deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GameRemovedResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid parameter",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing API token. The user is not authenticated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Group or game not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -610,34 +660,6 @@
           }
         }
       },
-      "UnspecifiedUsernameResponse": {
-        "type": "object",
-        "description": "User created successfully",
-        "required": [
-          "code",
-          "name",
-          "message",
-          "info"
-        ],
-        "properties": {
-          "code": {
-            "type": "integer",
-            "example": 2003
-          },
-          "name": {
-            "type": "string",
-            "example": "MISSING_PARAM"
-          },
-          "message": {
-            "type": "string",
-            "example": "Required parameter missing"
-          },
-          "info": {
-            "type": "string",
-            "example": "Unspecified username"
-          }
-        }
-      },
       "GroupAddedResponse": {
         "type": "object",
         "description": "Group added successfully",
@@ -668,7 +690,7 @@
       },
       "GroupResponse": {
         "type": "object",
-        "description": "Group edited successfully",
+        "description": "Requested group",
         "required": [
           "name",
           "description",
@@ -722,37 +744,9 @@
           }
         }
       },
-      "GroupNameMissingResponse": {
-        "type": "object",
-        "description": "Group edited successfully",
-        "required": [
-          "code",
-          "name",
-          "message",
-          "info"
-        ],
-        "properties": {
-          "code": {
-            "type": "integer",
-            "example": 2003
-          },
-          "name": {
-            "type": "string",
-            "example": "MISSING_PARAM"
-          },
-          "message": {
-            "type": "string",
-            "example": "Required parameter missing"
-          },
-          "info": {
-            "type": "string",
-            "example": "name"
-          }
-        }
-      },
       "GroupDeletedResponse": {
         "type": "object",
-        "description": "Group edited successfully",
+        "description": "Group deleted successfully",
         "required": [
           "code",
           "name",
@@ -801,7 +795,7 @@
       },
       "GameRemovedResponse": {
         "type": "object",
-        "description": "Group edited successfully",
+        "description": "Game removed successfully",
         "required": [
           "code",
           "name",
@@ -829,7 +823,7 @@
       },
       "GameAddedResponse": {
         "type": "object",
-        "description": "Group edited successfully",
+        "description": "Game added successfully",
         "required": [
           "code",
           "name",
@@ -852,32 +846,6 @@
           "info": {
             "type": "string",
             "example": "Exploding Kittens added to Friday Night Games"
-          }
-        }
-      },
-      "Game": {
-        "type": "object",
-        "description": "Game data",
-        "required": [
-          "id",
-          "name",
-          "price"
-        ],
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "Internal game id",
-            "example": "74f9mzbw9Y"
-          },
-          "name": {
-            "type": "string",
-            "description": "The game title",
-            "example": "Exploding Kittens"
-          },
-          "price": {
-            "type": "string",
-            "description": "The price of the game",
-            "example": 9.99
           }
         }
       },

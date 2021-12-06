@@ -103,7 +103,7 @@ describe('Group Related Tests', () => {
             const game = '74f9mzbw9Y';
             const sut = await services.addGame(testToken, group, game);
         } catch (err) {
-            expect(err.name).toEqual('FAIL');
+            expect(err.name).toEqual('NOT_FOUND');
             return;
         }
     });
@@ -132,7 +132,7 @@ describe('Group Related Tests', () => {
             const group = '54321';
             const sut = await services.deleteGame(testToken, group, game)
         } catch (err) {
-            expect(err.name).toEqual('FAIL')
+            expect(err.name).toEqual('NOT_FOUND')
         }
     });
 
@@ -147,7 +147,7 @@ describe('Group Related Tests', () => {
             const group = testUser.membroTeste[12345];
             const sut = await services.deleteGame(testToken, group, game)
         } catch (err) {
-            expect(err.name).toEqual('FAIL')
+            expect(err.name).toEqual('NOT_FOUND')
         }
     });
 
