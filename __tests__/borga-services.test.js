@@ -1,7 +1,5 @@
 'use strict';
 
-const errorList = require('../borga-responseCodes');
-
 const service_builder = require('../borga-services.js');
 
 const mock_data_ext = require('borga-games-data');
@@ -56,7 +54,7 @@ describe('Group Related Tests', () => {
     test('create a group without giving him a name', async () => {
         const services = default_services;
         try {
-            const sut = services.createGroup(testToken, '', 'SLB é o maior')
+            const sut = await services.createGroup(testToken, '', 'SLB é o maior')
         } catch (err) {
             expect(err.name).toEqual('MISSING_PARAM');
         }
@@ -182,7 +180,7 @@ describe('Group Related Tests', () => {
     test('edit group without a groupId', async () => {
         const services = default_services;
         try {
-            const sut = services.editGroup(testToken, undefined, 'newGroupName', 'newGroupDesc');
+            const sut = await services.editGroup(testToken, undefined, 'newGroupName', 'newGroupDesc');
         } catch (err) {
             expect(err.name).toEqual('MISSING_PARAM')
         }
@@ -191,7 +189,7 @@ describe('Group Related Tests', () => {
     test('get group info without a group id', async () => {
         const services = default_services;
         try {
-            const sut = services.getGroupInfo(testToken, '');
+            const sut = await services.getGroupInfo(testToken, '');
         } catch (err) {
             expect(err.name).toEqual('MISSING_PARAM')
         }
@@ -200,10 +198,10 @@ describe('Group Related Tests', () => {
 });
 
 describe('User Related Tests', () => {
-    test('get the username of a user without a token', () => {
+    test('get the username of a user without a token', async () => {
         const services = default_services;
         try {
-            services.getUsername(undefined)
+            await services.getUsername(undefined)
         } catch (err) {
             expect(err.name).toEqual('UNAUTHENTICATED');
             return

@@ -2,8 +2,6 @@
 
 const express = require('express');
 
-const responseCodes = require('./borga-responseCodes');
-
 const openApiUi = require('swagger-ui-express');
 const openApiSpec = require('./docs/borga-api-spec.json');
 

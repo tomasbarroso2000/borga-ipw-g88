@@ -2,7 +2,6 @@
 
 const responseCodes = require('./borga-responseCodes');
 const errors = responseCodes.errorList;
-const successes = responseCodes.successList;
 
 module.exports = function (data_ext, data_int) {
 
