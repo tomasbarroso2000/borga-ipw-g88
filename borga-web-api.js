@@ -13,31 +13,31 @@ module.exports = function (services) {
 		const auth = req.header('Authorization');
 		if (auth) {
 			const authData = auth.trim();
-			if (authData.substr(0,6).toLowerCase() === 'bearer') {
+			if (authData.substr(0, 6).toLowerCase() === 'bearer') {
 				return authData.replace(/^bearer\s+/i, '');
 			}
 		}
 		return null;
 	}
-	
+
 	function onError(req, res, err) {
 		console.log('[ERROR]', err);
 		switch (err.name) {
-			case 'NOT_FOUND': 
+			case 'NOT_FOUND':
 				res.status(404);
 				break;
 			case 'EXT_SVC_FAIL':
 				res.status(502);
 				break;
-			case 'MISSING_PARAM': 
-			case 'INVALID_PARAM': 
+			case 'MISSING_PARAM':
+			case 'INVALID_PARAM':
 				res.status(400);
 				break;
-			case 'UNAUTHENTICATED': 
+			case 'UNAUTHENTICATED':
 				res.status(401);
 				break;
 			default:
-				res.status(500);				
+				res.status(500);
 		}
 		res.json({ cause: err });
 	}
@@ -87,7 +87,7 @@ module.exports = function (services) {
 			const token = getBearerToken(req);
 			const groupRes = await services.createGroup(token, groupName, groupDesc);
 			res.json(groupRes);
-		} catch (err){
+		} catch (err) {
 			onError(req, res, err);
 		}
 	}
@@ -97,7 +97,7 @@ module.exports = function (services) {
 			const token = getBearerToken(req);
 			const groupRes = await services.getGroups(token);
 			return res.json(groupRes);
-		} catch (err){
+		} catch (err) {
 			onError(req, res, err);
 		}
 	}
@@ -116,7 +116,7 @@ module.exports = function (services) {
 	}
 
 	async function deleteGroup(req, res) {
-		try{
+		try {
 			const groupId = req.params.groupId;
 			const token = getBearerToken(req);
 			const groupRes = await services.deleteGroup(token, groupId)
@@ -127,7 +127,7 @@ module.exports = function (services) {
 	}
 
 	async function getGroupInfo(req, res) {
-		try{
+		try {
 			const groupId = req.params.groupId;
 			const token = getBearerToken(req);
 			const groupRes = await services.getGroupInfo(token, groupId)
@@ -157,7 +157,7 @@ module.exports = function (services) {
 
 	//Resource: /users
 	router.post('/users/create', createUser);
-	
+
 	//Resource: /global/games
 	router.get('/global/games', searchInGlobalGames);
 
@@ -165,11 +165,11 @@ module.exports = function (services) {
 	router.post('/my/groups', createGroup);
 	router.get('/my/groups', getGroups);
 	router.put('/my/groups', editGroup);
-	router.delete('/my/groups/:groupId', deleteGroup); 
+	router.delete('/my/groups/:groupId', deleteGroup);
 	router.get('/my/groups/:groupId/info', getGroupInfo);
 
 	router.delete('/my/groups/:groupId/:gameId', deleteGameFromGroup);
 	router.post('/my/groups/:groupId/:gameId', addGameToGroup);
-	
+
 	return router;
 }

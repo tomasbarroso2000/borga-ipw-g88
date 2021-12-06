@@ -5,7 +5,7 @@ const responseCodes = require('./borga-responseCodes');
 const errors = responseCodes.errorList;
 const successes = responseCodes.successList;
 const fetch = require('node-fetch');
-const BOARD_GAME_ATLAS_BASE_URI = 
+const BOARD_GAME_ATLAS_BASE_URI =
 	'https://api.boardgameatlas.com/api/';
 
 function makeGameObj(gameInfo) {
@@ -13,7 +13,7 @@ function makeGameObj(gameInfo) {
 		id: gameInfo.id,
 		name: gameInfo.name,
 		price: gameInfo.price,
-	};	
+	};
 }
 
 const HTTP_SERVER_ERROR = 5;

@@ -4,28 +4,28 @@ const responseCodes = require('./borga-responseCodes');
 const errors = responseCodes.errorList;
 const successes = responseCodes.successList;
 
-module.exports = function(data_ext, data_int) {
-	
+module.exports = function (data_ext, data_int) {
+
 	async function getUsername(token) {
-		if(!token){
+		if (!token) {
 			throw errors.UNAUTHENTICATED('no token');
 		}
 		const username = await data_int.tokenToUsername(token);
-		if(!username) {
+		if (!username) {
 			throw errors.UNAUTHENTICATED('invalid token');
 		}
 		return username;
 	}
 
 	async function searchGame(query) {
-		if(!query) {
+		if (!query) {
 			throw errors.MISSING_PARAM('query');
 		}
-		try{
+		try {
 			const game = await data_ext.findGames(query);
 			return game;
-		} catch(err) {
-			if(err.name === 'NOT_FOUND') {
+		} catch (err) {
+			if (err.name === 'NOT_FOUND') {
 				throw errors.INVALID_PARAM("Invalid game: " + query + " : " + err);
 			}
 			throw err;
@@ -33,31 +33,31 @@ module.exports = function(data_ext, data_int) {
 	}
 
 	async function addGame(token, group, game) {
-		if(!group) {
+		if (!group) {
 			throw errors.MISSING_PARAM('group');
 		}
-		if(!game) {
+		if (!game) {
 			throw errors.MISSING_PARAM('game');
 		}
-		try{
+		try {
 			const username = await getUsername(token);
-			const gameObj = await data_ext.findGameById(game); 
+			const gameObj = await data_ext.findGameById(game);
 			const gameRes = data_int.saveGame(username, group, gameObj);
 			return gameRes;
 		} catch (err) {
-			if(err.name === 'NOT_FOUND') {
+			if (err.name === 'NOT_FOUND') {
 				throw errors.INVALID_PARAM("Invalid game: " + game + " : " + err);
 			}
 			throw err;
 		}
 	}
-	
+
 	async function deleteGame(token, group, game) {
 		const username = await getUsername(token);
-		if(!group) {
+		if (!group) {
 			throw errors.MISSING_PARAM('group');
 		}
-		if(!game) {
+		if (!game) {
 			throw errors.MISSING_PARAM('game');
 		}
 		const gameRes = data_int.deleteGame(username, group, game);
@@ -66,7 +66,7 @@ module.exports = function(data_ext, data_int) {
 
 	async function createGroup(token, groupName, groupDesc) {
 		const username = await getUsername(token);
-		if(!groupName) {
+		if (!groupName) {
 			throw errors.MISSING_PARAM('name');
 		}
 		const group = await data_int.createGroup(
@@ -87,7 +87,7 @@ module.exports = function(data_ext, data_int) {
 
 	async function editGroup(token, groupId, newGroupName, newGroupDesc) {
 		const username = await getUsername(token);
-		if(!groupId) {
+		if (!groupId) {
 			throw errors.MISSING_PARAM('id');
 		}
 		const group = await data_int.editGroup(username, groupId, newGroupName, newGroupDesc);
@@ -96,7 +96,7 @@ module.exports = function(data_ext, data_int) {
 
 	async function getGroupInfo(token, groupId) {
 		const username = await getUsername(token);
-		if(!groupId) {
+		if (!groupId) {
 			throw errors.MISSING_PARAM('group');
 		}
 		const group = await data_int.getGroupInfo(username, groupId);
@@ -108,14 +108,14 @@ module.exports = function(data_ext, data_int) {
 		const group = await data_int.deleteGroup(
 			username,
 			groupId,
-		)	
+		)
 		return group;
 	}
 
 	async function getPopularGames() {
-		try{
+		try {
 			return await data_ext.getPopularGames();
-		} catch(err) {
+		} catch (err) {
 			throw errors.FAIL('Unnable to retrieve most popular games list')
 		}
 	}
@@ -125,7 +125,7 @@ module.exports = function(data_ext, data_int) {
 		searchGame,
 		addGame,
 		deleteGame,
-		getPopularGames, 
+		getPopularGames,
 		createGroup,
 		getGroups,
 		editGroup,
