@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "18ec7752-dc66-42eb-89a3-52780c424a0f",
+		"_postman_id": "0cf2410c-8084-4f00-ad58-aa5e05a432a0",
 		"name": "borga-api-test",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -52,7 +52,7 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8888/api/my/groups/8jBi2I4S",
+					"raw": "http://localhost:8888/api/my/groups/5xxWOKxM",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -62,7 +62,7 @@
 						"api",
 						"my",
 						"groups",
-						"8jBi2I4S"
+						"5xxWOKxM"
 					]
 				}
 			},
@@ -85,7 +85,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"id\": \"w0lkItAK\",\r\n    \"name\": \"changed\",\r\n    \"description\": \"new description\"\r\n}",
+					"raw": "{\r\n    \"id\": \"5xxWOKxM\",\r\n    \"name\": \"changed\",\r\n    \"description\": \"new description\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -125,7 +125,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"teste\",\r\n    \"description\": \"something_good\",\r\n    \"bla\": \"bla\"\r\n}",
+					"raw": "{\r\n    \"name\": \"NewGroup\",\r\n    \"description\": \"Description of NewGroup\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -164,7 +164,7 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8888/api/my/groups/zJeTs91S/74f9mzbw9Y",
+					"raw": "http://localhost:8888/api/my/groups/5xxWOKxM/74f9mzbw9Y",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -174,7 +174,7 @@
 						"api",
 						"my",
 						"groups",
-						"zJeTs91S",
+						"5xxWOKxM",
 						"74f9mzbw9Y"
 					]
 				}
@@ -197,7 +197,7 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8888/api/my/groups/gazxgOaClm/74f9mzbw9Y",
+					"raw": "http://localhost:8888/api/my/groups/5xxWOKxM/74f9mzbw9Y",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -207,7 +207,7 @@
 						"api",
 						"my",
 						"groups",
-						"gazxgOaClm",
+						"5xxWOKxM",
 						"74f9mzbw9Y"
 					]
 				}
@@ -230,7 +230,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8888/api/my/groups/8jBi2I4S/info",
+					"raw": "http://localhost:8888/api/my/groups/5xxWOKxM/info",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -240,7 +240,7 @@
 						"api",
 						"my",
 						"groups",
-						"8jBi2I4S",
+						"5xxWOKxM",
 						"info"
 					]
 				}
@@ -275,7 +275,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"username\": \"xpto\"\r\n}",
+					"raw": "{\r\n    \"username\": \"UltimateGamer\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -304,7 +304,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8888/api/global/games?search=Alex+o+Leao",
+					"raw": "http://localhost:8888/api/global/games?search=Exploding+Kittens",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -318,7 +318,7 @@
 					"query": [
 						{
 							"key": "search",
-							"value": "Alex+o+Leao"
+							"value": "Exploding+Kittens"
 						}
 					]
 				}
