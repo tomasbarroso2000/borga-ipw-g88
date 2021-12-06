@@ -154,7 +154,6 @@ async function getGroupInfo(username, groupId) {
 }
 
 module.exports = {
-	users,
 	saveGame,
 	deleteGame,
 	tokenToUsername,

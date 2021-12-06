@@ -6,7 +6,7 @@ const games = {
 }
 
 const queries = {
-    'exploding+kittens': '74f9mzbw9Y'
+    'exploding+kittens': [games['74f9mzbw9Y']]
 }
 
 function makeGameObj(gameInfo) {
@@ -18,8 +18,7 @@ function makeGameObj(gameInfo) {
 }
 
 async function findGames(query) {
-	const gameId = await queries[query];
-	return getGameById(gameId)
+	return queries[query];
 }
 
 async function findGameById(query) {
@@ -35,9 +34,17 @@ async function getGameById(gameId) {
 	return makeGameObj(game);
 }
 
+async function getPopularGames() {
+	return [
+		{"id":"TAAifFP590","name":"Root","price":"0.00"},
+		{"id":"yqR4PtpO8X","name":"Scythe","price":"54.92"}
+	]
+}
+
 module.exports = {
     games,
     findGames,
     getGameById,
+	getPopularGames,
 	findGameById
 }

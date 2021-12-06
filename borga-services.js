@@ -90,12 +90,6 @@ module.exports = function(data_ext, data_int) {
 		if(!groupId) {
 			throw errors.MISSING_PARAM('id');
 		}
-		if(!newGroupName) {
-			throw errors.MISSING_PARAM('name');
-		}
-		if(!newGroupDesc) {
-			throw errors.MISSING_PARAM('description');
-		}
 		const group = await data_int.editGroup(username, groupId, newGroupName, newGroupDesc);
 		return group;
 	}
