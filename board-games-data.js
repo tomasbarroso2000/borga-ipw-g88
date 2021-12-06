@@ -16,6 +16,8 @@ function makeGameObj(gameInfo) {
 	};	
 }
 
+const HTTP_SERVER_ERROR = 5;
+
 function getStatusClass(statusCode) {
 	return ~~(statusCode / 100);
 }
