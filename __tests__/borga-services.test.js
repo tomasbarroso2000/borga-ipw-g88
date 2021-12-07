@@ -14,7 +14,6 @@ const testUser = {
     }
 }
 
-
 const default_services = service_builder(
     mock_data_ext,
     test_data_int
@@ -30,7 +29,6 @@ describe('Search Tests', () => {
             return
         }
     });
-
 
     test('search nonexisting game', async () => {
         const services = default_services;
@@ -107,7 +105,6 @@ describe('Group Related Tests', () => {
             return;
         }
     });
-
 
     test('add an invalid game to a group', async () => {
         const services = default_services;

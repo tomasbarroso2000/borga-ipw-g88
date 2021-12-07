@@ -2,7 +2,7 @@
   "name": "borga",
   "version": "1.0.0",
   "description": "",
-  "main": "app-try.js",
+  "main": "borga-server.js",
   "scripts": {
     "test": "jest",
     "start": "node borga-server.js"
@@ -16,6 +16,7 @@
     "swagger-ui-express": "^4.1.6"
   },
   "devDependencies": {
-    "jest": "^27.3.1"
+    "jest": "^27.3.1",
+    "nodemon": "^2.0.15"
   }
 }

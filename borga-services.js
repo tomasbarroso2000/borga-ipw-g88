@@ -16,6 +16,14 @@ module.exports = function (data_ext, data_int) {
 		return username;
 	}
 
+	async function getPopularGames() {
+		try {
+			return await data_ext.getPopularGames();
+		} catch (err) {
+			throw errors.EXT_SVC_FAIL('Board Game Atlas is not responding');
+		}
+	}
+
 	async function searchGame(query) {
 		if (!query) {
 			throw errors.MISSING_PARAM('query');
@@ -32,6 +40,57 @@ module.exports = function (data_ext, data_int) {
 			}
 			throw err;
 		}
+	}
+
+	async function getGroups(token) {
+		const username = await getUsername(token);
+		const group = await data_int.getGroups(
+			username
+		)
+		return group;
+	}
+
+	async function createGroup(token, groupName, groupDesc) {
+		const username = await getUsername(token);
+		if (!groupName) {
+			throw errors.MISSING_PARAM('name');
+		}
+		const group = await data_int.createGroup(
+			username,
+			groupName,
+			groupDesc
+		)
+		return group;
+	}
+
+	async function editGroup(token, groupId, newGroupName, newGroupDesc) {
+		const username = await getUsername(token);
+		if (!groupId) {
+			throw errors.MISSING_PARAM('id');
+		}
+		const group = await data_int.editGroup(username, groupId, newGroupName, newGroupDesc);
+		return group;
+	}
+
+	async function deleteGroup(token, groupId) {
+		const username = await getUsername(token);
+		if (!groupId) {
+			throw errors.MISSING_PARAM('groupId');
+		}
+		const group = await data_int.deleteGroup(
+			username,
+			groupId,
+		)
+		return group;
+	}
+
+	async function getGroupInfo(token, groupId) {
+		const username = await getUsername(token);
+		if (!groupId) {
+			throw errors.MISSING_PARAM('group');
+		}
+		const group = await data_int.getGroupInfo(username, groupId);
+		return group;
 	}
 
 	async function addGame(token, group, game) {
@@ -67,65 +126,6 @@ module.exports = function (data_ext, data_int) {
 		}
 		const gameRes = data_int.deleteGame(username, group, game);
 		return gameRes;
-	}
-
-	async function createGroup(token, groupName, groupDesc) {
-		const username = await getUsername(token);
-		if (!groupName) {
-			throw errors.MISSING_PARAM('name');
-		}
-		const group = await data_int.createGroup(
-			username,
-			groupName,
-			groupDesc
-		)
-		return group;
-	}
-
-	async function getGroups(token) {
-		const username = await getUsername(token);
-		const group = await data_int.getGroups(
-			username
-		)
-		return group;
-	}
-
-	async function editGroup(token, groupId, newGroupName, newGroupDesc) {
-		const username = await getUsername(token);
-		if (!groupId) {
-			throw errors.MISSING_PARAM('id');
-		}
-		const group = await data_int.editGroup(username, groupId, newGroupName, newGroupDesc);
-		return group;
-	}
-
-	async function getGroupInfo(token, groupId) {
-		const username = await getUsername(token);
-		if (!groupId) {
-			throw errors.MISSING_PARAM('group');
-		}
-		const group = await data_int.getGroupInfo(username, groupId);
-		return group;
-	}
-
-	async function deleteGroup(token, groupId) {
-		const username = await getUsername(token);
-		if (!groupId) {
-			throw errors.MISSING_PARAM('groupId');
-		}
-		const group = await data_int.deleteGroup(
-			username,
-			groupId,
-		)
-		return group;
-	}
-
-	async function getPopularGames() {
-		try {
-			return await data_ext.getPopularGames();
-		} catch (err) {
-			throw errors.EXT_SVC_FAIL('Board Game Atlas is not responding');
-		}
 	}
 
 	return {

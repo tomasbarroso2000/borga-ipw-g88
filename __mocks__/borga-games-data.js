@@ -1,5 +1,6 @@
-const errors = require("../borga-responseCodes");
+'use strict';
 
+const errors = require("../borga-responseCodes");
 
 const games = {
 	'74f9mzbw9Y': { "id": "74f9mzbw9Y", "name": "Exploding Kittens", "price": "19.82" }
@@ -24,7 +25,6 @@ async function findGames(query) {
 async function findGameById(query) {
 	return getGameById(query);
 }
-
 
 async function getGameById(gameId) {
 	const game = await games[gameId];

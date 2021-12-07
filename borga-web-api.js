@@ -160,14 +160,14 @@ module.exports = function (services) {
 	router.get('/global/games', searchInGlobalGames);
 
 	//Resource: /my/groups
-	router.post('/my/groups', createGroup);
 	router.get('/my/groups', getGroups);
+	router.post('/my/groups', createGroup);
 	router.put('/my/groups', editGroup);
 	router.delete('/my/groups/:groupId', deleteGroup);
 	router.get('/my/groups/:groupId/info', getGroupInfo);
 
-	router.delete('/my/groups/:groupId/:gameId', deleteGameFromGroup);
 	router.post('/my/groups/:groupId/:gameId', addGameToGroup);
+	router.delete('/my/groups/:groupId/:gameId', deleteGameFromGroup);
 
 	return router;
 }

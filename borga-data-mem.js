@@ -38,38 +38,13 @@ function makeGroupId() {
 	return result;
 }
 
-function createGroup(username, groupName, groupDesc) {
-	let groupId = makeGroupId();
-	const user = users[username];
-	while (user[groupId]) {
-		groupId = makeGroupId();
-	}
-	user[groupId] = { 'name': groupName, 'description': groupDesc, 'games': [] };
-	return successes.GROUP_CREATED('Group ' + groupName + ' created');
-}
-
-async function deleteGroup(username, groupId) {
-	const user = users[username];
-	const group = user[groupId];
-	const hasGroupInUser = await hasGroup(user, groupId);
-	if (!hasGroupInUser) {
-		throw errors.NOT_FOUND("Group doesn't exist");
-	}
-	const groupName = group.name;
-	delete user[groupId];
-	return successes.GROUP_DELETED("Group " + groupName + " deleted");
-}
-
-async function editGroup(username, groupId, newGroupName, newGroupDesc) {
-	const user = users[username];
-	const group = user[groupId];
-	const hasGroupInUser = await hasGroup(user, groupId);
-	if (!hasGroupInUser) {
-		throw errors.NOT_FOUND("Group doesn't exist");
-	}
-	group.description = newGroupDesc;
-	group.name = newGroupName;
-	return successes.GROUP_MODIFIED("Group Name: " + newGroupName + " | Group Description: " + newGroupDesc);
+const listGames = async (group) => {
+	const gamesList = [];
+	group.games.forEach(async elem => {
+		const name = await games[elem].name;
+		gamesList.push(name);
+	});
+	return gamesList;
 }
 
 function createUser(username) {
@@ -84,6 +59,60 @@ function createUser(username) {
 	tokens[newToken] = username;
 	users[username] = {};
 	return successes.USER_ADDED("Username " + username + " added with token " + newToken);
+}
+
+async function getGroups(username) {
+	const groups = users[username];
+	return groups;
+}
+
+function createGroup(username, groupName, groupDesc) {
+	let groupId = makeGroupId();
+	const user = users[username];
+	while (user[groupId]) {
+		groupId = makeGroupId();
+	}
+	user[groupId] = { 'name': groupName, 'description': groupDesc, 'games': [] };
+	return successes.GROUP_CREATED('Group ' + groupName + ' created');
+}
+
+async function editGroup(username, groupId, newGroupName, newGroupDesc) {
+	const user = users[username];
+	const group = user[groupId];
+	const hasGroupInUser = await hasGroup(user, groupId);
+	if (!hasGroupInUser) {
+		throw errors.NOT_FOUND("Group doesn't exist");
+	}
+	group.description = newGroupDesc;
+	group.name = newGroupName;
+	return successes.GROUP_MODIFIED("Group Name: " + newGroupName + " | Group Description: " + newGroupDesc);
+}
+
+async function deleteGroup(username, groupId) {
+	const user = users[username];
+	const group = user[groupId];
+	const hasGroupInUser = await hasGroup(user, groupId);
+	if (!hasGroupInUser) {
+		throw errors.NOT_FOUND("Group doesn't exist");
+	}
+	const groupName = group.name;
+	delete user[groupId];
+	return successes.GROUP_DELETED("Group " + groupName + " deleted");
+}
+
+async function getGroupInfo(username, groupId) {
+	const user = users[username];
+	const hasGroupInUser = await hasGroup(user, groupId);
+	if (!hasGroupInUser) {
+		throw errors.NOT_FOUND("Group doesn't exist");
+	}
+	const group = user[groupId];
+	const groupObj = {
+		name: group.name,
+		description: group.description,
+		games: await listGames(group)
+	};
+	return groupObj;
 }
 
 async function saveGame(username, groupId, gameObj) {
@@ -119,35 +148,6 @@ async function deleteGame(username, groupId, gameId) {
 	const games = user[groupId].games;
 	games.splice(games.indexOf(gameId), 1);
 	return successes.GAME_REMOVED("Game removed from group " + user[groupId].name);
-}
-
-const listGames = async (group) => {
-	const gamesList = [];
-	group.games.forEach(async elem => {
-		const name = await games[elem].name;
-		gamesList.push(name);
-	});
-	return gamesList;
-}
-
-async function getGroups(username) {
-	const groups = users[username];
-	return groups;
-}
-
-async function getGroupInfo(username, groupId) {
-	const user = users[username];
-	const hasGroupInUser = await hasGroup(user, groupId);
-	if (!hasGroupInUser) {
-		throw errors.NOT_FOUND("Group doesn't exist");
-	}
-	const group = user[groupId];
-	const groupObj = {
-		name: group.name,
-		description: group.description,
-		games: await listGames(group)
-	};
-	return groupObj;
 }
 
 module.exports = {
