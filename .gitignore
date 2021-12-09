@@ -104,7 +104,3 @@ dist
 package-lock.json
 # TernJS port file
 .tern-port
-
-# Phase 2
-views/
-borga-web-ui.js
