@@ -131,9 +131,22 @@ div#gameContent .game{
     position: static;
 }
 
+div#gameContent .gameimg {
+    height: 200px;
+    width: 150px;
+    position: absolute;
+}
+
+div#gameContent .container {
+    height: 100px;
+    width: 150px;
+    padding: 200px 0;
+    position: absolute;
+}
+
 div#gameContent .game img{
-    max-height: 150px;
-    max-width: auto;
+    max-height: 200px;
+    max-width: 150px;
 }
 
 div#gameContent .game:hover{
@@ -149,4 +162,5 @@ div#gameContent .game .container button.add{
     border: none;
     padding: 5px 10px;
     cursor: pointer;
+    position: relative;
 }
