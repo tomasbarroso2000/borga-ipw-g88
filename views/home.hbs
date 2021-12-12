@@ -1,0 +1,15 @@
+<div id="gameContent">
+    <h1>POPULAR GAMES</h1>
+    {{#if games}}
+        {{#each games}}
+            <div class="game">
+            <img src='{{this.image}}' alt="this.name">
+            <div class="container">
+              <h4><b>{{this.name}}</b></h4>
+              <p>{{this.price}} €</p>
+              <button class="add">ADD</button>
+            </div>
+        </div>
+        {{/each}}
+    {{/if}}
+</div>

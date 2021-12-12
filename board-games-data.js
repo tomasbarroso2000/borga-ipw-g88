@@ -4,6 +4,7 @@ const ATLAS_CLIENT_ID = process.env.ATLAS_CLIENT_ID;
 const responseCodes = require('./borga-responseCodes');
 const errors = responseCodes.errorList;
 const fetch = require('node-fetch');
+const HTTP_SERVER_ERROR = 5;
 const BOARD_GAME_ATLAS_BASE_URI =
 	'https://api.boardgameatlas.com/api/';
 
@@ -12,10 +13,17 @@ function makeGameObj(gameInfo) {
 		id: gameInfo.id,
 		name: gameInfo.name,
 		price: gameInfo.price,
+		discount: gameInfo.discount,
+		minimum_players: gameInfo.min_players,
+		maximum_players: gameInfo.max_players,
+		minimum_age: gameInfo.min_age,
+		description: gameInfo.description,
+		image: gameInfo.image_url,
+		url: gameInfo.url,
+		mechanics: gameInfo.mechanics,
+		categories: gameInfo.categories
 	};
 }
-
-const HTTP_SERVER_ERROR = 5;
 
 function getStatusClass(statusCode) {
 	return ~~(statusCode / 100);
