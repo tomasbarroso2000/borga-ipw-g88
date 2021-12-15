@@ -29,15 +29,18 @@ module.exports = function (
         [guest_token]: guest_user
     };
 
+
     function checkUser(username) {
         if(!users.has(username)) {
             throw errors.UNAUTHENTICATED(username);
         }
     }
 
+
     async function tokenToUsername(token) {
         return tokens[token];
     }
+
 
     async function hasGame(gameId){
         checkUser(username);
@@ -52,6 +55,7 @@ module.exports = function (
         }
     }
 
+
     async function hasGroup(username, groupId){
         try{
             const response = await fetch(
@@ -63,6 +67,7 @@ module.exports = function (
             throw errors.NOT_FOUND(err);
         }
     }
+
 
     async function hasGameInGroup(username, groupId, gameId) {
         try{
@@ -76,6 +81,7 @@ module.exports = function (
         }
     }
 
+
     async function saveGame(username, groupId, gameObj){
         checkUser(username);
         const gameId = gameObj.id;
@@ -85,7 +91,7 @@ module.exports = function (
         try {
             if(!hasGroup)
                 throw errors.NOT_FOUND("Group does not exist");
-            if(!hasGameInGroup)
+            if(hasGameInGroup)
                 throw errors.NOT_FOUND("Game already exist in group");
             if(!hasGame) {
                 const response = fetch(
@@ -116,6 +122,35 @@ module.exports = function (
         }
     }
 
+
+    async function deleteGame(username, groupId, gameId){
+        checkUser(username);
+        const hasGroup = await hasGroup(username, groupId);
+        const hasGameInGroup = await hasGameInGroup(username, groupId, gameId);
+        const hasGame = await hasGame(gameId);
+        try {
+            if(!hasGroup)
+                throw errors.NOT_FOUND("Group does not exist");
+            if(!hasGameInGroup)
+                throw errors.NOT_FOUND("Game does not exist in group");
+            if(!hasGame)
+                throw errors.NOT_FOUND("Game does not exist"); 
+            const response = await fetch(
+                `${userGroupURL(username)}/_doc/${groupId}/${gameId}?refresh=wait_for`,
+                {
+                    method: 'DELETE'
+                }
+            );
+            if(response.status === 200) {
+                const answer = await response.json();
+                return answer._id;
+            }
+        } catch (err) {
+            console.log(err);
+            throw errors.FAIL(err);
+        }
+    }
+
     const listGames = async (username, groupId) => {
         const gamesList = [];
         try{
@@ -136,6 +171,29 @@ module.exports = function (
         } catch (err){
             console.log(err);
             throw errors.NOT_FOUND(err);
+        }
+    }
+
+
+    async function deleteGroup(username, groupId) {
+        checkUser(username);
+        const hasGroup = await hasGroup(username, groupId);
+        if(!hasGroup)
+            throw errors.NOT_FOUND('This group does not exist');
+        try{
+            const response = await fetch(
+                `${userGroupURL(username)}/_doc/${groupId}`,
+                {
+                    method: 'DELETE'
+                }
+            );
+            if(response.status === 200) {
+                const answer = await response.json();
+                return answer._id;
+            }
+        } catch (err) {
+            console.log(err);
+            throw errors.FAIL(err);
         }
     }
 
@@ -221,26 +279,6 @@ async function getGroupInfo(username, groupId) {
 		games: await listGames(group)
 	};
 	return groupObj;
-}
-
-async function saveGame(username, groupId, gameObj) {
-	const user = users[username];
-	const group = user[groupId];
-	const gameId = gameObj.id;
-	const hasGroupInUser = await hasGroup(user, groupId);
-	if (!hasGroupInUser) {
-		throw errors.NOT_FOUND("Group doesn't exist");
-	}
-	const hasGameInUserGroup = await hasGameInGroup(user, groupId, gameId);
-	if (hasGameInUserGroup) {
-		throw errors.INVALID_PARAM("Game " + gameObj.name + " is already in " + group.name);
-	}
-	const hasGameInGlobal = await hasGame(gameId);
-	if (!hasGameInGlobal) {
-		games[gameId] = gameObj;
-	}
-	user[groupId].games.push(gameId);
-	return successes.GAME_ADDED(gameObj.name + " added to group " + group.name);
 }
 
 async function deleteGame(username, groupId, gameId) {
