@@ -139,6 +139,6 @@ module.exports = function (data_ext, data_int) {
 		editGroup,
 		deleteGroup,
 		getGroupInfo,
-		createUser: data_int.createUser
+		createUser: data_int.createUser // fazer funçao
 	};
 };

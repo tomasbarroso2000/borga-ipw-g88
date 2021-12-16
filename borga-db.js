@@ -5,8 +5,6 @@ const fetch = require('node-fetch');
 const errors = responseCodes.errorList;
 const successes = responseCodes.successList;
 const crypto = require('crypto');
-const { pathToFileURL } = require('url');
-const { use } = require('express/lib/application');
 
 module.exports = function (
     es_host,
@@ -160,12 +158,9 @@ module.exports = function (
             const answer = await response.json();
             const hits = answer.hits.hits;
             const games = hits.map(hit => hit._source);
-            games.array.forEach(element => {
-                gamesList.push(
-                    await fetch(
-                        `${baseURL}/_doc/${element}`
-                    ).json().hits.hits.map(hit => hit._source)
-                )
+            games.array.forEach(async element => {
+                const answer = await fetch(`${baseURL}/_doc/${element}`).json().hits.hits.map(hit => hit._source);
+                gamesList.push(answer);
             });
             return gamesList;
         } catch (err){
@@ -237,6 +232,35 @@ module.exports = function (
         }
     }
 
+
+    async function createUser(username) {
+        if (checkUser(username)) {
+            throw errors.INVALID_PARAM("Username " + username + " already exists");
+        }
+        const newToken = crypto.randomUUID();
+        tokens[newToken] = username;
+        try {
+            const response = await fetch(
+                userGroupURL(username),
+                {
+                    method: 'POST'
+                }
+            );
+            return successes.USER_ADDED("Username " + username + " added with token " + newToken);
+        }
+        catch (err) {
+            throw errors.FAIL(err);
+        }
+    }
+
+    return {
+        saveGame,
+        deleteGame,
+        deleteGroup,
+        getGroups,
+        getGroupInfo,
+        createUser
+    }
 
 }
 

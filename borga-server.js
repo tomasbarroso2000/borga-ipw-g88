@@ -6,10 +6,20 @@ const port = process.argv[2] || default_port;
 const guest_user  = 'guest';
 const guest_token = '1365834658346586';
 
+const es_host = 'localhost';
+const es_port = 9200;
+
+const es_prefix = 'prod';
+
 const express = require('express');
 
 const data_ext = require('./board-games-data');
-const data_int = require('./borga-data-mem');
+//const data_int = require('./borga-data-mem');
+const data_int = require('./borga-db')(
+	es_host, es_port,
+	es_prefix,
+	guest_user, guest_token
+);
 const services = require('./borga-services')(data_ext, data_int);
 const webapi = require('./borga-web-api')(services);
 const webui = require('./borga-web-site')(services, guest_token);
