@@ -197,8 +197,55 @@ module.exports = function (
         }
     }
 
+
+    async function getGroups(username){
+        checkUser(username);
+        try{
+            const response = await fetch(
+                `${userGroupURL(username)}/_doc`
+            );
+            const groups = response.json();
+            return groups.groups; // ?? 
+
+        } catch (err) {
+            console.log(err);
+            throw errors.FAIL(err);
+        }
+    }
+
+    
+    async function getGroupInfo(username, groupId){
+        checkUser(username);
+        const hasGroupInUser = await hasGroup(user, groupId);
+	    if (!hasGroupInUser) {
+		    throw errors.NOT_FOUND("Group doesn't exist");
+	    }
+        try{
+            const response = await fetch(
+                `${userGroupURL(username)}/_doc/${groupId}`
+            );
+            const group = response.json();
+            const groupObj = {
+                name: group.name,
+                description: group.description,
+                games: await listGames(group)
+            };
+            return groupObj;
+        } catch (err) {
+            console.log(err);
+            throw errors.FAIL(err);
+        }
+    }
+
+
 }
 
+
+
+
+/**
+ *  BORGA-DATA-MEM
+ */
 
 
 
@@ -254,45 +301,4 @@ async function editGroup(username, groupId, newGroupName, newGroupDesc) {
 	return successes.GROUP_MODIFIED("Group Name: " + newGroupName + " | Group Description: " + newGroupDesc);
 }
 
-async function deleteGroup(username, groupId) {
-	const user = users[username];
-	const group = user[groupId];
-	const hasGroupInUser = await hasGroup(user, groupId);
-	if (!hasGroupInUser) {
-		throw errors.NOT_FOUND("Group doesn't exist");
-	}
-	const groupName = group.name;
-	delete user[groupId];
-	return successes.GROUP_DELETED("Group " + groupName + " deleted");
-}
-
-async function getGroupInfo(username, groupId) {
-	const user = users[username];
-	const hasGroupInUser = await hasGroup(user, groupId);
-	if (!hasGroupInUser) {
-		throw errors.NOT_FOUND("Group doesn't exist");
-	}
-	const group = user[groupId];
-	const groupObj = {
-		name: group.name,
-		description: group.description,
-		games: await listGames(group)
-	};
-	return groupObj;
-}
-
-async function deleteGame(username, groupId, gameId) {
-	const user = users[username];
-	const hasGroupInUser = await hasGroup(user, groupId);
-	if (!hasGroupInUser) {
-		throw errors.NOT_FOUND("Group doesn't exist");
-	}
-	const hasGameInUserGroup = await hasGameInGroup(user, groupId, gameId);
-	if (!hasGameInUserGroup) {
-		throw errors.NOT_FOUND("Game doesn't exist");
-	}
-	const games = user[groupId].games;
-	games.splice(games.indexOf(gameId), 1);
-	return successes.GAME_REMOVED("Game removed from group " + user[groupId].name);
-}
 
