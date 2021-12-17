@@ -7,28 +7,63 @@ const successes = responseCodes.successList;
 const crypto = require('crypto');
 
 module.exports = function (
-    es_host,
-    es_port,
-    idx_prefix,
-    guest_user,
-    guest_token
+    es_spec, 
+    guest
 ) {
-    const baseURL = `http://${es_host}:${es_port}`;
+    const baseURL = `${es_spec.url}`;
 
-    const userGroupURL = username => `${baseURL}/${idx_prefix}_${username}_groups`;
-    const usersURL = `${baseURL}/${idx_prefix}_users`;
-    const tokensURL = `${baseURL}/${idx_prefix}_tokens`;
+    const userGroupURL = username => `${baseURL}${es_spec.prefix}_${username}_groups`;
+    const usersURL = `${baseURL}${es_spec.prefix}_users`;
+    const tokensURL = `${baseURL}${es_spec.prefix}_tokens`;
 
     //TO DO: MOVE TO DB
     const users = new Set([
-        guest_user
+        guest.user
     ]);
 
     //TO DO: MOVE TO DB
     const tokens = {
-        [guest_token]: guest_user
+        [guest.token]: guest.user
     };
 
+    async function hasGame(gameId){
+        checkUser(username);
+        try{
+            const response = await fetch(
+                `${baseURL}/_doc/${gameId}`
+            );
+            return response.status === 200;
+        } catch(err) {
+            console.log(err);
+            throw errors.NOT_FOUND(err);
+        }
+    }
+    
+    
+    async function hasGroup(username, groupId){
+        try{
+            const response = await fetch(
+                `${userGroupURL(username)}/_doc/${groupId}`
+            );
+            return response.status === 200;
+        } catch(err) {
+            console.log(err);
+            throw errors.NOT_FOUND(err);
+        }
+    }
+    
+    async function hasGameInGroup(username, groupId, gameId) {
+        try{
+            const response = await fetch(
+                `${userGroupURL(username)}/_doc/${groupId}/${gameId}`
+            );
+            return response.status === 200;
+        } catch(err) {
+            console.log(err);
+            throw errors.NOT_FOUND(err);
+        }
+    }
+    
     async function isUsernameTaken(username) {
         try{
             const answer = await fetch(`${usersURL}/_doc/${username}`);
@@ -38,7 +73,7 @@ module.exports = function (
         }
         
     }
-
+    
     async function checkUser(username) {
         if(!isUsernameTaken(username)) {
             throw errors.UNAUTHENTICATED(username);
@@ -53,58 +88,18 @@ module.exports = function (
         return answer['_source'].token;
     }
 
-
-    async function hasGame(gameId){
-        checkUser(username);
-        try{
-            const response = await fetch(
-                `${baseURL}/_doc/${gameId}`
-            );
-            return response.status === 200;
-        } catch(err) {
-            console.log(err);
-            throw errors.NOT_FOUND(err);
-        }
-    }
-
-
-    async function hasGroup(username, groupId){
-        try{
-            const response = await fetch(
-                `${userGroupURL(username)}/_doc/${groupId}`
-            );
-            return response.status === 200;
-        } catch(err) {
-            console.log(err);
-            throw errors.NOT_FOUND(err);
-        }
-    }
-
-
-    async function hasGameInGroup(username, groupId, gameId) {
-        try{
-            const response = await fetch(
-                `${userGroupURL(username)}/_doc/${groupId}/${gameId}`
-            );
-            return response.status === 200;
-        } catch(err) {
-            console.log(err);
-            throw errors.NOT_FOUND(err);
-        }
-    }
-
-
     async function saveGame(username, groupId, gameObj){
         checkUser(username);
         const gameId = gameObj.id;
         const hasGroup = await hasGroup(username, groupId);
         const hasGameInGroup = await hasGameInGroup(username, groupId, gameId);
         const hasGame = await hasGame(gameId);
+
+        if(!hasGroup)
+            throw errors.NOT_FOUND("Group does not exist");
+        if(hasGameInGroup)
+            throw errors.NOT_FOUND("Game already exist in group");
         try {
-            if(!hasGroup)
-                throw errors.NOT_FOUND("Group does not exist");
-            if(hasGameInGroup)
-                throw errors.NOT_FOUND("Game already exist in group");
             if(!hasGame) {
                 const response = fetch(
                     `${baseURL}/_doc/${gameId}`,
@@ -126,8 +121,10 @@ module.exports = function (
                     }
                 }
             );
-            const answer = await response.json();
-            return answer._id;
+            //const answer = await response.json();
+            if(response.status === 200) {
+                return successes.GAME_ADDED("Game added");
+            }
         } catch (err) {
             console.log(err);
             throw errors.FAIL(err);
@@ -140,13 +137,14 @@ module.exports = function (
         const hasGroup = await hasGroup(username, groupId);
         const hasGameInGroup = await hasGameInGroup(username, groupId, gameId);
         const hasGame = await hasGame(gameId);
-        try {
-            if(!hasGroup)
+
+        if(!hasGroup)
                 throw errors.NOT_FOUND("Group does not exist");
-            if(!hasGameInGroup)
-                throw errors.NOT_FOUND("Game does not exist in group");
-            if(!hasGame)
-                throw errors.NOT_FOUND("Game does not exist"); 
+        if(!hasGameInGroup)
+            throw errors.NOT_FOUND("Game does not exist in group");
+        if(!hasGame)
+            throw errors.NOT_FOUND("Game does not exist"); 
+        try {
             const response = await fetch(
                 `${userGroupURL(username)}/_doc/${groupId}/${gameId}?refresh=wait_for`,
                 {
@@ -154,8 +152,8 @@ module.exports = function (
                 }
             );
             if(response.status === 200) {
-                const answer = await response.json();
-                return answer._id;
+                //const answer = await response.json();
+                return successes.GAME_REMOVED("Game removed");
             }
         } catch (err) {
             console.log(err);
@@ -244,8 +242,12 @@ module.exports = function (
             const answer = await response.json();
             const hits = await answer.hits.hits;
             const groups = {};
-            hits.forEach( hit => groups[hit[_id]] = hit[_source] );
-            return groups.groups; // ?? 
+            hits.forEach(async hit => {
+                const group = await hit[_id];
+                groups[group] = hit[_source];
+            });
+            //return groups.groups; // ?? 
+            return groups;
 
         } catch (err) {
             console.log(err);
@@ -256,7 +258,7 @@ module.exports = function (
     
     async function getGroupInfo(username, groupId){
         checkUser(username);
-        const hasGroupInUser = await hasGroup(user, groupId);
+        const hasGroupInUser = await hasGroup(username, groupId);
 	    if (!hasGroupInUser) {
 		    throw errors.NOT_FOUND("Group doesn't exist");
 	    }
@@ -292,7 +294,7 @@ module.exports = function (
                         'Content-Type': 'application/json'
                     },
                     body: {
-                        newToken: username
+                        [newToken]: username
                     }
                 }
             );
@@ -327,72 +329,11 @@ module.exports = function (
         saveGame,
         deleteGame,
         deleteGroup,
+        createGroup,
         getGroups,
         getGroupInfo,
-        createUser
+        createUser,
+        tokenToUsername
     }
 
 }
-
-
-
-
-/**
- *  BORGA-DATA-MEM
- */
-
-
-
-function makeGroupId() {
-	const length = 8;
-	var result = '';
-	var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-	var charactersLength = characters.length;
-	for (var i = 0; i < length; i++) {
-		result += characters.charAt(Math.floor(Math.random() * charactersLength));
-	}
-	return result;
-}
-
-function createUser(username) {
-	if (!username) {
-		throw errors.MISSING_PARAM("Unspecified username");
-	}
-	const user = users[username];
-	if (user) {
-		throw errors.INVALID_PARAM("Username " + username + " already exists");
-	}
-	const newToken = crypto.randomUUID();
-	tokens[newToken] = username;
-	users[username] = {};
-	return successes.USER_ADDED("Username " + username + " added with token " + newToken);
-}
-
-async function getGroups(username) {
-	const groups = users[username];
-	return groups;
-}
-
-function createGroup(username, groupName, groupDesc) {
-	let groupId = makeGroupId();
-	const user = users[username];
-	while (user[groupId]) {
-		groupId = makeGroupId();
-	}
-	user[groupId] = { 'name': groupName, 'description': groupDesc, 'games': [] };
-	return successes.GROUP_CREATED('Group ' + groupName + ' created');
-}
-
-async function editGroup(username, groupId, newGroupName, newGroupDesc) {
-	const user = users[username];
-	const group = user[groupId];
-	const hasGroupInUser = await hasGroup(user, groupId);
-	if (!hasGroupInUser) {
-		throw errors.NOT_FOUND("Group doesn't exist");
-	}
-	group.description = newGroupDesc;
-	group.name = newGroupName;
-	return successes.GROUP_MODIFIED("Group Name: " + newGroupName + " | Group Description: " + newGroupDesc);
-}
-
-
