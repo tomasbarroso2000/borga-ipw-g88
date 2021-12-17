@@ -2,10 +2,10 @@
   "name": "borga",
   "version": "1.0.0",
   "description": "",
-  "main": "borga-server.js",
+  "main": "borga-launch.js",
   "scripts": {
     "test": "jest",
-    "start": "node borga-server.js"
+    "start": "node borga-launch.js"
   },
   "keywords": [],
   "author": "",

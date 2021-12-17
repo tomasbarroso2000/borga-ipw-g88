@@ -16,6 +16,8 @@ module.exports = function (
     const baseURL = `http://${es_host}:${es_port}`;
 
     const userGroupURL = username => `${baseURL}/${idx_prefix}_${username}_groups`;
+    const usersURL = `${baseURL}/${idx_prefix}_users`;
+    const tokensURL = `${baseURL}/${idx_prefix}_tokens`;
 
     //TO DO: MOVE TO DB
     const users = new Set([
@@ -27,16 +29,28 @@ module.exports = function (
         [guest_token]: guest_user
     };
 
+    async function isUsernameTaken(username) {
+        try{
+            const answer = await fetch(`${usersURL}/_doc/${username}`);
+            return answer.found;  
+        } catch(err) {
+            throw errors.FAIL(err);
+        }
+        
+    }
 
-    function checkUser(username) {
-        if(!users.has(username)) {
+    async function checkUser(username) {
+        if(!isUsernameTaken(username)) {
             throw errors.UNAUTHENTICATED(username);
         }
     }
 
-
     async function tokenToUsername(token) {
-        return tokens[token];
+        const answer = await fetch(`${tokensURL}/_doc/${token}`);
+        if (!answer.found) {
+            throw errors.NOT_FOUND('Token does not exist');
+        }
+        return answer['_source'].token;
     }
 
 
@@ -169,12 +183,41 @@ module.exports = function (
         }
     }
 
+    async function createGroup(username, groupName, groupDesc) {
+        checkUser(username);
+        let groupId = makeGroupId();
+        while(await hasGroup(username, groupId)){
+            groupId = makeGroupId();
+        }
+        try{
+            const response = await fetch(
+                `${userGroupURL(username)}/_doc/${groupId}`,
+                {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: {
+                        "name":groupName,
+                        "description":groupDesc,
+                        "games": []
+                    }
+                },
+                
+            );
+            return successes.GROUP_ADDED("Group " + groupName + " added");
+        } catch (err) {
+            throw errors.FAIL(err);
+        }
+    }
 
     async function deleteGroup(username, groupId) {
         checkUser(username);
         const hasGroup = await hasGroup(username, groupId);
-        if(!hasGroup)
+        if(!hasGroup){
             throw errors.NOT_FOUND('This group does not exist');
+        }
+
         try{
             const response = await fetch(
                 `${userGroupURL(username)}/_doc/${groupId}`,
@@ -183,8 +226,7 @@ module.exports = function (
                 }
             );
             if(response.status === 200) {
-                const answer = await response.json();
-                return answer._id;
+                return successes.GROUP_DELETED("Group removed with success");
             }
         } catch (err) {
             console.log(err);
@@ -197,9 +239,12 @@ module.exports = function (
         checkUser(username);
         try{
             const response = await fetch(
-                `${userGroupURL(username)}/_doc`
+                `${userGroupURL(username)}/_search`
             );
-            const groups = response.json();
+            const answer = await response.json();
+            const hits = await answer.hits.hits;
+            const groups = {};
+            hits.forEach( hit => groups[hit[_id]] = hit[_source] );
             return groups.groups; // ?? 
 
         } catch (err) {
@@ -234,18 +279,43 @@ module.exports = function (
 
 
     async function createUser(username) {
-        if (checkUser(username)) {
+        if (await isUsernameTaken(username)) {
             throw errors.INVALID_PARAM("Username " + username + " already exists");
         }
-        const newToken = crypto.randomUUID();
-        tokens[newToken] = username;
         try {
-            const response = await fetch(
-                userGroupURL(username),
+            const newToken = crypto.randomUUID();
+            const token = await fetch(
+                `${tokensURL}/_doc/${newToken}`,
                 {
-                    method: 'POST'
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: {
+                        newToken: username
+                    }
                 }
             );
+            const username = await fetch(
+                `${usersURL}/_doc/${username}`,
+                {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: {
+                        'username': username
+                    }
+                }
+            );
+
+            const userObj = await fetch(
+                `${userGroupURL(username)}`,
+                {
+                    method: 'PUT'
+                }
+            );
+
             return successes.USER_ADDED("Username " + username + " added with token " + newToken);
         }
         catch (err) {
