@@ -6,8 +6,9 @@ const errors = responseCodes.errorList;
 const successes = responseCodes.successList;
 const crypto = require('crypto');
 
+
 module.exports = function (
-    es_spec, 
+    es_spec,
     guest
 ) {
     const baseURL = `${es_spec.url}`;
@@ -16,7 +17,7 @@ module.exports = function (
     const usersURL = `${baseURL}${es_spec.prefix}_users`;
     const tokensURL = `${baseURL}${es_spec.prefix}_tokens`;
 
-    //TO DO: MOVE TO DB
+    //TO DO: MOVE TO DB 
     const users = new Set([
         guest.user
     ]);
@@ -26,81 +27,96 @@ module.exports = function (
         [guest.token]: guest.user
     };
 
-    async function hasGame(gameId){
+    function makeGroupId() {
+        const length = 8;
+        var result = '';
+        var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var charactersLength = characters.length;
+        for (var i = 0; i < length; i++) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
+    }
+
+    async function hasGame(gameId) {
         checkUser(username);
-        try{
+        try {
             const response = await fetch(
                 `${baseURL}/_doc/${gameId}`
             );
             return response.status === 200;
-        } catch(err) {
+        } catch (err) {
             console.log(err);
             throw errors.NOT_FOUND(err);
         }
     }
-    
-    
-    async function hasGroup(username, groupId){
-        try{
+
+
+    async function hasGroup(username, groupId) {
+        try {
             const response = await fetch(
                 `${userGroupURL(username)}/_doc/${groupId}`
             );
-            return response.status === 200;
-        } catch(err) {
+            const answer = await response.json();
+            return answer.found;
+        } catch (err) {
             console.log(err);
             throw errors.NOT_FOUND(err);
         }
     }
-    
+
     async function hasGameInGroup(username, groupId, gameId) {
-        try{
+        try {
             const response = await fetch(
                 `${userGroupURL(username)}/_doc/${groupId}/${gameId}`
             );
-            return response.status === 200;
-        } catch(err) {
+            const answer = await response.json()
+            return answer.found;
+        } catch (err) {
             console.log(err);
             throw errors.NOT_FOUND(err);
         }
     }
-    
+
     async function isUsernameTaken(username) {
-        try{
+        try {
             const answer = await fetch(`${usersURL}/_doc/${username}`);
-            return answer.found;  
-        } catch(err) {
+            const response = await answer.json();
+            return response.found;
+        } catch (err) {
             throw errors.FAIL(err);
         }
-        
+
     }
-    
+
     async function checkUser(username) {
-        if(!isUsernameTaken(username)) {
+        if (!isUsernameTaken(username)) {
             throw errors.UNAUTHENTICATED(username);
         }
     }
 
     async function tokenToUsername(token) {
-        const answer = await fetch(`${tokensURL}/_doc/${token}`);
-        if (!answer.found) {
+        const answer = await fetch(`${tokensURL}/_doc/${token}`)
+        const response = await answer.json();
+        if (!response.found) {
             throw errors.NOT_FOUND('Token does not exist');
         }
-        return answer['_source'].token;
+        return response._source[token];
     }
 
-    async function saveGame(username, groupId, gameObj){
+    async function saveGame(username, groupId, gameObj) {
         checkUser(username);
         const gameId = gameObj.id;
         const hasGroup = await hasGroup(username, groupId);
         const hasGameInGroup = await hasGameInGroup(username, groupId, gameId);
         const hasGame = await hasGame(gameId);
 
-        if(!hasGroup)
+        if (!hasGroup)
             throw errors.NOT_FOUND("Group does not exist");
-        if(hasGameInGroup)
+        if (hasGameInGroup)
             throw errors.NOT_FOUND("Game already exist in group");
         try {
-            if(!hasGame) {
+            if (!hasGame) {
                 const response = fetch(
                     `${baseURL}/_doc/${gameId}`,
                     {
@@ -122,7 +138,7 @@ module.exports = function (
                 }
             );
             //const answer = await response.json();
-            if(response.status === 200) {
+            if (response.status === 200) {
                 return successes.GAME_ADDED("Game added");
             }
         } catch (err) {
@@ -132,18 +148,18 @@ module.exports = function (
     }
 
 
-    async function deleteGame(username, groupId, gameId){
+    async function deleteGame(username, groupId, gameId) {
         checkUser(username);
         const hasGroup = await hasGroup(username, groupId);
         const hasGameInGroup = await hasGameInGroup(username, groupId, gameId);
         const hasGame = await hasGame(gameId);
 
-        if(!hasGroup)
-                throw errors.NOT_FOUND("Group does not exist");
-        if(!hasGameInGroup)
+        if (!hasGroup)
+            throw errors.NOT_FOUND("Group does not exist");
+        if (!hasGameInGroup)
             throw errors.NOT_FOUND("Game does not exist in group");
-        if(!hasGame)
-            throw errors.NOT_FOUND("Game does not exist"); 
+        if (!hasGame)
+            throw errors.NOT_FOUND("Game does not exist");
         try {
             const response = await fetch(
                 `${userGroupURL(username)}/_doc/${groupId}/${gameId}?refresh=wait_for`,
@@ -151,7 +167,7 @@ module.exports = function (
                     method: 'DELETE'
                 }
             );
-            if(response.status === 200) {
+            if (response.status === 200) {
                 //const answer = await response.json();
                 return successes.GAME_REMOVED("Game removed");
             }
@@ -163,7 +179,7 @@ module.exports = function (
 
     const listGames = async (username, groupId) => {
         const gamesList = [];
-        try{
+        try {
             const response = await fetch(
                 `${userGroupURL(username)}/_doc/${groupId}`
             );
@@ -175,7 +191,7 @@ module.exports = function (
                 gamesList.push(answer);
             });
             return gamesList;
-        } catch (err){
+        } catch (err) {
             console.log(err);
             throw errors.NOT_FOUND(err);
         }
@@ -184,10 +200,10 @@ module.exports = function (
     async function createGroup(username, groupName, groupDesc) {
         checkUser(username);
         let groupId = makeGroupId();
-        while(await hasGroup(username, groupId)){
+        while (await hasGroup(username, groupId)) {
             groupId = makeGroupId();
         }
-        try{
+        try {
             const response = await fetch(
                 `${userGroupURL(username)}/_doc/${groupId}`,
                 {
@@ -195,15 +211,15 @@ module.exports = function (
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: {
-                        "name":groupName,
-                        "description":groupDesc,
+                    body: JSON.stringify({
+                        "name": groupName,
+                        "description": groupDesc,
                         "games": []
-                    }
+                    })
                 },
-                
+
             );
-            return successes.GROUP_ADDED("Group " + groupName + " added");
+            return successes.GROUP_CREATED("Group " + groupName + " added");
         } catch (err) {
             throw errors.FAIL(err);
         }
@@ -211,19 +227,18 @@ module.exports = function (
 
     async function deleteGroup(username, groupId) {
         checkUser(username);
-        const hasGroup = await hasGroup(username, groupId);
-        if(!hasGroup){
+        if (! await hasGroup(username, groupId)) {
             throw errors.NOT_FOUND('This group does not exist');
         }
 
-        try{
+        try {
             const response = await fetch(
                 `${userGroupURL(username)}/_doc/${groupId}`,
                 {
                     method: 'DELETE'
                 }
             );
-            if(response.status === 200) {
+            if (response.status === 200) {
                 return successes.GROUP_DELETED("Group removed with success");
             }
         } catch (err) {
@@ -233,36 +248,35 @@ module.exports = function (
     }
 
 
-    async function getGroups(username){
+    async function getGroups(username) {
         checkUser(username);
-        try{
+        try {
             const response = await fetch(
                 `${userGroupURL(username)}/_search`
             );
             const answer = await response.json();
             const hits = await answer.hits.hits;
             const groups = {};
-            hits.forEach(async hit => {
-                const group = await hit[_id];
-                groups[group] = hit[_source];
+            hits.forEach(hit => {
+                const group = hit._id;
+                groups[group] = hit._source;
             });
-            //return groups.groups; // ?? 
             return groups;
 
         } catch (err) {
-            console.log(err);
+            console.log(err); 
             throw errors.FAIL(err);
         }
     }
 
-    
-    async function getGroupInfo(username, groupId){
+
+    async function getGroupInfo(username, groupId) {
         checkUser(username);
-        const hasGroupInUser = await hasGroup(username, groupId);
-	    if (!hasGroupInUser) {
-		    throw errors.NOT_FOUND("Group doesn't exist");
-	    }
-        try{
+        const hasGroup = await hasGroup(username, groupId);
+        if (!hasGroup) {
+            throw errors.NOT_FOUND("Group doesn't exist");
+        }
+        try {
             const response = await fetch(
                 `${userGroupURL(username)}/_doc/${groupId}`
             );
@@ -280,6 +294,31 @@ module.exports = function (
     }
 
 
+    async function editGroup(username, groupId, newGroupName, newGroupDesc) {
+        checkUser(username);
+        try {
+            if (! await hasGroup(username, groupId)) {
+                throw errors.NOT_FOUND("Group doesn't exist");
+            }
+            const response = await fetch(
+                `${userGroupURL(username)}/_update/${groupId}`,
+                {
+                    method: 'POST',
+                     headers:
+                    {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({script : `ctx._source.name='${newGroupName}';ctx._source.description='${newGroupDesc}'`})
+                }
+            );
+            const answer = await response.json();
+            return successes.GROUP_MODIFIED();
+        } catch (err) {
+            throw errors.FAIL(err);
+        }
+    }
+
+
     async function createUser(username) {
         if (await isUsernameTaken(username)) {
             throw errors.INVALID_PARAM("Username " + username + " already exists");
@@ -290,24 +329,21 @@ module.exports = function (
                 `${tokensURL}/_doc/${newToken}`,
                 {
                     method: 'PUT',
-                    headers: {
+                    headers:
+                    {
                         'Content-Type': 'application/json'
                     },
-                    body: {
-                        [newToken]: username
-                    }
+                    body: JSON.stringify({ [newToken]: username })
                 }
             );
-            const username = await fetch(
+            const usernameReq = await fetch(
                 `${usersURL}/_doc/${username}`,
                 {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: {
-                        'username': username
-                    }
+                    body: JSON.stringify({ 'username': username })
                 }
             );
 
@@ -318,7 +354,10 @@ module.exports = function (
                 }
             );
 
-            return successes.USER_ADDED("Username " + username + " added with token " + newToken);
+            if (token.ok && usernameReq.ok && userObj.ok) {
+                return successes.USER_ADDED("Username " + username + " added with token " + newToken);
+            }
+            else throw errors.FAIL("User Creation Failed")
         }
         catch (err) {
             throw errors.FAIL(err);
@@ -330,6 +369,7 @@ module.exports = function (
         deleteGame,
         deleteGroup,
         createGroup,
+        editGroup,
         getGroups,
         getGroupInfo,
         createUser,
