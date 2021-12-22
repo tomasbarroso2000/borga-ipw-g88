@@ -6,7 +6,6 @@ const errors = responseCodes.errorList;
 const successes = responseCodes.successList;
 const crypto = require('crypto');
 
-
 module.exports = function (
     es_spec,
     guest
@@ -294,7 +293,6 @@ module.exports = function (
         }
     }
 
-
     async function getGroups(username) {
         checkUser(username);
         try {
@@ -315,7 +313,6 @@ module.exports = function (
             throw errors.FAIL(err);
         }
     }
-
 
     async function getGroupInfo(username, groupId) {
         checkUser(username);
@@ -341,7 +338,6 @@ module.exports = function (
         }
     }
 
-
     async function editGroup(username, groupId, newGroupName, newGroupDesc) {
         checkUser(username);
         try {
@@ -365,7 +361,6 @@ module.exports = function (
             throw errors.FAIL(err);
         }
     }
-
 
     async function createUser(username) {
         if (await isUsernameTaken(username)) {
