@@ -13,7 +13,8 @@ module.exports = function (
 ) {
     const baseURL = `${es_spec.url}`;
 
-    const userGroupURL = username => `${baseURL}${es_spec.prefix}_${username}_groups`;
+    const userGroupURL = username => `${baseURL}${es_spec.prefix}_${username.toLowerCase()}_groups`;
+    const gamesURL = `${baseURL}${es_spec.prefix}_games`;
     const usersURL = `${baseURL}${es_spec.prefix}_users`;
     const tokensURL = `${baseURL}${es_spec.prefix}_tokens`;
 
@@ -38,14 +39,37 @@ module.exports = function (
         return result;
     }
 
+    async function checkGamesInit() {
+        try {
+            const checkGames = await fetch(
+                `${gamesURL}`
+            );
+            if (!checkGames.ok) {
+                const createGames = await fetch(
+                    `${gamesURL}`,
+                    {
+                        method: 'PUT'
+                    }
+                );
+                if (!createGames.ok) {
+                    throw errors.FAIL('Database failure');
+                }
+            }
+        }
+        catch (err) {
+            throw err;
+        }
+    }
+
     async function hasGame(gameId) {
-        checkUser(username);
+        checkGamesInit();
         try {
             const response = await fetch(
-                `${baseURL}/_doc/${gameId}`
+                `${gamesURL}/_doc/${gameId}`
             );
-            return response.status === 200;
-        } catch (err) {
+            const answer = await response.json();
+            return answer.found;
+        } catch (err) { 
             console.log(err);
             throw errors.NOT_FOUND(err);
         }
@@ -68,10 +92,11 @@ module.exports = function (
     async function hasGameInGroup(username, groupId, gameId) {
         try {
             const response = await fetch(
-                `${userGroupURL(username)}/_doc/${groupId}/${gameId}`
+                `${userGroupURL(username)}/_doc/${groupId}`
             );
-            const answer = await response.json()
-            return answer.found;
+            const answer = await response.json();
+            const games = answer._source.games;
+            return games.includes(gameId);
         } catch (err) {
             console.log(err);
             throw errors.NOT_FOUND(err);
@@ -107,18 +132,14 @@ module.exports = function (
     async function saveGame(username, groupId, gameObj) {
         checkUser(username);
         const gameId = gameObj.id;
-        const hasGroup = await hasGroup(username, groupId);
-        const hasGameInGroup = await hasGameInGroup(username, groupId, gameId);
-        const hasGame = await hasGame(gameId);
-
-        if (!hasGroup)
+        if (! await hasGroup(username, groupId))
             throw errors.NOT_FOUND("Group does not exist");
-        if (hasGameInGroup)
-            throw errors.NOT_FOUND("Game already exist in group");
+        if (await hasGameInGroup(username, groupId, gameId))
+            throw errors.INVALID_PARAM("Game already exists in group");
         try {
-            if (!hasGame) {
+            if (! await hasGame(gameId)) {
                 const response = fetch(
-                    `${baseURL}/_doc/${gameId}`,
+                    `${gamesURL}/_doc/${gameId}`,
                     {
                         method: 'PUT',
                         headers: {
@@ -127,19 +148,33 @@ module.exports = function (
                         body: JSON.stringify(gameObj)
                     }
                 );
-            }
-            const response = await fetch(
-                `${userGroupURL(username)}/_doc/${groupId}/${gameId}?refresh=wait_for`,
-                {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
+                if (!response.ok) {
+                    throw errors.FAIL('Could not add game')
                 }
-            );
-            //const answer = await response.json();
-            if (response.status === 200) {
-                return successes.GAME_ADDED("Game added");
+            }
+            if (! await hasGameInGroup(username, groupId, gameId)) {
+                const response = await fetch(
+                    `${userGroupURL(username)}/_update/${groupId}?refresh=wait_for`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            script: {
+                                source: "ctx._source.games.addAll(params.newGame)",
+                                params: {
+                                    newGame: [gameId]
+                                }
+                            }
+                        })
+                    }
+                );
+                if (response.ok) {
+                    return successes.GAME_ADDED("Game added");
+                } else {
+                    throw errors.FAIL('Could not add game');
+                }
             }
         } catch (err) {
             console.log(err);
@@ -147,29 +182,37 @@ module.exports = function (
         }
     }
 
-
     async function deleteGame(username, groupId, gameId) {
         checkUser(username);
-        const hasGroup = await hasGroup(username, groupId);
-        const hasGameInGroup = await hasGameInGroup(username, groupId, gameId);
-        const hasGame = await hasGame(gameId);
-
-        if (!hasGroup)
+        if (! await hasGroup(username, groupId))
             throw errors.NOT_FOUND("Group does not exist");
-        if (!hasGameInGroup)
+        if (! await hasGameInGroup(username, groupId, gameId))
             throw errors.NOT_FOUND("Game does not exist in group");
-        if (!hasGame)
+        if (! await hasGame(gameId))
             throw errors.NOT_FOUND("Game does not exist");
         try {
             const response = await fetch(
-                `${userGroupURL(username)}/_doc/${groupId}/${gameId}?refresh=wait_for`,
+                `${userGroupURL(username)}/_update/${groupId}?refresh=wait_for`,
                 {
-                    method: 'DELETE'
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        script: {
+                            source: "ctx._source.games.removeAll(params.toRemove)",
+                            params: {
+                                toRemove: [gameId]
+                            }
+                        }
+                    })
                 }
             );
-            if (response.status === 200) {
-                //const answer = await response.json();
+            if (response.ok) {
                 return successes.GAME_REMOVED("Game removed");
+            }
+            else {
+                throw errors.FAIL('Could not remove game');
             }
         } catch (err) {
             console.log(err);
@@ -178,19 +221,23 @@ module.exports = function (
     }
 
     const listGames = async (username, groupId) => {
-        const gamesList = [];
         try {
+            const gamesList = [];
             const response = await fetch(
                 `${userGroupURL(username)}/_doc/${groupId}`
             );
             const answer = await response.json();
-            const hits = answer.hits.hits;
-            const games = hits.map(hit => hit._source);
-            games.array.forEach(async element => {
-                const answer = await fetch(`${baseURL}/_doc/${element}`).json().hits.hits.map(hit => hit._source);
-                gamesList.push(answer);
+            const games = await answer._source.games;
+            const gamesNames = await games.map(async element => {
+                const gameRes = await fetch(`${gamesURL}/_doc/${element}`);
+                const gameAnswer =  await gameRes.json();
+                const game = await gameAnswer._source.name;
+                gamesList.push(game);
+                return game;
             });
-            return gamesList;
+            return Promise.all(gamesNames).then( () => {
+                return gamesList;
+            })
         } catch (err) {
             console.log(err);
             throw errors.NOT_FOUND(err);
@@ -272,19 +319,20 @@ module.exports = function (
 
     async function getGroupInfo(username, groupId) {
         checkUser(username);
-        const hasGroup = await hasGroup(username, groupId);
-        if (!hasGroup) {
+        if (! await hasGroup(username, groupId)) {
             throw errors.NOT_FOUND("Group doesn't exist");
         }
         try {
             const response = await fetch(
                 `${userGroupURL(username)}/_doc/${groupId}`
             );
-            const group = response.json();
+            const answer = await response.json();
+            const group = await answer._source;
+            const games = await listGames(username, groupId);
             const groupObj = {
                 name: group.name,
                 description: group.description,
-                games: await listGames(group)
+                games: games
             };
             return groupObj;
         } catch (err) {
@@ -304,7 +352,7 @@ module.exports = function (
                 `${userGroupURL(username)}/_update/${groupId}`,
                 {
                     method: 'POST',
-                     headers:
+                    headers:
                     {
                         'Content-Type': 'application/json'
                     },
