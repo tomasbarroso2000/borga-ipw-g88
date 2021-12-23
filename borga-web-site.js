@@ -23,12 +23,14 @@ module.exports = function (services, guest_token) {
 	} 
 
     async function searchInGlobalGames(req, res) {
+		const header = 'Find Game Result';
+		const query = req.query.search;
 		try {
             let games;
-			if (req.query.search == undefined) {
+			if (query == undefined || query == "") {
 				games = await services.getPopularGames();
 			} else {
-				games = await services.searchGame(req.query.search);
+				games = await services.searchGame(query);
 			}
             res.render(
                 'games',
@@ -38,13 +40,13 @@ module.exports = function (services, guest_token) {
 			switch (err.name) {
 				case 'NOT_FOUND':
 					res.status(404).render(
-						'game',
+						'games',
 						{ header, query, error: 'no game found for this query' }
 					);
 					break;
 				default:
 					res.status(500).render(
-						'game',
+						'games',
 						{ header, query, error: JSON.stringify(err) }
 					);
 					break;

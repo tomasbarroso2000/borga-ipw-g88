@@ -1,0 +1,23 @@
+<h1 id="search">{{header}}</h1>
+
+<div id="gameContent">
+    {{#if query}}
+    <p>Search for: {{query}}</p>
+    {{/if}}
+
+    {{#if games}}
+        {{#each games}}
+            <div class="game">
+                <div class="gameimg"><img src='{{this.image}}' alt="this.name"></div>
+                <div class="container">
+                    <p><b>{{this.name}}</b></p>
+                    <p>{{this.price}}€</p>
+                    <button class="add">ADD</button>
+                </div>
+            </div>
+        {{/each}}
+    {{/if}}
+</div>
+{{#if error}}
+<p><strong>ERROR:</strong> {{error}}</p>
+{{/if}}
