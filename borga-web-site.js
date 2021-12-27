@@ -53,7 +53,8 @@ module.exports = function (services, guest_token) {
 			}
 		}
 	}
-/*
+
+	
 	async function addGameToGroup(req, res) {
         const header = 'Save Game Result';
         const groupId = req.params.groupId;
@@ -72,7 +73,7 @@ module.exports = function (services, guest_token) {
 		try {
 			const groupId = req.params.groupId;
 			const game = req.params.gameId;
-			const token = getBearerToken(req);
+			const token = getToken(req);
 			const gameRes = await services.deleteGame(token, groupId, game);
 			res.json(gameRes);
 		} catch (err) {
@@ -84,7 +85,7 @@ module.exports = function (services, guest_token) {
 		try {
 			const groupName = req.body.name;
 			const groupDesc = req.body.description;
-			const token = getBearerToken(req);
+			const token = getToken(req);
 			const groupRes = await services.createGroup(token, groupName, groupDesc);
 			res.json(groupRes);
 		} catch (err) {
@@ -93,12 +94,29 @@ module.exports = function (services, guest_token) {
 	}
 
 	async function getGroups(req, res) {
+		const header = "My Groups"
 		try {
-			const token = getBearerToken(req);
+			const token = getToken(req);
 			const groupRes = await services.getGroups(token);
-			return res.json(groupRes);
+			res.render(
+                'groups',
+                { header, groupRes }
+            );
 		} catch (err) {
-			onError(req, res, err);
+			switch (err.name) {
+				case 'NOT_FOUND':
+					res.status(404).render(
+						'groups',
+						{ header, error:'no groups found' }
+					);
+					break;
+				default:
+					res.status(500).render(
+						'groups',
+						{ header, error: JSON.stringify(err) }
+					);
+					break;
+			}
 		}
 	}
 
@@ -107,7 +125,7 @@ module.exports = function (services, guest_token) {
 			const oldGroupName = req.body.id;
 			const newGroupName = req.body.name;
 			const newGroupDesc = req.body.description;
-			const token = getBearerToken(req);
+			const token = getToken(req);
 			const groupRes = await services.editGroup(token, oldGroupName, newGroupName, newGroupDesc);
 			return res.json(groupRes);
 		} catch (err) {
@@ -118,7 +136,7 @@ module.exports = function (services, guest_token) {
 	async function deleteGroup(req, res) {
 		try {
 			const groupId = req.params.groupId;
-			const token = getBearerToken(req);
+			const token = getToken(req);
 			const groupRes = await services.deleteGroup(token, groupId)
 			res.json(groupRes);
 		} catch (err) {
@@ -129,14 +147,16 @@ module.exports = function (services, guest_token) {
 	async function getGroupInfo(req, res) {
 		try {
 			const groupId = req.params.groupId;
-			const token = getBearerToken(req);
+			const token = getToken(req);
 			const groupRes = await services.getGroupInfo(token, groupId)
 			return res.json(groupRes);
 		} catch (err) {
 			onError(req, res, err);
 		}
 	}
-    */
+
+	
+    
 
     const router = express.Router();
 	
@@ -150,13 +170,15 @@ module.exports = function (services, guest_token) {
 
     //Resource: /global/games
 	router.get('/global/games', searchInGlobalGames);
-    /*
+    
 	//Resource: /my/groups
 	router.get('/my/groups', getGroups);
 	router.post('/my/groups', createGroup);
+	router.post('/my/groups/edit', editGroup);
+	router.post('/my/groups/:groupId/delete', deleteGroup);
 	router.get('/my/groups/:groupId/info', getGroupInfo);
 
-	router.post('/my/groups/:groupId/:gameId', addGameToGroup);*/
+	router.post('/my/groups/:groupId/:gameId', addGameToGroup);
 
 	return router;
 };

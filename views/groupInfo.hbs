@@ -1,0 +1,19 @@
+<h1 id="search">{{header}}</h1>
+
+<div id="gameContent">
+
+    {{#if groupRes}}
+        {{#each groupRes}}
+            <table class="group">
+                <a><tr>
+                    <td><b>{{this.name}}</b></td>
+                    <td>{{this.description}}</td>
+                    <td>{{this.games}}</td>
+                </tr></a>
+            </table>
+        {{/each}}
+    {{/if}}
+</div>
+{{#if error}}
+<p><strong>ERROR:</strong> {{error}}</p>
+{{/if}}
