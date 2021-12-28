@@ -7,14 +7,18 @@
 
     {{#if games}}
         {{#each games}}
-            <div class="game">
-                <div class="gameimg"><img src='{{this.image}}' alt="this.name"></div>
-                <div class="container">
-                    <p><b>{{this.name}}</b></p>
-                    <p>{{this.price}}€</p>
-                    <button class="add">ADD</button>
+            <a href="/global/games/{{this.id}}/info">
+                <div class="game">
+                    <div class="gameimg"><img src='{{this.image}}' alt="this.name"></div>
+                    <div class="container">
+                        <p><b>{{this.name}}</b></p>
+                        <p>{{this.price}}€</p>
+                        <form action="/my/groups/{{this.id}}/select" method="get">
+                            <input value="ADD" type="submit">
+                        </form>
+                    </div>
                 </div>
-            </div>
+            </a>
         {{/each}}
     {{/if}}
 </div>

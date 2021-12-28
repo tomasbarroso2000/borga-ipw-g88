@@ -128,6 +128,17 @@ module.exports = function (data_ext, data_int) {
 		return gameRes;
 	}
 
+	async function listGameObjs(token, group) {
+		const username = await getUsername(token);
+		if (!group) {
+			throw errors.MISSING_PARAM('group');
+		}
+		const groupRes = data_int.listGameObjs(username, group);
+		return groupRes;
+	}
+
+
+
 	return {
 		getUsername,
 		searchGame,
@@ -139,6 +150,8 @@ module.exports = function (data_ext, data_int) {
 		editGroup,
 		deleteGroup,
 		getGroupInfo,
-		createUser: data_int.createUser // fazer funçao
+		createUser: data_int.createUser, // fazer funçao
+		listGameObjs,
+		getGameInfo: data_ext.findGameById,
 	};
 };

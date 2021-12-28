@@ -1,0 +1,24 @@
+<h1 id="search">{{header}}</h1>
+
+<div id="gameContent">
+    {{#if gameObj}}
+        <div class="group">
+            <div><img src='{{gameObj.image}}' alt="this.name"></div></div>
+            <div><b>Name: {{gameObj.name}}</b></div>
+            <div>Description: {{gameObj.description}}</div>
+            <div>Price: {{gameObj.price}}$ with {{gameObj.discount}}$ discount</div>
+            <div>Minimum players: {{gameObj.minimum_players}}</div>
+            <div>Maximum players: {{gameObj.maximum_players}}</div>
+            <div>Age: {{gameObj.minimum_age}}</div>
+            <div>Url: {{gameObj.url}}</div>
+            <div>Mechanics: {{gameObj.mechanics}}</div>
+            <div>Categories: {{gameObj.categories}}</div>
+            <form action="/my/groups/{{gameObj.id}}/select" method="get">
+                        <input value="ADD" type="submit">
+            </form>
+        </div>
+    {{/if}}
+</div>
+{{#if error}}
+<p><strong>ERROR:</strong> {{error}}</p>
+{{/if}}

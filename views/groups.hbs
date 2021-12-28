@@ -1,16 +1,30 @@
 <h1 id="search">{{header}}</h1>
 
 <div id="gameContent">
-
     {{#if groupRes}}
-        {{#each groupRes}}
-            <table class="group">
-                <a><tr>
-                    <td><b>{{this.name}}</b></td>
-                    <td>{{this.description}}</td>
-                </tr></a>
+        {{#if groupSelect}}
+            <table>
+                {{#each groupRes}}
+                    <tr>
+                        <td>
+                            <form action="/my/groups/{{this.id}}/{{../gameId}}" method="POST">
+                                <input type="submit" value="{{this.name}}">
+                            </form>
+                        </td>
+                        <td>{{this.description}}</td>
+                    </tr>
+                {{/each}}
             </table>
-        {{/each}}
+        {{else}}
+            <table>
+                {{#each groupRes}}
+                    <tr>
+                        <td><a href="/my/groups/{{this.id}}/info"><b>{{this.name}}</b></a></td>
+                        <td>{{this.description}}</td>
+                    </tr>
+                {{/each}}
+            </table>
+        {{/if}}
     {{/if}}
 </div>
 {{#if error}}

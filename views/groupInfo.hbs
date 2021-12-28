@@ -2,16 +2,25 @@
 
 <div id="gameContent">
 
-    {{#if groupRes}}
-        {{#each groupRes}}
-            <table class="group">
-                <a><tr>
-                    <td><b>{{this.name}}</b></td>
-                    <td>{{this.description}}</td>
-                    <td>{{this.games}}</td>
-                </tr></a>
-            </table>
-        {{/each}}
+    {{#if group}}
+        <div class="group">
+            <div><b>{{group.name}}</b></div>
+            <div>{{group.description}}</div>
+            {{#each gameObjs}}
+                <a href="/global/games/{{this.id}}/info">
+                    <div class="game">
+                        <div class="gameimg"><img src='{{this.image}}' alt="this.name"></div>
+                        <div class="container">
+                            <p><b>{{this.name}}</b></p>
+                            <p>{{this.price}}€</p>
+                            <form action="/my/groups/{{../groupId}}/{{this.id}}/delete" method="post">
+                                <input value="REMOVE" type="submit">
+                            </form>
+                        </div>
+                    </div>
+                </a>
+            {{/each}}
+        </div>
     {{/if}}
 </div>
 {{#if error}}

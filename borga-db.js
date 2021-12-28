@@ -137,7 +137,7 @@ module.exports = function (
             throw errors.INVALID_PARAM("Game already exists in group");
         try {
             if (! await hasGame(gameId)) {
-                const response = fetch(
+                const response = await fetch(
                     `${gamesURL}/_doc/${gameId}`,
                     {
                         method: 'PUT',
@@ -172,7 +172,7 @@ module.exports = function (
                 if (response.ok) {
                     return successes.GAME_ADDED("Game added");
                 } else {
-                    throw errors.FAIL('Could not add game');
+                    throw errors.FAIL('Could not add game2');
                 }
             }
         } catch (err) {
@@ -243,6 +243,31 @@ module.exports = function (
         }
     }
 
+    const listGameObjs = async (username, groupId) => {
+        checkUser(username);
+        try {
+            const gamesList = [];
+            const response = await fetch(
+                `${userGroupURL(username)}/_doc/${groupId}`
+            );
+            const answer = await response.json();
+            const games = await answer._source.games;
+            const gamesPromises = await games.map(async element => {
+                const gameRes = await fetch(`${gamesURL}/_doc/${element}`);
+                const gameAnswer =  await gameRes.json();
+                const game = await gameAnswer._source;
+                gamesList.push(game);
+                return game;
+            });
+            return Promise.all(gamesPromises).then( () => {
+                return gamesList;
+            })
+        } catch (err) {
+            console.log(err);
+            throw errors.NOT_FOUND(err);
+        }
+    }
+
     async function createGroup(username, groupName, groupDesc) {
         checkUser(username);
         let groupId = makeGroupId();
@@ -305,6 +330,7 @@ module.exports = function (
             hits.forEach(hit => {
                 const group = hit._id;
                 groups[group] = hit._source;
+                groups[group].id = group;
             });
             return groups;
 
@@ -416,7 +442,8 @@ module.exports = function (
         getGroups,
         getGroupInfo,
         createUser,
-        tokenToUsername
+        tokenToUsername,
+        listGameObjs
     }
 
 }
