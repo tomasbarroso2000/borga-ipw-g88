@@ -38,7 +38,7 @@ describe('Users Related Tests', () => {
 
     test('save a game successfully', async () => {
         const sut = await mem.saveGame(
-            'membroTeste',
+            'guest',
             '12345',
             { "id": "74f9mzbw9Y", "name": "Exploding Kittens", "price": "19.82" }
         );
@@ -48,7 +48,7 @@ describe('Users Related Tests', () => {
     test('delete a game from a nonexistint group', async () => {
         try {
             const sut = await mem.deleteGame(
-                'membroTeste',
+                'guest',
                 'noobMaster',
                 '74f9mzbw9Y'
             );
@@ -60,7 +60,7 @@ describe('Users Related Tests', () => {
     test('delete a game that is not in the group', async () => {
         try {
             const sut = await mem.deleteGame(
-                'membroTeste',
+                'guest',
                 '12345',
                 '74f9mzbw9Y'
             );

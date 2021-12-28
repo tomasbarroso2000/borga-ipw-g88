@@ -208,6 +208,6 @@ describe('User Related Tests', () => {
     test('get the username of a user using the token', async () => {
         const services = default_services;
         const username = await services.getUsername(testToken);
-        expect(username).toEqual('membroTeste');
+        expect(username).toEqual('guest');
     });
 });
