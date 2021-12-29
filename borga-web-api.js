@@ -102,11 +102,11 @@ module.exports = function (services) {
 
 	async function editGroup(req, res) {
 		try {
-			const oldGroupName = req.body.id;
+			const groupId = req.body.id;
 			const newGroupName = req.body.name;
 			const newGroupDesc = req.body.description;
 			const token = getBearerToken(req);
-			const groupRes = await services.editGroup(token, oldGroupName, newGroupName, newGroupDesc);
+			const groupRes = await services.editGroup(token, groupId, newGroupName, newGroupDesc);
 			return res.json(groupRes);
 		} catch (err) {
 			onError(req, res, err);

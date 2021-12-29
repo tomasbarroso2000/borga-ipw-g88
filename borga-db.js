@@ -276,7 +276,7 @@ module.exports = function (
         }
         try {
             const response = await fetch(
-                `${userGroupURL(username)}/_doc/${groupId}`,
+                `${userGroupURL(username)}/_doc/${groupId}?refresh=wait_for`,
                 {
                     method: 'PUT',
                     headers: {
@@ -304,7 +304,7 @@ module.exports = function (
 
         try {
             const response = await fetch(
-                `${userGroupURL(username)}/_doc/${groupId}`,
+                `${userGroupURL(username)}/_doc/${groupId}?refresh=wait_for`,
                 {
                     method: 'DELETE'
                 }
@@ -370,15 +370,25 @@ module.exports = function (
             if (! await hasGroup(username, groupId)) {
                 throw errors.NOT_FOUND("Group doesn't exist");
             }
+
+            const group = await getGroupInfo(username, groupId);
+            let updatedGroupName = group.name;
+            let updatedGroupDescription = group.description;
+            if(newGroupName) {
+                updatedGroupName = newGroupName;
+            } 
+            if(newGroupDesc) {
+                updatedGroupDescription = newGroupDesc;
+            }
             const response = await fetch(
-                `${userGroupURL(username)}/_update/${groupId}`,
+                `${userGroupURL(username)}/_update/${groupId}?refresh=wait_for`,
                 {
                     method: 'POST',
                     headers:
                     {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({script : `ctx._source.name='${newGroupName}';ctx._source.description='${newGroupDesc}'`})
+                    body: JSON.stringify({script : `ctx._source.name='${updatedGroupName}';ctx._source.description='${updatedGroupDescription}'`})
                 }
             );
             const answer = await response.json();

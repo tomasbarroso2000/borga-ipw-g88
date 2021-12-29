@@ -118,15 +118,26 @@ module.exports = function (services, guest_token) {
 			const groupName = req.body.name;
 			const groupDesc = req.body.description;
 			const token = getToken(req);
-			const groupRes = await services.createGroup(token, groupName, groupDesc);
-			res.json(groupRes);
+			await services.createGroup(token, groupName, groupDesc);
+			res.redirect(`/my/groups`);
 		} catch (err) {
-			onError(req, res, err);
+            switch (err.name) {
+                case 'MISSING_PARAM':
+                    res.status(400).render('getGroupDetails', { header, error: 'no name or description provided' });
+                    break;
+                case 'UNAUTHENTICATED':
+                    res.status(401).render('getGroupDetails', { header, error: 'login required' });
+                    break;
+                default:
+                    console.log(err);
+                    res.status(500).render('getGroupDetails', { header, error: JSON.stringify(err) });
+                    break;
+            }
 		}
 	}
 
 	async function getGroups(req, res) {
-		const header = "My Groups"
+		const header = "My Groups";
 		try {
 			const token = getToken(req);
 			const groupRes = await services.getGroups(token);
@@ -142,6 +153,9 @@ module.exports = function (services, guest_token) {
 						{ header, error:'no groups found' }
 					);
 					break;
+				case 'UNAUTHENTICATED':
+					res.status(401).render('groups', { header, error: 'login required' });
+					break;
 				default:
 					res.status(500).render(
 						'groups',
@@ -153,15 +167,34 @@ module.exports = function (services, guest_token) {
 	}
 
 	async function editGroup(req, res) {
+		const header = "Edit Group";
 		try {
-			const oldGroupName = req.body.id;
+			const groupId = req.body.id;
 			const newGroupName = req.body.name;
 			const newGroupDesc = req.body.description;
 			const token = getToken(req);
-			const groupRes = await services.editGroup(token, oldGroupName, newGroupName, newGroupDesc);
-			return res.json(groupRes);
+			const groupRes = await services.editGroup(token, groupId, newGroupName, newGroupDesc);
+			res.redirect(`/my/groups`);
 		} catch (err) {
-			onError(req, res, err);
+			switch (err.name) {
+				case 'NOT_FOUND':
+					res.status(404).render(
+						'getGroupDetails',
+						{ header, error:'no groups found' }
+					);
+					break;
+				case 'UNAUTHENTICATED':
+					res.status(401).render(
+						'getGroupDetails', { header, error: 'login required' }
+						);
+					break;
+				default:
+					res.status(500).render(
+						'getGroupDetails',
+						{ header, error: JSON.stringify(err) }
+					);
+					break;
+			}
 		}
 	}
 
@@ -169,8 +202,8 @@ module.exports = function (services, guest_token) {
 		try {
 			const groupId = req.params.groupId;
 			const token = getToken(req);
-			const groupRes = await services.deleteGroup(token, groupId)
-			res.json(groupRes);
+			await services.deleteGroup(token, groupId);
+			res.redirect(`/my/groups`);
 		} catch (err) {
 			onError(req, res, err);
 		}
@@ -195,9 +228,68 @@ module.exports = function (services, guest_token) {
 						{ header, error:'no group found' }
 					);
 					break;
+				case 'UNAUTHENTICATED':
+					res.status(401).render('groups', { header, error: 'login required' });
+					break;
 				default:
 					res.status(500).render(
 						'group',
+						{ header, error: JSON.stringify(err) }
+					);
+					break;
+			}
+		}
+	}
+
+	async function getGroupNewInfo(req, res) {
+		const header = "Edit Group";
+		try {
+			const token = getToken(req);
+			const groupId = req.params.groupId;
+			
+			res.render(
+                'getGroupDetails',
+                { header, groupId, createGroup: false }
+            );
+		} catch (err) {
+			switch (err.name) {
+				case 'NOT_FOUND':
+					res.status(404).render(
+						'getGroupDetails',
+						{ header, error:'no group found' }
+					);
+					break;
+				case 'UNAUTHENTICATED':
+					res.status(401).render('getGroupDetails', { header, error: 'login required' });
+					break;
+				default:
+					res.status(500).render(
+						'getGroupDetails',
+						{ header, error: JSON.stringify(err) }
+					);
+					break;
+			}
+		}
+	}
+
+	async function  getNewGroupInfo(req, res) {
+		const header = "Create New Group";
+		try {
+			const token = getToken(req);
+			const groupId = req.params.groupId;
+			
+			res.render(
+                'getGroupDetails',
+                { header, groupId, createGroup: true }
+            );
+		} catch (err) {
+			switch (err.name) {
+				case 'UNAUTHENTICATED':
+					res.status(401).render('getGroupDetails', { header, error: 'login required' });
+					break;
+				default:
+					res.status(500).render(
+						'getGroupDetails',
 						{ header, error: JSON.stringify(err) }
 					);
 					break;
@@ -250,6 +342,9 @@ module.exports = function (services, guest_token) {
 						{ header, error:'no groups found' }
 					);
 					break;
+				case 'UNAUTHENTICATED':
+					res.status(401).render('groupEdit', { header, error: 'login required' });
+					break;
 				default:
 					res.status(500).render(
 						'groups',
@@ -283,6 +378,8 @@ module.exports = function (services, guest_token) {
 	router.post('/my/groups/edit', editGroup);
 	router.post('/my/groups/:groupId/delete', deleteGroup);
 	router.get('/my/groups/:groupId/info', getGroupInfo);
+	router.get('/my/groups/:groupId/edit', getGroupNewInfo);
+	router.get('/my/groups/create', getNewGroupInfo);
 
 	router.get('/my/groups/:gameId/select', selectGroup);
 
