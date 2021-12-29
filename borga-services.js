@@ -137,6 +137,17 @@ module.exports = function (data_ext, data_int) {
 		return groupRes;
 	}
 
+	async function getGameInfo(gameId) {
+		if(!gameId) {
+			throw errors.MISSING_PARAM('gameId');
+		}
+		const game = await data_ext.findGameById(gameId);
+		const newMechanics = await data_ext.getMechanics(game.mechanics);
+		const newCategories = await data_ext.getCategories(game.categories);
+		game.mechanics = newMechanics;
+		game.categories = newCategories;
+		return game;
+	}
 
 
 	return {
@@ -152,6 +163,6 @@ module.exports = function (data_ext, data_int) {
 		getGroupInfo,
 		createUser: data_int.createUser, // fazer funçao
 		listGameObjs,
-		getGameInfo: data_ext.findGameById,
+		getGameInfo,
 	};
 };

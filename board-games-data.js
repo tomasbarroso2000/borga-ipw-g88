@@ -8,6 +8,26 @@ const HTTP_SERVER_ERROR = 5;
 const BOARD_GAME_ATLAS_BASE_URI =
 	'https://api.boardgameatlas.com/api/';
 
+async function getMechanics(mechanics) {
+	const ids = mechanics.map(data => data.id);
+	const search_mechanics_uri = BOARD_GAME_ATLAS_BASE_URI + 'game/mechanics?pretty=true&client_id=' + ATLAS_CLIENT_ID;
+	const response = await do_fetch(search_mechanics_uri);
+	console.log(response);
+	const filtered = response.mechanics.filter(m => ids.includes(m.id));
+	const names = filtered.map(data => data.name);
+	return names;
+}
+
+async function getCategories(categories) {
+	const ids = categories.map(data => data.id);
+	const search_categories_uri = BOARD_GAME_ATLAS_BASE_URI + 'game/categories?pretty=true&client_id=' + ATLAS_CLIENT_ID;
+	const response = await do_fetch(search_categories_uri);
+	console.log(response);
+	const filtered = response.categories.filter(c => ids.includes(c.id));
+	const names = filtered.map(data => data.name);
+	return names;
+}
+
 function makeGameObj(gameInfo) {
 	return {
 		id: gameInfo.id,
@@ -84,7 +104,7 @@ async function getPopularGames() {
 		answer.games.forEach(element => {
 			gamesArray.push(makeGameObj(element));
 		});
-		return gamesArray;
+		return gamesArray
 	} else {
 		throw errors.NOT_FOUND({ query });
 	}
@@ -93,5 +113,7 @@ async function getPopularGames() {
 module.exports = {
 	findGames,
 	getPopularGames,
-	findGameById
+	findGameById,
+	getMechanics,
+	getCategories
 };

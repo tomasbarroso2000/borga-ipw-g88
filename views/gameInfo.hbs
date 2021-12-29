@@ -10,11 +10,11 @@
             <div>Minimum players: {{gameObj.minimum_players}}</div>
             <div>Maximum players: {{gameObj.maximum_players}}</div>
             <div>Age: {{gameObj.minimum_age}}</div>
-            <div>Url: {{gameObj.url}}</div>
+            <div>Url: <a href="{{gameObj.url}}">{{gameObj.url}}</a></div>
             <div>Mechanics: {{gameObj.mechanics}}</div>
             <div>Categories: {{gameObj.categories}}</div>
             <form action="/my/groups/{{gameObj.id}}/select" method="get">
-                        <input value="ADD" type="submit">
+                <input value="ADD" type="submit">
             </form>
         </div>
     {{/if}}
