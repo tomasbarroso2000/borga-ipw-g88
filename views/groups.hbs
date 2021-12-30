@@ -16,22 +16,21 @@
                 {{/each}}
             </table>
         {{else}}
-            <a href="/my/groups/create"><button>CREATE GROUP</button></a>
+            <a href="/my/groups/create"><button class="gameBtn">CREATE GROUP</button></a>
             <table>
                 {{#each groupRes}}
-                    <tr>
-                        <td><a href="/my/groups/{{this.id}}/info"><b>{{this.name}}</b></a></td>
+                    <tr onclick="window.location='/my/groups/{{this.id}}/info';">
+                        <td><b>{{this.name}}</b></td>
                         <td>{{this.description}}</td>
                         <td>
                             <form action="/my/groups/{{this.id}}/delete" method="POST">
-                                <input type="submit" value="DELETE">
+                                <input type="submit" value="DELETE" id="red">
                             </form>
-                        </td>
-                        <td>
                             <form action="/my/groups/{{this.id}}/edit" method="GET">
-                                <input type="submit" value="EDIT">
+                                <input type="submit" value="EDIT" id="green">
                             </form> 
                         </td>
+                        
                     </tr>
                 {{/each}}
             </table>

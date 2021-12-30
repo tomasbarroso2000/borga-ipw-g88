@@ -42,6 +42,9 @@ html{
     font-family: 'Open Sans', sans-serif;
     text-decoration: none;
 }
+a { 
+    color: inherit; 
+} 
 
 div#bar{
     width: 100%;
@@ -102,11 +105,13 @@ nav#menu ul li{
 
 nav#menu ul li a{
     color: #2d4059;
+    transition: .4s;
 }
 
 nav#menu ul li a:hover{
     cursor: pointer;
     color: white;
+    transition: .4s;
 }
 
 div#gameContent{
@@ -154,7 +159,7 @@ div#gameContent .game:hover{
     cursor: pointer;
 }
 
-div#gameContent .game .container button.add{
+.gameBtn{
     margin-top: 10px;
     border-radius: 2px;
     background-color: #f07b3f;
@@ -163,6 +168,12 @@ div#gameContent .game .container button.add{
     padding: 5px 10px;
     cursor: pointer;
     position: relative;
+    transition: .4s;
+}
+
+.gameBtn:hover{
+    background-color: #FFBF46;
+    transition: .4s;
 }
 
 form#search{
@@ -213,4 +224,59 @@ form#search label{
 h1#search{
     text-align: center;
     margin-top: 100px;
+}
+
+#gameContent tr{
+    text-align: center;
+    display: inline-block;
+    padding: 10px 15px;
+}
+
+table td{
+    display: block;
+}
+table form{
+    margin-top: 10px;
+    display: inline-block;
+}
+
+table form input[type="submit"]{
+    border: none;
+    color: #272838;
+    border-radius: 2px;
+    padding: 5px 10px;
+}
+
+table tr{
+    margin-left: 25px;
+    margin-top: 25px;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: .4s;
+}
+
+table b{
+    font-size: 22px;
+}
+
+table td{
+    margin-top: 10px;
+}
+
+table tr:hover{
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+    cursor: pointer;
+    transition: .4s;
+}
+
+table form input[type="submit"]:hover{
+    cursor: pointer;
+    color: white;
+}
+
+table form #green{
+    background-color: #8ACB88;
+}
+
+table form #red{
+    background-color: #FF5A5F;
 }
