@@ -176,7 +176,7 @@ div#gameContent .game:hover{
     transition: .4s;
 }
 
-form#search{
+form.header{
     background-color: #272838;
     width: max-content;
     border-radius: 4px;
@@ -190,7 +190,7 @@ form#search{
     padding-bottom: 5px;
 }
 
-form#search input#txtQuery{
+form.header input#txtQuery{
     width: 30vw;
     font-size: 100%;
     outline: none;
@@ -200,7 +200,7 @@ form#search input#txtQuery{
     padding-left: 15px;
 }
 
-form#search input#btn{
+form.header input#btn{
     cursor: pointer;
     background-color: white;
     border: none;
@@ -211,17 +211,17 @@ form#search input#btn{
     transition: .4s;
 }
 
-form#search input#btn:hover{
+form.header input#btn:hover{
     background-color: #CD4631;
     color: white;
     transition: .4s;
 }
 
-form#search label{
+form.header label{
     display: none;
 }
 
-h1#search{
+h1.header{
     text-align: center;
     margin-top: 100px;
 }
@@ -242,7 +242,6 @@ table form{
 
 table form input[type="submit"]{
     border: none;
-    color: #272838;
     border-radius: 2px;
     padding: 5px 10px;
 }
@@ -260,6 +259,19 @@ table b{
 
 table td{
     margin-top: 10px;
+    width: 150px;
+    height: 80px;
+    overflow-x: scroll;
+}
+
+.scroll::-webkit-scrollbar {
+    display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.scroll {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
 
 table tr:hover{
@@ -275,8 +287,33 @@ table form input[type="submit"]:hover{
 
 table form #green{
     background-color: #8ACB88;
+    color: white;
 }
 
 table form #red{
     background-color: #FF5A5F;
+    color: white;
+}
+
+.gameImg {
+    max-width: 50%;
+    max-height: 50%;
+}
+
+#groupDetailsContainer {
+    text-align: center;
+}
+
+#groupDetailsContainer input[type="text"], label {
+    display: block;
+    margin: auto;
+    margin-top: 15px;
+    font-size: large;
+    width: 25%;
+}
+
+#groupDetailsContainer input[type="submit"] {
+    margin-top: 15px;
+    padding: 5px 15px;
+    cursor: pointer;
 }

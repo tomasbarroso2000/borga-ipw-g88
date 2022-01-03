@@ -16,6 +16,14 @@ module.exports = function (data_ext, data_int) {
 		return username;
 	}
 
+	async function createUser(username) {
+		if(!username) {
+			throw errors.MISSING_PARAM('username');
+		}
+		const user = await data_int.createUser;
+		return user;
+	}
+
 	async function getPopularGames() {
 		try {
 			return await data_ext.getPopularGames();
@@ -161,7 +169,7 @@ module.exports = function (data_ext, data_int) {
 		editGroup,
 		deleteGroup,
 		getGroupInfo,
-		createUser: data_int.createUser, // fazer funçao
+		createUser,
 		listGameObjs,
 		getGameInfo,
 	};

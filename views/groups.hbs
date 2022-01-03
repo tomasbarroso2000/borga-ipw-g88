@@ -1,4 +1,4 @@
-<h1 id="search">{{header}}</h1>
+<h1 class="header">{{header}}</h1>
 
 <div id="gameContent">
     {{#if groupRes}}
@@ -6,12 +6,13 @@
             <table>
                 {{#each groupRes}}
                     <tr>
-                        <td>
+                        <td class="scroll"><b>{{this.name}}</b></td>
+                        <td class="scroll">{{this.description}}</td>
+                        <td class="scroll">
                             <form action="/my/groups/{{this.id}}/{{../gameId}}" method="POST">
-                                <input type="submit" value="{{this.name}}">
+                                <input value="ADD" type="submit" class="gameBtn">
                             </form>
                         </td>
-                        <td>{{this.description}}</td>
                     </tr>
                 {{/each}}
             </table>
@@ -20,9 +21,9 @@
             <table>
                 {{#each groupRes}}
                     <tr onclick="window.location='/my/groups/{{this.id}}/info';">
-                        <td><b>{{this.name}}</b></td>
-                        <td>{{this.description}}</td>
-                        <td>
+                        <td class="scroll"><b>{{this.name}}</b></td>
+                        <td class="scroll">{{this.description}}</td>
+                        <td class="scroll">
                             <form action="/my/groups/{{this.id}}/delete" method="POST">
                                 <input type="submit" value="DELETE" id="red">
                             </form>

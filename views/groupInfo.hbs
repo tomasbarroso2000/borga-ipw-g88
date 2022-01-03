@@ -1,4 +1,4 @@
-<h1 id="search">{{header}}</h1>
+<h1 class="header">{{header}}</h1>
 
 <div id="gameContent">
 
@@ -12,7 +12,7 @@
                         <div class="gameimg"><img src='{{this.image}}' alt="this.name"></div>
                         <div class="container">
                             <p><b>{{this.name}}</b></p>
-                            <p>{{this.price}}€</p>
+                            <p>{{this.price}}$</p>
                             <form action="/my/groups/{{../groupId}}/{{this.id}}/delete" method="post">
                                 <input value="REMOVE" type="submit" class="gameBtn">
                             </form>

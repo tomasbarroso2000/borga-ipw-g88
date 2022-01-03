@@ -6,12 +6,8 @@ const path = require('path');
 module.exports = function (services, guest_token) {
 
 	function getToken(req) {
-		return guest_token; // to be improved...
+		return guest_token;
 	}
-
-    /*function getGroupId(req) {
-        return req.body.groupId;
-    }*/
 	
 	async function getHomepage(req, res) {
 		const header = 'Popular Games';
@@ -58,84 +54,6 @@ module.exports = function (services, guest_token) {
 		}
 	}
 
-	
-	async function addGameToGroup(req, res) {
-        const header = 'Add Game';
-        const token  = getToken(req);
-        const gameId = req.params.gameId;
-		const groupId = req.params.groupId;
-        try {
-            await services.addGame(token, groupId, gameId);
-            res.redirect(`/my/groups/${gameId}/select`);
-        } catch (err) {
-            switch (err.name) {
-                case 'MISSING_PARAM':
-                    res.status(400).render('games', { header, error: 'no gameId provided' });
-                    break;
-                case 'UNAUTHENTICATED':
-                    res.status(401).render('games', { header, error: 'login required' });
-                    break;
-                case 'NOT_FOUND':
-                    res.status(404).render('games', { header, error: `no game found with id ${gameId}` });
-                    break;
-                default:
-                    console.log(err);
-                    res.status(500).render('games', { header, error: JSON.stringify(err) });
-                    break;
-            }
-        }
-	}
-
-	async function deleteGameFromGroup(req, res) {
-		const header = 'Delete Game';
-        const token  = getToken(req);
-        const gameId = req.params.gameId;
-		const groupId = req.params.groupId;
-        try {
-            await services.deleteGame(token, groupId, gameId);
-            res.redirect(`/my/groups/${groupId}/info`);
-        } catch (err) {
-            switch (err.name) {
-                case 'MISSING_PARAM':
-                    res.status(400).render('games', { header, error: 'no gameId provided' });
-                    break;
-                case 'UNAUTHENTICATED':
-                    res.status(401).render('games', { header, error: 'login required' });
-                    break;
-                case 'NOT_FOUND':
-                    res.status(404).render('games', { header, error: `no game found with id ${gameId}` });
-                    break;
-                default:
-                    console.log(err);
-                    res.status(500).render('games', { header, error: JSON.stringify(err) });
-                    break;
-            }
-        }
-	}
-
-	async function createGroup(req, res) {
-		try {
-			const groupName = req.body.name;
-			const groupDesc = req.body.description;
-			const token = getToken(req);
-			await services.createGroup(token, groupName, groupDesc);
-			res.redirect(`/my/groups`);
-		} catch (err) {
-            switch (err.name) {
-                case 'MISSING_PARAM':
-                    res.status(400).render('getGroupDetails', { header, error: 'no name or description provided' });
-                    break;
-                case 'UNAUTHENTICATED':
-                    res.status(401).render('getGroupDetails', { header, error: 'login required' });
-                    break;
-                default:
-                    console.log(err);
-                    res.status(500).render('getGroupDetails', { header, error: JSON.stringify(err) });
-                    break;
-            }
-		}
-	}
-
 	async function getGroups(req, res) {
 		const header = "My Groups";
 		try {
@@ -163,6 +81,29 @@ module.exports = function (services, guest_token) {
 					);
 					break;
 			}
+		}
+	}
+
+	async function createGroup(req, res) {
+		try {
+			const groupName = req.body.name;
+			const groupDesc = req.body.description;
+			const token = getToken(req);
+			await services.createGroup(token, groupName, groupDesc);
+			res.redirect(`/my/groups`);
+		} catch (err) {
+            switch (err.name) {
+                case 'MISSING_PARAM':
+                    res.status(400).render('getGroupDetails', { header, error: 'no name or description provided' });
+                    break;
+                case 'UNAUTHENTICATED':
+                    res.status(401).render('getGroupDetails', { header, error: 'login required' });
+                    break;
+                default:
+                    console.log(err);
+                    res.status(500).render('getGroupDetails', { header, error: JSON.stringify(err) });
+                    break;
+            }
 		}
 	}
 
@@ -239,6 +180,60 @@ module.exports = function (services, guest_token) {
 					break;
 			}
 		}
+	}
+	
+	async function addGameToGroup(req, res) {
+        const header = 'Add Game';
+        const token  = getToken(req);
+        const gameId = req.params.gameId;
+		const groupId = req.params.groupId;
+        try {
+            await services.addGame(token, groupId, gameId);
+            res.redirect(`/my/groups/${gameId}/select`);
+        } catch (err) {
+            switch (err.name) {
+                case 'MISSING_PARAM':
+                    res.status(400).render('games', { header, error: 'no gameId provided' });
+                    break;
+                case 'UNAUTHENTICATED':
+                    res.status(401).render('games', { header, error: 'login required' });
+                    break;
+                case 'NOT_FOUND':
+                    res.status(404).render('games', { header, error: `no game found with id ${gameId}` });
+                    break;
+                default:
+                    console.log(err);
+                    res.status(500).render('games', { header, error: JSON.stringify(err) });
+                    break;
+            }
+        }
+	}
+
+	async function deleteGameFromGroup(req, res) {
+		const header = 'Delete Game';
+        const token  = getToken(req);
+        const gameId = req.params.gameId;
+		const groupId = req.params.groupId;
+        try {
+            await services.deleteGame(token, groupId, gameId);
+            res.redirect(`/my/groups/${groupId}/info`);
+        } catch (err) {
+            switch (err.name) {
+                case 'MISSING_PARAM':
+                    res.status(400).render('games', { header, error: 'no gameId provided' });
+                    break;
+                case 'UNAUTHENTICATED':
+                    res.status(401).render('games', { header, error: 'login required' });
+                    break;
+                case 'NOT_FOUND':
+                    res.status(404).render('games', { header, error: `no game found with id ${gameId}` });
+                    break;
+                default:
+                    console.log(err);
+                    res.status(500).render('games', { header, error: JSON.stringify(err) });
+                    break;
+            }
+        }
 	}
 
 	async function getGroupNewInfo(req, res) {

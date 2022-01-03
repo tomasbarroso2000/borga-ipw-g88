@@ -40,6 +40,16 @@ module.exports = function (services) {
 		res.json({ cause: err });
 	}
 
+	async function createUser(req, res) {
+		try {
+			const username = req.body.username;
+			const userRes = await services.createUser(username);
+			return res.json(userRes);
+		} catch (err) {
+			onError(req, res, err);
+		}
+	}
+
 	async function searchInGlobalGames(req, res) {
 		try {
 			if (req.query.search == undefined) {
@@ -54,25 +64,11 @@ module.exports = function (services) {
 		}
 	}
 
-	async function addGameToGroup(req, res) {
+	async function getGroups(req, res) {
 		try {
-			const groupId = req.params.groupId;
-			const game = req.params.gameId;
 			const token = getBearerToken(req);
-			const gameRes = await services.addGame(token, groupId, game);
-			res.json(gameRes);
-		} catch (err) {
-			onError(req, res, err);
-		}
-	}
-
-	async function deleteGameFromGroup(req, res) {
-		try {
-			const groupId = req.params.groupId;
-			const game = req.params.gameId;
-			const token = getBearerToken(req);
-			const gameRes = await services.deleteGame(token, groupId, game);
-			res.json(gameRes);
+			const groupRes = await services.getGroups(token);
+			return res.json(groupRes);
 		} catch (err) {
 			onError(req, res, err);
 		}
@@ -85,16 +81,6 @@ module.exports = function (services) {
 			const token = getBearerToken(req);
 			const groupRes = await services.createGroup(token, groupName, groupDesc);
 			res.json(groupRes);
-		} catch (err) {
-			onError(req, res, err);
-		}
-	}
-
-	async function getGroups(req, res) {
-		try {
-			const token = getBearerToken(req);
-			const groupRes = await services.getGroups(token);
-			return res.json(groupRes);
 		} catch (err) {
 			onError(req, res, err);
 		}
@@ -135,11 +121,25 @@ module.exports = function (services) {
 		}
 	}
 
-	async function createUser(req, res) {
+	async function addGameToGroup(req, res) {
 		try {
-			const username = req.body.username;
-			const userRes = await services.createUser(username);
-			return res.json(userRes);
+			const groupId = req.params.groupId;
+			const game = req.params.gameId;
+			const token = getBearerToken(req);
+			const gameRes = await services.addGame(token, groupId, game);
+			res.json(gameRes);
+		} catch (err) {
+			onError(req, res, err);
+		}
+	}
+
+	async function deleteGameFromGroup(req, res) {
+		try {
+			const groupId = req.params.groupId;
+			const game = req.params.gameId;
+			const token = getBearerToken(req);
+			const gameRes = await services.deleteGame(token, groupId, game);
+			res.json(gameRes);
 		} catch (err) {
 			onError(req, res, err);
 		}
