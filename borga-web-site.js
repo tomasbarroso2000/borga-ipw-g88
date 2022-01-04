@@ -189,7 +189,7 @@ module.exports = function (services, guest_token) {
 		const groupId = req.params.groupId;
         try {
             await services.addGame(token, groupId, gameId);
-            res.redirect(`/my/groups/${gameId}/select`);
+            res.redirect(`/my/groups/${gameId}/selection`);
         } catch (err) {
             switch (err.name) {
                 case 'MISSING_PARAM':
@@ -374,9 +374,9 @@ module.exports = function (services, guest_token) {
 	router.post('/my/groups/:groupId/delete', deleteGroup);
 	router.get('/my/groups/:groupId/info', getGroupInfo);
 	router.get('/my/groups/:groupId/edit', getGroupNewInfo);
-	router.get('/my/groups/create', getNewGroupInfo);
+	router.get('/my/groups/new', getNewGroupInfo);
 
-	router.get('/my/groups/:gameId/select', selectGroup);
+	router.get('/my/groups/:gameId/selection', selectGroup);
 
 	router.post('/my/groups/:groupId/:gameId', addGameToGroup);
 	router.post('/my/groups/:groupId/:gameId/delete', deleteGameFromGroup);

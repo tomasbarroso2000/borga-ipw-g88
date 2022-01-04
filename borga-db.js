@@ -50,8 +50,52 @@ module.exports = function (
         }
     }
 
+    async function checkUsersInit() {
+        try {
+            const checkUsers = await fetch(
+                `${usersURL}`
+            );
+            if (!checkUsers.ok) {
+                const createUsers = await fetch(
+                    `${usersURL}`,
+                    {
+                        method: 'PUT'
+                    }
+                );
+                if (!createUsers.ok) {
+                    throw errors.FAIL('Database failure');
+                }
+            }
+        }
+        catch (err) {
+            throw err;
+        }
+    }
+
+    async function checkTokensInit() {
+        try {
+            const checkTokens = await fetch(
+                `${tokensURL}`
+            );
+            if (!checkTokens.ok) {
+                const createTokens = await fetch(
+                    `${tokensURL}`,
+                    {
+                        method: 'PUT'
+                    }
+                );
+                if (!createTokens.ok) {
+                    throw errors.FAIL('Database failure');
+                }
+            }
+        }
+        catch (err) {
+            throw err;
+        }
+    }
+
     async function hasGame(gameId) {
-        checkGamesInit();
+        checkGamesInit;
         try {
             const response = await fetch(
                 `${gamesURL}/_doc/${gameId}`
@@ -110,12 +154,20 @@ module.exports = function (
     }
 
     async function tokenToUsername(token) {
-        const answer = await fetch(`${tokensURL}/_doc/${token}`)
-        const response = await answer.json();
-        if (!response.found) {
-            throw errors.NOT_FOUND('Token does not exist');
-        }
-        return response._source[token];
+        const maybeCreateGames = await checkGamesInit();
+        const maybeCreateTokens = await checkTokensInit();
+        const maybeCreatUsers = await checkUsersInit();
+        return Promise.all([maybeCreateGames, maybeCreatUsers, maybeCreateTokens]).then(async () => {
+            const maybeCreateGuest = await createGuest();
+            return Promise.all([maybeCreateGuest]).then(async () => {
+                const answer = await fetch(`${tokensURL}/_doc/${token}`);
+                const response = await answer.json();
+                if (!response.found) {
+                    throw errors.NOT_FOUND('Token does not exist');
+                }
+                return response._source[token];
+            });
+        });
     }
 
     async function createUser(username) {
@@ -157,6 +209,49 @@ module.exports = function (
                 return successes.USER_ADDED("Username " + username + " added with token " + newToken);
             }
             else throw errors.FAIL("User Creation Failed")
+        }
+        catch (err) {
+            throw errors.FAIL(err);
+        }
+    }
+
+    async function createGuest() {
+        if (await isUsernameTaken(guest.user)) {
+            return;
+        }
+        try {
+            const token = await fetch(
+                `${tokensURL}/_doc/${guest.token}`,
+                {
+                    method: 'PUT',
+                    headers:
+                    {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ [guest.token]: guest.user })
+                }
+            );
+            const usernameReq = await fetch(
+                `${usersURL}/_doc/${guest.user}`,
+                {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 'username': guest.user })
+                }
+            );
+
+            const userObj = await fetch(
+                `${userGroupURL(guest.user)}`,
+                {
+                    method: 'PUT'
+                }
+            );
+
+            if (usernameReq.ok && userObj.ok) {
+                return successes.USER_ADDED("Username " + guest.user + " added with token " + guest.token);
+            }
         }
         catch (err) {
             throw errors.FAIL(err);

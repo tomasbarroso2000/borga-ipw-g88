@@ -17,7 +17,7 @@
                 {{/each}}
             </table>
         {{else}}
-            <a href="/my/groups/create"><button class="gameBtn">CREATE GROUP</button></a>
+            <a href="/my/groups/new"><button class="gameBtn">CREATE GROUP</button></a>
             <table>
                 {{#each groupRes}}
                     <tr onclick="window.location='/my/groups/{{this.id}}/info';">
