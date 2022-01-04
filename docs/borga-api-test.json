@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "e7bcee3b-2d89-46b5-b666-bb30f41c2aaf",
+		"_postman_id": "032ebc8c-e783-4545-af5f-6d45c9c31fed",
 		"name": "borga-api-test",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -323,6 +323,28 @@
 							"key": "search",
 							"value": "Exploding+Kittens"
 						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get a game's info",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8888/api/global/games/74f9mzbw9Y",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"api",
+						"global",
+						"games",
+						"74f9mzbw9Y"
 					]
 				}
 			},

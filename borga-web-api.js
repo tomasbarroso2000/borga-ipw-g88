@@ -145,6 +145,16 @@ module.exports = function (services) {
 		}
 	}
 
+	async function getGameInfo(req, res) {
+		try {
+			const gameId = req.params.gameId;
+			const gameRes = await services.getGameInfo(gameId);
+			res.json(gameRes);
+		} catch (err) {
+			onError(req, res, err);
+		}
+	}
+
 	//middleware
 	const router = express.Router();
 
@@ -158,6 +168,7 @@ module.exports = function (services) {
 
 	//Resource: /global/games
 	router.get('/global/games', searchInGlobalGames);
+	router.get('/global/games/:gameId', getGameInfo);
 
 	//Resource: /my/groups
 	router.get('/my/groups', getGroups);
