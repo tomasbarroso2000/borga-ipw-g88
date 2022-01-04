@@ -18,6 +18,10 @@ module.exports = function (services, guest_token) {
 		);
 	} 
 
+	function getAboutPage(req, res) {
+		res.render('about');
+	}
+
 	function getSearchPage(req, res) {
 		res.render('search');
 	} 
@@ -359,6 +363,9 @@ module.exports = function (services, guest_token) {
 	
 	// Homepage
 	router.get('/', getHomepage);
+
+	// About page
+	router.get('/about', getAboutPage);
 	
 	// Search page
 	router.get('/search', getSearchPage);

@@ -95,7 +95,6 @@ module.exports = function (
     }
 
     async function hasGame(gameId) {
-        checkGamesInit;
         try {
             const response = await fetch(
                 `${gamesURL}/_doc/${gameId}`

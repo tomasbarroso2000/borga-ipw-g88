@@ -317,3 +317,13 @@ table form #red{
     padding: 5px 15px;
     cursor: pointer;
 }
+
+div#aboutContent{
+    margin: 50px;
+    text-align: justify;
+}
+
+div#aboutContent p{
+    margin-top: 50px;
+    font-size: 20px;
+}
