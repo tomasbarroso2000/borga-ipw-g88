@@ -1,5 +1,6 @@
 'use strict';
 
+const res = require('express/lib/response');
 const fetch = require('node-fetch');
 const request = require('supertest');  // npm install supertest --save-dev
 
@@ -38,16 +39,27 @@ describe('Integration Tests', () => {
         expect(response.status).toBe(404); 
     });
 
-    /*
+    
     test( 'Add group to user', async () => {
-        const addResponse = await request(app)
+        const response = await request(app)
             .put('/api/my/groups')
             .set('Authorization', `Bearer ${config.guest.token}`)
             .set('Accept', 'application/json')
-			.expect('Content-Type', 'application/json; charset=utf-8')
-			.expect(200);
-		
-		expect(addResponse.body).toBeTruthy();
-		expect(addResponse.body.bookId).toEqual(bookId);
-    });*/
+			.expect('Content-Type', 'application/json; charset=utf-8');
+			
+        expect(response.status).toBe(200);
+		expect(response.body).toBeTruthy();
+    });
+
+
+    test( 'Get groups from user', async () => {
+        const response = await request(app)
+            .get('/api/my/groups')
+            .set('Authorization', `Bearer ${config.guest.token}`)
+            .set('Accept', 'application/json')
+			.expect('Content-Type', 'application/json; charset=utf-8');
+
+        expect(response.status).toBe(200); 
+        expect(response.body).toBeTruthy();
+    });
 });
