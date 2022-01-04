@@ -154,7 +154,7 @@ module.exports = function (services) {
 	router.use(express.json());
 
 	//Resource: /users
-	router.post('/users/create', createUser);
+	router.post('/users/new', createUser);
 
 	//Resource: /global/games
 	router.get('/global/games', searchInGlobalGames);
