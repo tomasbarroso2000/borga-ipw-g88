@@ -1,8 +1,7 @@
 'use strict';
 
-const res = require('express/lib/response');
 const fetch = require('node-fetch');
-const request = require('supertest');  // npm install supertest --save-dev
+const request = require('supertest');  
 
 const config = require('../borga-config.js');
 const server = require('../borga-server.js');
@@ -22,11 +21,18 @@ describe('Integration Tests', () => {
 
     const app = server(es_spec, config.guest);
 
+    /*
     afterAll(async () => {
-        await fetch(`${es_spec.url}${es_spec.prefix}_${config.guest.user}_groups`, // to do
-        { method: 'DELETE' }
+        const response = await request(app)
+            .get('/api/my/groups')
+            .set('Authorization', `Bearer ${config.guest.token}`)
+            .set('Accept', 'application/json')
+			.expect('Content-Type', 'application/json; charset=utf-8');
+        Object.keys(response.body).forEach(
+            await request(app).delete('api/my/groups/'+this)
         );
     });
+    */
 
     test( 'Get nonexisting groups from user', async () => {
         const response = await request(app)
@@ -34,9 +40,8 @@ describe('Integration Tests', () => {
             .set('Authorization', `Bearer ${config.guest.token}`)
             .set('Accept', 'application/json')
             .expect('Content-Type', 'application/json; charset=utf-8')
-            .expect(404);
         
-        expect(response.status).toBe(404); 
+        expect(response.status).toBe(200); 
     });
 
     
@@ -45,8 +50,13 @@ describe('Integration Tests', () => {
             .put('/api/my/groups')
             .set('Authorization', `Bearer ${config.guest.token}`)
             .set('Accept', 'application/json')
+            .set('body', {
+                "name": "NewGroup",
+                "description": "Description of NewGroup"
+            })
 			.expect('Content-Type', 'application/json; charset=utf-8');
 			
+        
         expect(response.status).toBe(200);
 		expect(response.body).toBeTruthy();
     });
@@ -61,5 +71,6 @@ describe('Integration Tests', () => {
 
         expect(response.status).toBe(200); 
         expect(response.body).toBeTruthy();
+        expect(Object.keys(response.body)).toHaveLength(0)
     });
 });
