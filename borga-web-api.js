@@ -64,6 +64,16 @@ module.exports = function (services) {
 		}
 	}
 
+	async function getGameInfo(req, res) {
+		try {
+			const gameId = req.params.gameId;
+			const gameRes = await services.getGameInfo(gameId);
+			res.json(gameRes);
+		} catch (err) {
+			onError(req, res, err);
+		}
+	}
+
 	async function getGroups(req, res) {
 		try {
 			const token = getBearerToken(req);
@@ -139,16 +149,6 @@ module.exports = function (services) {
 			const game = req.params.gameId;
 			const token = getBearerToken(req);
 			const gameRes = await services.deleteGame(token, groupId, game);
-			res.json(gameRes);
-		} catch (err) {
-			onError(req, res, err);
-		}
-	}
-
-	async function getGameInfo(req, res) {
-		try {
-			const gameId = req.params.gameId;
-			const gameRes = await services.getGameInfo(gameId);
 			res.json(gameRes);
 		} catch (err) {
 			onError(req, res, err);

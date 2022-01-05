@@ -50,6 +50,18 @@ module.exports = function (data_ext, data_int) {
 		}
 	}
 
+	async function getGameInfo(gameId) {
+		if(!gameId) {
+			throw errors.MISSING_PARAM('gameId');
+		}
+		const game = await data_ext.findGameById(gameId);
+		const newMechanics = await data_ext.getMechanics(game.mechanics);
+		const newCategories = await data_ext.getCategories(game.categories);
+		game.mechanics = newMechanics;
+		game.categories = newCategories;
+		return game;
+	}
+
 	async function getGroups(token) {
 		const username = await getUsername(token);
 		const group = await data_int.getGroups(
@@ -144,19 +156,6 @@ module.exports = function (data_ext, data_int) {
 		const groupRes = data_int.listGameObjs(username, group);
 		return groupRes;
 	}
-
-	async function getGameInfo(gameId) {
-		if(!gameId) {
-			throw errors.MISSING_PARAM('gameId');
-		}
-		const game = await data_ext.findGameById(gameId);
-		const newMechanics = await data_ext.getMechanics(game.mechanics);
-		const newCategories = await data_ext.getCategories(game.categories);
-		game.mechanics = newMechanics;
-		game.categories = newCategories;
-		return game;
-	}
-
 
 	return {
 		getUsername,
