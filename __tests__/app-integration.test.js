@@ -21,7 +21,6 @@ describe('Integration Tests', () => {
 
     const app = server(es_spec, config.guest);
 
-
     afterAll(async () => {
         const response = await request(app)
             .get('/api/my/groups')
@@ -97,6 +96,17 @@ describe('Integration Tests', () => {
         expect(Object.keys(response.body)).toHaveLength(1)
     });
 
+    test('Get groups from nonexisting user', async () => {
+        const response = await request(app)
+            .get('/api/my/groups')
+            .set('Authorization', `Bearer alexandre_alemao`)
+            .set('Accept', 'application/json')
+			.expect('Content-Type', 'application/json; charset=utf-8');
+
+        expect(response.status).toBe(404); 
+        expect(response.body).toBeTruthy();
+    });
+
 
     test('Add game to group', async () => {
         const get = await request(app)
@@ -114,6 +124,18 @@ describe('Integration Tests', () => {
             
 
         expect(response.status).toBe(200);
+        expect(response.body).toBeTruthy();
+    });
+
+    test('Add game to nonexisting group', async () => {
+        const response = await request(app)
+            .post('/api/my/groups/groupId/TAAifFP590')
+            .set('Authorization', `Bearer ${config.guest.token}`)
+            .set('Accept', 'application/json')
+			.expect('Content-Type', 'application/json; charset=utf-8')
+            
+
+        expect(response.status).toBe(404);
         expect(response.body).toBeTruthy();
     });
 
@@ -156,6 +178,27 @@ describe('Integration Tests', () => {
         expect(response.body).toBeTruthy();
     }); 
 
+    test('Create a group with a name of an already existing group', async () => {
+        const response = await request(app)
+            .post('/api/my/groups')
+            .set('Authorization', `Bearer ${config.guest.token}`)
+            .set('Accept', 'application/json')
+            .send({name: 'EditTestGroup', description: 'Edit Description of TestGroup'})
+            .expect('Content-Type', 'application/json; charset=utf-8')
+
+        expect(response.status).toBe(200);
+        expect(response.body).toBeTruthy();
+
+        const get = await request(app)
+            .get('/api/my/groups')
+            .set('Authorization', `Bearer ${config.guest.token}`)
+            .set('Accept', 'application/json')
+            .expect('Content-Type', 'application/json; charset=utf-8');
+
+        expect(get.status).toBe(200);
+        expect(Object.keys(get.body)).toHaveLength(2);
+    });
+
     test('Delete game from group', async () => {
         const get = await request(app)
             .get('/api/my/groups')
@@ -175,6 +218,7 @@ describe('Integration Tests', () => {
         expect(response.body).toBeTruthy();
     });
 
+    
     test('Delete group from user', async () => {
         const get = await request(app)
             .get('/api/my/groups')
@@ -193,5 +237,15 @@ describe('Integration Tests', () => {
         expect(response.body).toBeTruthy();
     });
 
+    test('Delete nonexisting group from user', async () => {
+        const response = await request(app)
+            .delete('/api/my/groups/12345678')
+            .set('Authorization', `Bearer ${config.guest.token}`)
+            .set('Accept', 'application/json')
+			.expect('Content-Type', 'application/json; charset=utf-8');
 
+        expect(response.status).toBe(404); 
+        expect(response.body).toBeTruthy();
+    });
+    
 });
