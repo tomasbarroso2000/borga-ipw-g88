@@ -1,9 +1,7 @@
 <h1 class="header">{{header}}</h1>
 
-<div id="gameContent">
-
+<div id="pageContent">
     {{#if group}}
-        <div class="group">
             <div><b>{{group.name}}</b></div>
             <div>{{group.description}}</div>
             {{#each gameObjs}}
@@ -20,7 +18,7 @@
                     </div>
                 </a>
             {{/each}}
-        </div>
+        
     {{/if}}
 </div>
 {{#if error}}

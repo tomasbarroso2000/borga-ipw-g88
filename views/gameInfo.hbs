@@ -1,25 +1,28 @@
 <h1 class="header">{{header}}</h1>
 
-<div id="gameContent">
+<div id="pageContent">
     {{#if gameObj}}
-        <div class="group">
-            <div><img class="gameImg" src='{{gameObj.image}}' alt="this.name"></div></div>
-            <div><b>Name: {{gameObj.name}}</b></div>
-            <div>Description: {{{gameObj.description}}}</div>
-            <div>Price: {{gameObj.price}}$ with {{gameObj.discount}}$ discount</div>
-            <div>Minimum players: {{gameObj.minimum_players}}</div>
-            <div>Maximum players: {{gameObj.maximum_players}}</div>
-            <div>Age: {{gameObj.minimum_age}}</div>
-            <div>Url: <a href="{{gameObj.url}}">{{gameObj.url}}</a></div>
-            <div>Mechanics: 
-                {{#each gameObj.mechanics}}
-                    {{this}}{{#unless @last}}, {{/unless}}
-                {{/each}}
+            <div><img class="gameImg" src='{{gameObj.image}}' alt="this.name"></div>
+            <div><b><h2>Name: {{gameObj.name}}</h2></b></div>
+            <div id="desc" class="info"> <h4>Description: </h4><p> {{{gameObj.description}}}</p></div>
+            <div class="info"><p>Price: {{gameObj.price}}$ with {{gameObj.discount}}$ discount</p></div>
+            <div class="info"><p>Minimum players: {{gameObj.minimum_players}}</p></div>
+            <div class="info"><p>Maximum players: {{gameObj.maximum_players}}</p></div>
+            <div class="info"><p>Age: {{gameObj.minimum_age}}</p></div>
+            <div class="info" id="url"><p>Url: <a href="{{gameObj.url}}">{{gameObj.url}}</a></p></div>
+            <div class="info">
+                <p>Mechanics: 
+                    {{#each gameObj.mechanics}}
+                        {{this}}{{#unless @last}}, {{/unless}}
+                    {{/each}}
+                </p>
             </div>
-            <div>Categories: 
-                {{#each gameObj.categories}}
-                    {{this}}{{#unless @last}}, {{/unless}}
-                {{/each}}
+            <div class="info" id="last">
+                <p>Categories: 
+                    {{#each gameObj.categories}}
+                        {{this}}{{#unless @last}}, {{/unless}}
+                    {{/each}}
+                </p>
             </div>
             <form action="/my/groups/{{gameObj.id}}/selection" method="get">
                 <input value="ADD" type="submit" class="gameBtn">
