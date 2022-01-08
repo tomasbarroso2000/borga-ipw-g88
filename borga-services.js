@@ -17,10 +17,10 @@ module.exports = function (data_ext, data_int) {
 	}
 
 	async function createUser(username) {
-		if(!username) {
+		if (!username) {
 			throw errors.MISSING_PARAM('username');
 		}
-		const user = await data_int.createUser;
+		const user = await data_int.createUser(username);
 		return user;
 	}
 
@@ -51,7 +51,7 @@ module.exports = function (data_ext, data_int) {
 	}
 
 	async function getGameInfo(gameId) {
-		if(!gameId) {
+		if (!gameId) {
 			throw errors.MISSING_PARAM('gameId');
 		}
 		const game = await data_ext.findGameById(gameId);

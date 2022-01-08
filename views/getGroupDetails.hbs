@@ -1,28 +1,28 @@
 <h1 class="header">{{header}}</h1>
 
-    <div id="groupDetailsContainer">
-        {{#if createGroup}}
-            <form class="groupDetails" action="/my/groups" method="POST">
-                <label for="name">Name:</label>
-                <input type="text" id="name" name="name" maxlength="30" required>
-                <label for="desc">Description:</label>
-                <input type="text" id="desc" name="description" required>
-                <input class="gameBtn" type="submit" value="CONFIRM">
-            </form>
-        {{else}}
-            {{#if groupId}}
-                <form class="groupDetails" action="/my/groups/edit" method="POST">
-                    <input type="hidden" name="id" value="{{groupId}}">
-                    <label for="newName">New Name:</label>
-                    <input type="text" id="newName" name="name" maxlength="30">
-                    <label for="newDesc">New Description:</label>
-                    <input type="text" id="newDesc" name="description">
-                    <input class="gameBtn" type="submit" value="CONFIRM">
-                </form>
-            {{/if}}
-        {{/if}}
-        
-    </div>
+<div id="groupDetailsContainer">
+    {{#if createGroup}}
+    <form class="groupDetails" action="/my/groups" method="POST">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" maxlength="30" required>
+        <label for="desc">Description:</label>
+        <input type="text" id="desc" name="description" required>
+        <input class="gameBtn" type="submit" value="CONFIRM">
+    </form>
+    {{else}}
+    {{#if groupId}}
+    <form class="groupDetails" action="/my/groups/edit" method="POST">
+        <input type="hidden" name="id" value="{{groupId}}">
+        <label for="newName">New Name:</label>
+        <input type="text" id="newName" name="name" maxlength="30">
+        <label for="newDesc">New Description:</label>
+        <input type="text" id="newDesc" name="description">
+        <input class="gameBtn" type="submit" value="CONFIRM">
+    </form>
+    {{/if}}
+    {{/if}}
+
+</div>
 
 {{#if error}}
 <p><strong>ERROR:</strong> {{error}}</p>

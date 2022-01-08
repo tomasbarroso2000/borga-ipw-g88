@@ -2,33 +2,48 @@
 
 <div id="pageContent">
     {{#if gameObj}}
-            <div><img class="gameImg" src='{{gameObj.image}}' alt="this.name"></div>
-            <div><b><h2>Name: {{gameObj.name}}</h2></b></div>
-            <div id="desc" class="info"> <h4>Description: </h4><p> {{{gameObj.description}}}</p></div>
-            <div class="info"><p>Price: {{gameObj.price}}$ with {{gameObj.discount}}$ discount</p></div>
-            <div class="info"><p>Minimum players: {{gameObj.minimum_players}}</p></div>
-            <div class="info"><p>Maximum players: {{gameObj.maximum_players}}</p></div>
-            <div class="info"><p>Age: {{gameObj.minimum_age}}</p></div>
-            <div class="info" id="url"><p>Url: <a href="{{gameObj.url}}">{{gameObj.url}}</a></p></div>
-            <div class="info">
-                <p>Mechanics: 
-                    {{#each gameObj.mechanics}}
-                        {{this}}{{#unless @last}}, {{/unless}}
-                    {{/each}}
-                </p>
-            </div>
-            <div class="info" id="last">
-                <p>Categories: 
-                    {{#each gameObj.categories}}
-                        {{this}}{{#unless @last}}, {{/unless}}
-                    {{/each}}
-                </p>
-            </div>
-            <form action="/my/groups/{{gameObj.id}}/selection" method="get">
-                <input value="ADD" type="submit" class="gameBtn">
-            </form>
-        </div>
-    {{/if}}
+    <div><img class="gameImg" src='{{gameObj.image}}' alt="this.name"></div>
+    <div><b>
+            <h2>Name: {{gameObj.name}}</h2>
+        </b></div>
+    <div id="desc" class="info">
+        <h4>Description: </h4>
+        <p> {{{gameObj.description}}}</p>
+    </div>
+    <div class="info">
+        <p>Price: {{gameObj.price}}$ with {{gameObj.discount}}$ discount</p>
+    </div>
+    <div class="info">
+        <p>Minimum players: {{gameObj.minimum_players}}</p>
+    </div>
+    <div class="info">
+        <p>Maximum players: {{gameObj.maximum_players}}</p>
+    </div>
+    <div class="info">
+        <p>Age: {{gameObj.minimum_age}}</p>
+    </div>
+    <div class="info" id="url">
+        <p>Url: <a href="{{gameObj.url}}">{{gameObj.url}}</a></p>
+    </div>
+    <div class="info">
+        <p>Mechanics:
+            {{#each gameObj.mechanics}}
+            {{this}}{{#unless @last}}, {{/unless}}
+            {{/each}}
+        </p>
+    </div>
+    <div class="info" id="last">
+        <p>Categories:
+            {{#each gameObj.categories}}
+            {{this}}{{#unless @last}}, {{/unless}}
+            {{/each}}
+        </p>
+    </div>
+    <form action="/my/groups/{{gameObj.id}}/selection" method="get">
+        <input value="ADD" type="submit" class="gameBtn">
+    </form>
+</div>
+{{/if}}
 </div>
 {{#if error}}
 <p><strong>ERROR:</strong> {{error}}</p>

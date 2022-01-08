@@ -1,14 +1,14 @@
 'use strict';
 
 const fetch = require('node-fetch');
-const request = require('supertest');  
+const request = require('supertest');
 
 const config = require('../borga-config.js');
 const server = require('../borga-server.js');
 
 const es_spec = {
-	url: config.devl_es_url,
-	prefix: 'test'
+    url: config.devl_es_url,
+    prefix: 'test'
 };
 
 test('Confirm database is running', async () => {
@@ -26,13 +26,13 @@ describe('Integration Tests', () => {
             .get('/api/my/groups')
             .set('Authorization', `Bearer ${config.guest.token}`)
             .set('Accept', 'application/json')
-			.expect('Content-Type', 'application/json; charset=utf-8');
+            .expect('Content-Type', 'application/json; charset=utf-8');
         Object.keys(response.body).forEach(async (elem) => {
             await request(app)
-            .delete('/api/my/groups/'+elem) 
-            .set('Authorization', `Bearer ${config.guest.token}`)
-            .set('Accept', 'application/json')
-			.expect('Content-Type', 'application/json; charset=utf-8');
+                .delete('/api/my/groups/' + elem)
+                .set('Authorization', `Bearer ${config.guest.token}`)
+                .set('Accept', 'application/json')
+                .expect('Content-Type', 'application/json; charset=utf-8');
         });
     });
 
@@ -43,8 +43,8 @@ describe('Integration Tests', () => {
             .get('/api/global/games')
             .set('Accept', 'application/json')
             .expect('Content-Type', 'application/json; charset=utf-8')
-        
-        expect(response.status).toBe(200); 
+
+        expect(response.status).toBe(200);
         expect(response.body).toBeTruthy();
     });
 
@@ -53,8 +53,8 @@ describe('Integration Tests', () => {
             .get('/api/global/games/TAAifFP590')
             .set('Accept', 'application/json')
             .expect('Content-Type', 'application/json; charset=utf-8')
-        
-        expect(response.status).toBe(200); 
+
+        expect(response.status).toBe(200);
         expect(response.body).toBeTruthy();
     });
 
@@ -64,34 +64,32 @@ describe('Integration Tests', () => {
             .set('Authorization', `Bearer ${config.guest.token}`)
             .set('Accept', 'application/json')
             .expect('Content-Type', 'application/json; charset=utf-8')
-        
-        expect(response.status).toBe(200); 
+
+        expect(response.status).toBe(200);
         expect(response.body).toBeTruthy();
     });
 
-    
     test('Add group to user', async () => {
         const response = await request(app)
             .post('/api/my/groups')
             .set('Authorization', `Bearer ${config.guest.token}`)
             .set('Accept', 'application/json')
-            .send({name: 'TestGroup', description: 'Description of TestGroup'})
-			.expect('Content-Type', 'application/json; charset=utf-8')
-            
+            .send({ name: 'TestGroup', description: 'Description of TestGroup' })
+            .expect('Content-Type', 'application/json; charset=utf-8')
 
-            expect(response.status).toBe(200);
-            expect(response.body).toBeTruthy();
+
+        expect(response.status).toBe(200);
+        expect(response.body).toBeTruthy();
     });
-
 
     test('Get groups from user', async () => {
         const response = await request(app)
             .get('/api/my/groups')
             .set('Authorization', `Bearer ${config.guest.token}`)
             .set('Accept', 'application/json')
-			.expect('Content-Type', 'application/json; charset=utf-8');
+            .expect('Content-Type', 'application/json; charset=utf-8');
 
-        expect(response.status).toBe(200); 
+        expect(response.status).toBe(200);
         expect(response.body).toBeTruthy();
         expect(Object.keys(response.body)).toHaveLength(1)
     });
@@ -101,12 +99,11 @@ describe('Integration Tests', () => {
             .get('/api/my/groups')
             .set('Authorization', `Bearer alexandre_alemao`)
             .set('Accept', 'application/json')
-			.expect('Content-Type', 'application/json; charset=utf-8');
+            .expect('Content-Type', 'application/json; charset=utf-8');
 
-        expect(response.status).toBe(404); 
+        expect(response.status).toBe(404);
         expect(response.body).toBeTruthy();
     });
-
 
     test('Add game to group', async () => {
         const get = await request(app)
@@ -117,11 +114,11 @@ describe('Integration Tests', () => {
         const groupId = Object.keys(get.body)[0];
 
         const response = await request(app)
-            .post('/api/my/groups/'+groupId+'/TAAifFP590')
+            .post('/api/my/groups/' + groupId + '/TAAifFP590')
             .set('Authorization', `Bearer ${config.guest.token}`)
             .set('Accept', 'application/json')
-			.expect('Content-Type', 'application/json; charset=utf-8')
-            
+            .expect('Content-Type', 'application/json; charset=utf-8')
+
 
         expect(response.status).toBe(200);
         expect(response.body).toBeTruthy();
@@ -132,8 +129,8 @@ describe('Integration Tests', () => {
             .post('/api/my/groups/groupId/TAAifFP590')
             .set('Authorization', `Bearer ${config.guest.token}`)
             .set('Accept', 'application/json')
-			.expect('Content-Type', 'application/json; charset=utf-8')
-            
+            .expect('Content-Type', 'application/json; charset=utf-8')
+
 
         expect(response.status).toBe(404);
         expect(response.body).toBeTruthy();
@@ -148,42 +145,42 @@ describe('Integration Tests', () => {
         const groupId = Object.keys(get.body)[0];
 
         const response = await request(app)
-            .post('/api/my/groups/'+groupId+'/TAAifFP590')
+            .post('/api/my/groups/' + groupId + '/TAAifFP590')
             .set('Authorization', `Bearer ${config.guest.token}`)
             .set('Accept', 'application/json')
-			.expect('Content-Type', 'application/json; charset=utf-8')
-            
+            .expect('Content-Type', 'application/json; charset=utf-8')
+
 
         expect(response.status).toBe(400);
         expect(response.body).toBeTruthy();
     });
-    
+
     test('Edit group info from user', async () => {
         const get = await request(app)
             .get('/api/my/groups')
             .set('Authorization', `Bearer ${config.guest.token}`)
             .set('Accept', 'application/json')
-			.expect('Content-Type', 'application/json; charset=utf-8');
+            .expect('Content-Type', 'application/json; charset=utf-8');
         const groupId = Object.keys(get.body)[0];
 
         const response = await request(app)
             .put('/api/my/groups')
             .set('Authorization', `Bearer ${config.guest.token}`)
             .set('Accept', 'application/json')
-            .send({id: `${groupId}`})
-            .send({name: 'EditTestGroup', description: 'Edit Description of TestGroup'})
-			.expect('Content-Type', 'application/json; charset=utf-8')
+            .send({ id: `${groupId}` })
+            .send({ name: 'EditTestGroup', description: 'Edit Description of TestGroup' })
+            .expect('Content-Type', 'application/json; charset=utf-8')
 
         expect(response.status).toBe(200);
         expect(response.body).toBeTruthy();
-    }); 
+    });
 
     test('Create a group with a name of an already existing group', async () => {
         const response = await request(app)
             .post('/api/my/groups')
             .set('Authorization', `Bearer ${config.guest.token}`)
             .set('Accept', 'application/json')
-            .send({name: 'EditTestGroup', description: 'Edit Description of TestGroup'})
+            .send({ name: 'EditTestGroup', description: 'Edit Description of TestGroup' })
             .expect('Content-Type', 'application/json; charset=utf-8')
 
         expect(response.status).toBe(200);
@@ -208,32 +205,31 @@ describe('Integration Tests', () => {
         const groupId = Object.keys(get.body)[0];
 
         const response = await request(app)
-            .delete('/api/my/groups/'+groupId+'/TAAifFP590')
+            .delete('/api/my/groups/' + groupId + '/TAAifFP590')
             .set('Authorization', `Bearer ${config.guest.token}`)
             .set('Accept', 'application/json')
-			.expect('Content-Type', 'application/json; charset=utf-8')
-            
+            .expect('Content-Type', 'application/json; charset=utf-8')
+
 
         expect(response.status).toBe(200);
         expect(response.body).toBeTruthy();
     });
 
-    
     test('Delete group from user', async () => {
         const get = await request(app)
             .get('/api/my/groups')
             .set('Authorization', `Bearer ${config.guest.token}`)
             .set('Accept', 'application/json')
-			.expect('Content-Type', 'application/json; charset=utf-8');
+            .expect('Content-Type', 'application/json; charset=utf-8');
         const groupId = Object.keys(get.body)[0];
 
         const response = await request(app)
             .delete('/api/my/groups/' + groupId)
             .set('Authorization', `Bearer ${config.guest.token}`)
             .set('Accept', 'application/json')
-			.expect('Content-Type', 'application/json; charset=utf-8');
+            .expect('Content-Type', 'application/json; charset=utf-8');
 
-        expect(response.status).toBe(200); 
+        expect(response.status).toBe(200);
         expect(response.body).toBeTruthy();
     });
 
@@ -242,10 +238,10 @@ describe('Integration Tests', () => {
             .delete('/api/my/groups/12345678')
             .set('Authorization', `Bearer ${config.guest.token}`)
             .set('Accept', 'application/json')
-			.expect('Content-Type', 'application/json; charset=utf-8');
+            .expect('Content-Type', 'application/json; charset=utf-8');
 
-        expect(response.status).toBe(404); 
+        expect(response.status).toBe(404);
         expect(response.body).toBeTruthy();
     });
-    
+
 });

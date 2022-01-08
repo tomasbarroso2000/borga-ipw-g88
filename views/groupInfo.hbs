@@ -2,23 +2,23 @@
 
 <div id="pageContent">
     {{#if group}}
-            <div><b>{{group.name}}</b></div>
-            <div>{{group.description}}</div>
-            {{#each gameObjs}}
-                <a href="/global/games/{{this.id}}/info">
-                    <div class="game">
-                        <div class="gameimg"><img src='{{this.image}}' alt="this.name"></div>
-                        <div class="container">
-                            <p><b>{{this.name}}</b></p>
-                            <p>{{this.price}}$</p>
-                            <form action="/my/groups/{{../groupId}}/{{this.id}}/delete" method="post">
-                                <input value="REMOVE" type="submit" class="gameBtn">
-                            </form>
-                        </div>
-                    </div>
-                </a>
-            {{/each}}
-        
+    <div><b>{{group.name}}</b></div>
+    <div>{{group.description}}</div>
+    {{#each gameObjs}}
+    <a href="/global/games/{{this.id}}/info">
+        <div class="game">
+            <div class="gameimg"><img src='{{this.image}}' alt="this.name"></div>
+            <div class="container">
+                <p><b>{{this.name}}</b></p>
+                <p>{{this.price}}$</p>
+                <form action="/my/groups/{{../groupId}}/{{this.id}}/delete" method="post">
+                    <input value="REMOVE" type="submit" class="gameBtn">
+                </form>
+            </div>
+        </div>
+    </a>
+    {{/each}}
+
     {{/if}}
 </div>
 {{#if error}}

@@ -2,40 +2,40 @@
 
 <div id="pageContent">
     {{#if groupRes}}
-        {{#if groupSelect}}
-            <table>
-                {{#each groupRes}}
-                    <tr>
-                        <td class="scroll"><b>{{this.name}}</b></td>
-                        <td class="scroll">{{this.description}}</td>
-                        <td class="scroll">
-                            <form action="/my/groups/{{this.id}}/{{../gameId}}" method="POST">
-                                <input value="ADD" type="submit" class="gameBtn">
-                            </form>
-                        </td>
-                    </tr>
-                {{/each}}
-            </table>
-        {{else}}
-            <a href="/my/groups/new"><button class="gameBtn">CREATE GROUP</button></a>
-            <table>
-                {{#each groupRes}}
-                    <tr onclick="window.location='/my/groups/{{this.id}}/info';">
-                        <td class="scroll"><b>{{this.name}}</b></td>
-                        <td class="scroll">{{this.description}}</td>
-                        <td class="scroll">
-                            <form action="/my/groups/{{this.id}}/delete" method="POST">
-                                <input type="submit" value="DELETE" id="red">
-                            </form>
-                            <form action="/my/groups/{{this.id}}/edit" method="GET">
-                                <input type="submit" value="EDIT" id="green">
-                            </form> 
-                        </td>
-                        
-                    </tr>
-                {{/each}}
-            </table>
-        {{/if}}
+    {{#if groupSelect}}
+    <table>
+        {{#each groupRes}}
+        <tr>
+            <td class="scroll"><b>{{this.name}}</b></td>
+            <td class="scroll">{{this.description}}</td>
+            <td class="scroll">
+                <form action="/my/groups/{{this.id}}/{{../gameId}}" method="POST">
+                    <input value="ADD" type="submit" class="gameBtn">
+                </form>
+            </td>
+        </tr>
+        {{/each}}
+    </table>
+    {{else}}
+    <a href="/my/groups/new"><button class="gameBtn">CREATE GROUP</button></a>
+    <table>
+        {{#each groupRes}}
+        <tr onclick="window.location='/my/groups/{{this.id}}/info';">
+            <td class="scroll"><b>{{this.name}}</b></td>
+            <td class="scroll">{{this.description}}</td>
+            <td class="scroll">
+                <form action="/my/groups/{{this.id}}/delete" method="POST">
+                    <input type="submit" value="DELETE" id="red">
+                </form>
+                <form action="/my/groups/{{this.id}}/edit" method="GET">
+                    <input type="submit" value="EDIT" id="green">
+                </form>
+            </td>
+
+        </tr>
+        {{/each}}
+    </table>
+    {{/if}}
     {{/if}}
 </div>
 {{#if error}}

@@ -101,7 +101,7 @@ module.exports = function (
             );
             const answer = await response.json();
             return answer.found;
-        } catch (err) { 
+        } catch (err) {
             console.log(err);
             throw errors.NOT_FOUND(err);
         }
@@ -152,20 +152,24 @@ module.exports = function (
         }
     }
 
-    async function tokenToUsername(token) {
+    async function checkDbInit() {
         const maybeCreateGames = await checkGamesInit();
         const maybeCreateTokens = await checkTokensInit();
         const maybeCreatUsers = await checkUsersInit();
         return Promise.all([maybeCreateGames, maybeCreatUsers, maybeCreateTokens]).then(async () => {
-            const maybeCreateGuest = await createGuest();
-            return Promise.all([maybeCreateGuest]).then(async () => {
-                const answer = await fetch(`${tokensURL}/_doc/${token}`);
-                const response = await answer.json();
-                if (!response.found) {
-                    throw errors.NOT_FOUND('Token does not exist');
-                }
-                return response._source[token];
-            });
+            return await createGuest();
+        });
+    }
+
+    async function tokenToUsername(token) {
+        const dbInit = await checkDbInit();
+        return Promise.all([dbInit]).then(async () => {
+            const answer = await fetch(`${tokensURL}/_doc/${token}`);
+            const response = await answer.json();
+            if (!response.found) {
+                throw errors.NOT_FOUND('Token does not exist');
+            }
+            return response._source[token];
         });
     }
 
@@ -274,7 +278,7 @@ module.exports = function (
             return groups;
 
         } catch (err) {
-            console.log(err); 
+            console.log(err);
             throw errors.FAIL(err);
         }
     }
@@ -317,10 +321,10 @@ module.exports = function (
             const group = await getGroupInfo(username, groupId);
             let updatedGroupName = group.name;
             let updatedGroupDescription = group.description;
-            if(newGroupName) {
+            if (newGroupName) {
                 updatedGroupName = newGroupName;
-            } 
-            if(newGroupDesc) {
+            }
+            if (newGroupDesc) {
                 updatedGroupDescription = newGroupDesc;
             }
             const response = await fetch(
@@ -331,7 +335,7 @@ module.exports = function (
                     {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({script : `ctx._source.name='${updatedGroupName}';ctx._source.description='${updatedGroupDescription}'`})
+                    body: JSON.stringify({ script: `ctx._source.name='${updatedGroupName}';ctx._source.description='${updatedGroupDescription}'` })
                 }
             );
             const answer = await response.json();
@@ -488,12 +492,12 @@ module.exports = function (
             const games = await answer._source.games;
             const gamesNames = await games.map(async element => {
                 const gameRes = await fetch(`${gamesURL}/_doc/${element}`);
-                const gameAnswer =  await gameRes.json();
+                const gameAnswer = await gameRes.json();
                 const game = await gameAnswer._source.name;
                 gamesList.push(game);
                 return game;
             });
-            return Promise.all(gamesNames).then( () => {
+            return Promise.all(gamesNames).then(() => {
                 return gamesList;
             })
         } catch (err) {
@@ -513,12 +517,12 @@ module.exports = function (
             const games = await answer._source.games;
             const gamesPromises = await games.map(async element => {
                 const gameRes = await fetch(`${gamesURL}/_doc/${element}`);
-                const gameAnswer =  await gameRes.json();
+                const gameAnswer = await gameRes.json();
                 const game = await gameAnswer._source;
                 gamesList.push(game);
                 return game;
             });
-            return Promise.all(gamesPromises).then( () => {
+            return Promise.all(gamesPromises).then(() => {
                 return gamesList;
             })
         } catch (err) {
@@ -539,5 +543,4 @@ module.exports = function (
         tokenToUsername,
         listGameObjs
     }
-
 }

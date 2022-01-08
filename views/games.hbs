@@ -6,20 +6,20 @@
     {{/if}}
 
     {{#if games}}
-        {{#each games}}
-            <a href="/global/games/{{this.id}}/info">
-                <div class="game">
-                    <div class="gameimg"><img src='{{this.image}}' alt="this.name"></div>
-                    <div class="container">
-                        <p><b>{{this.name}}</b></p>
-                        <p>{{this.price}}$</p>
-                        <form action="/my/groups/{{this.id}}/selection" method="get">
-                            <input value="ADD" type="submit" class="gameBtn">
-                        </form>
-                    </div>
-                </div>
-            </a>
-        {{/each}}
+    {{#each games}}
+    <a href="/global/games/{{this.id}}/info">
+        <div class="game">
+            <div class="gameimg"><img src='{{this.image}}' alt="this.name"></div>
+            <div class="container">
+                <p><b>{{this.name}}</b></p>
+                <p>{{this.price}}$</p>
+                <form action="/my/groups/{{this.id}}/selection" method="get">
+                    <input value="ADD" type="submit" class="gameBtn">
+                </form>
+            </div>
+        </div>
+    </a>
+    {{/each}}
     {{/if}}
 </div>
 {{#if error}}
