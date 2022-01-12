@@ -26,6 +26,10 @@ module.exports = function (services, guest_token) {
 		res.render('search');
 	}
 
+	function getAuthenticationPage(req, res) {
+		res.render('authentication');
+	}
+
 	async function searchInGlobalGames(req, res) {
 		const header = 'Find Game Result';
 		const query = req.query.search;
@@ -366,6 +370,9 @@ module.exports = function (services, guest_token) {
 
 	// Search page
 	router.get('/search', getSearchPage);
+
+	// Authentication page
+	router.get('/authentication', getAuthenticationPage);
 
 	//Resource: /global/games
 	router.get('/global/games', searchInGlobalGames);

@@ -358,3 +358,52 @@ div.info{
 div#last{
     margin-bottom: 15px;
 }
+
+div#login-container{
+    position:absolute;
+    top: 0; 
+    bottom: 0; 
+    left: 0; 
+    right: 0;
+    margin: auto;
+    padding: 50px;
+    width: fit-content;
+    height: fit-content;
+    background-color: #ffd460;
+    vertical-align: middle;
+    border-radius: 0.2em;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+}
+
+div#login-container input{
+    display: block;
+    margin: 0 auto;
+    margin-top: 25px;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 0.2em;
+    transition: 0.4s;
+    outline: none;
+}
+
+input[type="submit"]:hover{
+    transition: 0.4s;
+    background-color: #2C3D55;
+    color: white;
+    cursor: pointer;
+}
+
+input[type="text"]:focus,input[type="password"]:focus{
+    outline: none;
+    box-shadow: 0 0 10px #2C3D55;
+}
+
+div#login-container #username,#password{
+    width: 300px;
+}
+
+div#login-container img{
+    width: 200px;
+    display: block;
+    margin: auto;
+}
