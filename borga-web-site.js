@@ -5,9 +5,6 @@ const express = require('express');
 module.exports = function (services, guest_token) {
 
 	function getToken(req) {
-		console.log("info:");
-		console.log(req.user);
-		console.log(req.user.token);
 		return req.user && req.user.token;
 	}
 
@@ -81,7 +78,6 @@ module.exports = function (services, guest_token) {
 
 		try{
 			const user = await services.checkAndGetUser(username, password);
-			console.log("check an get: " + JSON.stringify(user));
 			req.login({ username: user.username, token: user.token}, err => {
 				if (err) {
 					console.log('LOGIN ERROR', err);
@@ -97,7 +93,7 @@ module.exports = function (services, guest_token) {
 
 	function doLogout(req, res){
 		req.logout();
-		req.redirect('/');
+		res.redirect('/');
 	}
 
 	async function searchInGlobalGames(req, res) {

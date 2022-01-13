@@ -78,8 +78,6 @@ module.exports = function (data_ext, data_int) {
 
 	async function getGroups(token) {
 		const username = await getUsername(token);
-		console.log("token to username: ");
-		console.log(username);
 		const group = await data_int.getGroups(
 			username
 		)

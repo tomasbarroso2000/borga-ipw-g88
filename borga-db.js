@@ -270,10 +270,9 @@ module.exports = function (
             const tokensArray = await tokensAnswer.hits.hits;
         
             const filteredTokens = tokensArray.filter((elem) => elem._source[elem._id] == username);
-            
-            userObj.token = filteredTokens[0]._id;
-            console.log(JSON.stringify(filteredTokens));
-            console.log("userObj:" + userObj);
+            if (filteredTokens.length != 0) {
+                userObj.token = filteredTokens[0]._id;
+            }
             if(response.found) return userObj;
         } catch (err) {
             throw errors.FAIL(err);
