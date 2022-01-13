@@ -143,7 +143,6 @@ module.exports = function (
         } catch (err) {
             throw errors.FAIL(err);
         }
-
     }
 
     async function checkUser(username) {
@@ -173,7 +172,7 @@ module.exports = function (
         });
     }
 
-    async function createUser(username) {
+    async function createUser(username, password) {
         if (await isUsernameTaken(username)) {
             throw errors.INVALID_PARAM("Username " + username + " already exists");
         }
@@ -197,7 +196,7 @@ module.exports = function (
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ 'username': username })
+                    body: JSON.stringify({ 'username': username, 'password': password })
                 }
             );
 
@@ -241,7 +240,7 @@ module.exports = function (
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ 'username': guest.user })
+                    body: JSON.stringify({ 'username': guest.user , 'password': guest.password})
                 }
             );
 
@@ -257,6 +256,26 @@ module.exports = function (
             }
         }
         catch (err) {
+            throw errors.FAIL(err);
+        }
+    }
+
+    async function getUser(username) {
+        try {
+            const answer = await fetch(`${usersURL}/_doc/${username}`);
+            const response = await answer.json();
+            const userObj = response._source;
+            const tokensResponse = await fetch(`${tokensURL}/_search`);
+            const tokensAnswer = await tokensResponse.json();
+            const tokensArray = await tokensAnswer.hits.hits;
+        
+            const filteredTokens = tokensArray.filter((elem) => elem._source[elem._id] == username);
+            
+            userObj.token = filteredTokens[0]._id;
+            console.log(JSON.stringify(filteredTokens));
+            console.log("userObj:" + userObj);
+            if(response.found) return userObj;
+        } catch (err) {
             throw errors.FAIL(err);
         }
     }
@@ -539,6 +558,7 @@ module.exports = function (
         editGroup,
         getGroups,
         getGroupInfo,
+        getUser,
         createUser,
         tokenToUsername,
         listGameObjs

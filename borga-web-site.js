@@ -1,33 +1,103 @@
 'use strict';
 
 const express = require('express');
-const path = require('path');
 
 module.exports = function (services, guest_token) {
 
 	function getToken(req) {
-		return guest_token;
+		console.log("info:");
+		console.log(req.user);
+		console.log(req.user.token);
+		return req.user && req.user.token;
 	}
+
+	function getUsername(req) {
+		return req.user && req.user.username;
+	}
+
+	async function getUserInfo(req, res) {
+		const header = "Create User";
+		try {
+			res.render(
+				'userInfo',
+				{ header, create: true, username: false }
+			);
+		} catch (err) {
+			res.status(500).render(
+				'userInfo',
+				{ header, create: true, error: JSON.stringify(err), username: false }
+			);
+		}
+	}
+	
+
+	async function createUser(req, res) {
+		try {
+			const header = "Create User";
+			const username = req.body.username;
+			const password = req.body.password;
+			await services.createUser(username, password);
+			res.redirect(`/`);
+		} catch (err) {
+			switch (err.name) {
+				case 'MISSING_PARAM':
+					res.status(400).render('userInfo', { header, error: 'no username or password provided', creation: true, username: false });
+					break;
+				default:
+					console.log(err);
+					res.status(500).render('userInfo', { header, error: JSON.stringify(err), creation: true, username: false });
+					break;
+			}
+		}
+	}
+
 
 	async function getHomepage(req, res) {
 		const header = 'Popular Games';
 		const games = await services.getPopularGames();
 		res.render(
 			'games',
-			{ header, games }
+			{ header, games, username: getUsername(req) }
 		);
 	}
-
+	
+	
 	function getAboutPage(req, res) {
-		res.render('about');
+		res.render('about', {username: getUsername(req)})
 	}
 
 	function getSearchPage(req, res) {
-		res.render('search');
+		res.render('search', {username: getUsername(req)})
 	}
 
-	function getAuthenticationPage(req, res) {
-		res.render('authentication');
+	function getLoginPage(req, res) {
+		const header = "Login";
+		res.render('userInfo', {header, creation: false, username: false }  );
+	}
+
+	async function doLogin(req, res){
+		const username = req.body.username;
+		const password = req.body.password;
+
+		try{
+			const user = await services.checkAndGetUser(username, password);
+			console.log("check an get: " + JSON.stringify(user));
+			req.login({ username: user.username, token: user.token}, err => {
+				if (err) {
+					console.log('LOGIN ERROR', err);
+				}
+				res.redirect('/');
+			});
+		} catch (err) {
+			// TO DO : improve error handling
+			console.log('LOGIN EXCEPTION', err);
+			res.redirect('/');
+		}
+	}
+
+	function doLogout(req, res){
+		req.logout();
+		req.redirect('/');
 	}
 
 	async function searchInGlobalGames(req, res) {
@@ -42,14 +112,14 @@ module.exports = function (services, guest_token) {
 			}
 			res.render(
 				'games',
-				{ header, query, games }
+				{ header, query, games, username: getUsername(req)}
 			);
 		} catch (err) {
 			switch (err.name) {
 				case 'NOT_FOUND':
 					res.status(404).render(
 						'games',
-						{ header, query, error: 'no game found for this query' }
+						{ header, query, error: 'no game found for this query', username: getUsername(req)}
 					);
 					break;
 				default:
@@ -69,14 +139,14 @@ module.exports = function (services, guest_token) {
 			const groupRes = await services.getGroups(token);
 			res.render(
 				'groups',
-				{ header, groupRes, groupSelect: false }
+				{ header, groupRes, groupSelect: false, username: getUsername(req) }
 			);
 		} catch (err) {
 			switch (err.name) {
 				case 'NOT_FOUND':
 					res.status(404).render(
 						'groups',
-						{ header, error: 'no groups found' }
+						{ header, error: 'no groups found', username: getUsername(req) }
 					);
 					break;
 				case 'UNAUTHENTICATED':
@@ -85,7 +155,7 @@ module.exports = function (services, guest_token) {
 				default:
 					res.status(500).render(
 						'groups',
-						{ header, error: JSON.stringify(err) }
+						{ header, error: JSON.stringify(err),  username: getUsername(req)}
 					);
 					break;
 			}
@@ -102,14 +172,14 @@ module.exports = function (services, guest_token) {
 		} catch (err) {
 			switch (err.name) {
 				case 'MISSING_PARAM':
-					res.status(400).render('getGroupDetails', { header, error: 'no name or description provided' });
+					res.status(400).render('getGroupDetails', { header, error: 'no name or description provided', username: getUsername(req) });
 					break;
 				case 'UNAUTHENTICATED':
 					res.status(401).render('getGroupDetails', { header, error: 'login required' });
 					break;
 				default:
 					console.log(err);
-					res.status(500).render('getGroupDetails', { header, error: JSON.stringify(err) });
+					res.status(500).render('getGroupDetails', { header, error: JSON.stringify(err), username: getUsername(req) });
 					break;
 			}
 		}
@@ -129,7 +199,7 @@ module.exports = function (services, guest_token) {
 				case 'NOT_FOUND':
 					res.status(404).render(
 						'getGroupDetails',
-						{ header, error: 'no groups found' }
+						{ header, error: 'no groups found', username: getUsername(req) }
 					);
 					break;
 				case 'UNAUTHENTICATED':
@@ -140,7 +210,7 @@ module.exports = function (services, guest_token) {
 				default:
 					res.status(500).render(
 						'getGroupDetails',
-						{ header, error: JSON.stringify(err) }
+						{ header, error: JSON.stringify(err), username: getUsername(req) }
 					);
 					break;
 			}
@@ -167,14 +237,14 @@ module.exports = function (services, guest_token) {
 			const group = await services.getGroupInfo(token, groupId);
 			res.render(
 				'groupInfo',
-				{ header, group, gameObjs, groupId }
+				{ header, group, gameObjs, groupId, username: getUsername(req) }
 			);
 		} catch (err) {
 			switch (err.name) {
 				case 'NOT_FOUND':
 					res.status(404).render(
 						'groups',
-						{ header, error: 'no group found' }
+						{ header, error: 'no group found', username: getUsername(req) }
 					);
 					break;
 				case 'UNAUTHENTICATED':
@@ -183,7 +253,7 @@ module.exports = function (services, guest_token) {
 				default:
 					res.status(500).render(
 						'group',
-						{ header, error: JSON.stringify(err) }
+						{ header, error: JSON.stringify(err), username: getUsername(req) }
 					);
 					break;
 			}
@@ -201,17 +271,17 @@ module.exports = function (services, guest_token) {
 		} catch (err) {
 			switch (err.name) {
 				case 'MISSING_PARAM':
-					res.status(400).render('games', { header, error: 'no gameId provided' });
+					res.status(400).render('games', { header, error: 'no gameId provided', username: getUsername(req) });
 					break;
 				case 'UNAUTHENTICATED':
 					res.status(401).render('games', { header, error: 'login required' });
 					break;
 				case 'NOT_FOUND':
-					res.status(404).render('games', { header, error: `no game found with id ${gameId}` });
+					res.status(404).render('games', { header, error: `no game found with id ${gameId}`, username: getUsername(req) });
 					break;
 				default:
 					console.log(err);
-					res.status(500).render('games', { header, error: JSON.stringify(err) });
+					res.status(500).render('games', { header, error: JSON.stringify(err), username: getUsername(req) });
 					break;
 			}
 		}
@@ -228,17 +298,17 @@ module.exports = function (services, guest_token) {
 		} catch (err) {
 			switch (err.name) {
 				case 'MISSING_PARAM':
-					res.status(400).render('games', { header, error: 'no gameId provided' });
+					res.status(400).render('games', { header, error: 'no gameId provided', username: getUsername(req) });
 					break;
 				case 'UNAUTHENTICATED':
 					res.status(401).render('games', { header, error: 'login required' });
 					break;
 				case 'NOT_FOUND':
-					res.status(404).render('games', { header, error: `no game found with id ${gameId}` });
+					res.status(404).render('games', { header, error: `no game found with id ${gameId}`, username: getUsername(req) });
 					break;
 				default:
 					console.log(err);
-					res.status(500).render('games', { header, error: JSON.stringify(err) });
+					res.status(500).render('games', { header, error: JSON.stringify(err), username: getUsername(req) });
 					break;
 			}
 		}
@@ -252,14 +322,14 @@ module.exports = function (services, guest_token) {
 
 			res.render(
 				'getGroupDetails',
-				{ header, groupId, createGroup: false }
+				{ header, groupId, createGroup: false, username: getUsername(req) }
 			);
 		} catch (err) {
 			switch (err.name) {
 				case 'NOT_FOUND':
 					res.status(404).render(
 						'getGroupDetails',
-						{ header, error: 'no group found' }
+						{ header, error: 'no group found', username: getUsername(req) }
 					);
 					break;
 				case 'UNAUTHENTICATED':
@@ -268,7 +338,7 @@ module.exports = function (services, guest_token) {
 				default:
 					res.status(500).render(
 						'getGroupDetails',
-						{ header, error: JSON.stringify(err) }
+						{ header, error: JSON.stringify(err), username: getUsername(req) }
 					);
 					break;
 			}
@@ -279,11 +349,10 @@ module.exports = function (services, guest_token) {
 		const header = "Create New Group";
 		try {
 			const token = getToken(req);
-			const groupId = req.params.groupId;
 
 			res.render(
 				'getGroupDetails',
-				{ header, groupId, createGroup: true }
+				{ header, createGroup: true, username: getUsername(req) }
 			);
 		} catch (err) {
 			switch (err.name) {
@@ -293,7 +362,7 @@ module.exports = function (services, guest_token) {
 				default:
 					res.status(500).render(
 						'getGroupDetails',
-						{ header, error: JSON.stringify(err) }
+						{ header, error: JSON.stringify(err), username: getUsername(req) }
 					);
 					break;
 			}
@@ -307,20 +376,20 @@ module.exports = function (services, guest_token) {
 			const gameObj = await services.getGameInfo(gameId);
 			res.render(
 				'gameInfo',
-				{ header, gameObj }
+				{ header, gameObj, username: getUsername(req) }
 			);
 		} catch (err) {
 			switch (err.name) {
 				case 'NOT_FOUND':
 					res.status(404).render(
 						'gameInfo',
-						{ header, error: 'no game found' }
+						{ header, error: 'no game found', username: getUsername(req) }
 					);
 					break;
 				default:
 					res.status(500).render(
 						'gameInfo',
-						{ header, error: JSON.stringify(err) }
+						{ header, error: JSON.stringify(err), username: getUsername(req) }
 					);
 					break;
 			}
@@ -335,14 +404,14 @@ module.exports = function (services, guest_token) {
 			const groupRes = await services.getGroups(token);
 			res.render(
 				'groups',
-				{ header, groupRes, groupSelect: true, gameId }
+				{ header, groupRes, groupSelect: true, gameId, username: getUsername(req) }
 			);
 		} catch (err) {
 			switch (err.name) {
 				case 'NOT_FOUND':
 					res.status(404).render(
 						'groups',
-						{ header, error: 'no groups found' }
+						{ header, error: 'no groups found', username: getUsername(req) }
 					);
 					break;
 				case 'UNAUTHENTICATED':
@@ -351,7 +420,7 @@ module.exports = function (services, guest_token) {
 				default:
 					res.status(500).render(
 						'groups',
-						{ header, error: JSON.stringify(err) }
+						{ header, error: JSON.stringify(err), username: getUsername(req) }
 					);
 					break;
 			}
@@ -372,13 +441,21 @@ module.exports = function (services, guest_token) {
 	router.get('/search', getSearchPage);
 
 	// Authentication page
-	router.get('/authentication', getAuthenticationPage);
+	router.get('/authentication', getLoginPage);
 
-	//Resource: /global/games
+	// Login action
+	router.post('/login', doLogin);
+	router.get('/users/new', getUserInfo);
+	router.post('/users', createUser)
+
+	// Logout action
+	router.post('/logout', doLogout);
+
+	// Resource: /global/games
 	router.get('/global/games', searchInGlobalGames);
 	router.get('/global/games/:gameId/info', getGameInfo);
 
-	//Resource: /my/groups
+	// Resource: /my/groups
 	router.get('/my/groups', getGroups);
 	router.post('/my/groups', createGroup);
 	router.post('/my/groups/edit', editGroup);

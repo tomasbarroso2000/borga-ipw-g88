@@ -15,12 +15,26 @@ module.exports = function (data_ext, data_int) {
 		}
 		return username;
 	}
+ 
+	async function checkAndGetUser(username, password) {
+		if (!username || !password) {
+			throw errors.MISSING_PARAM('missing credentials');
+		}
+		const user = await data_int.getUser(username);
+		if (user.password !== password) {
+			throw errors.UNAUTHENTICATED(username);
+		}
+		return user;
+	} 
 
-	async function createUser(username) {
+	async function createUser(username, password) {
 		if (!username) {
 			throw errors.MISSING_PARAM('username');
 		}
-		const user = await data_int.createUser(username);
+		if (!password) {
+			throw errors.MISSING_PARAM('password');
+		}
+		const user = await data_int.createUser(username, password);
 		return user;
 	}
 
@@ -64,6 +78,8 @@ module.exports = function (data_ext, data_int) {
 
 	async function getGroups(token) {
 		const username = await getUsername(token);
+		console.log("token to username: ");
+		console.log(username);
 		const group = await data_int.getGroups(
 			username
 		)
@@ -159,6 +175,7 @@ module.exports = function (data_ext, data_int) {
 
 	return {
 		getUsername,
+		checkAndGetUser,
 		searchGame,
 		addGame,
 		deleteGame,

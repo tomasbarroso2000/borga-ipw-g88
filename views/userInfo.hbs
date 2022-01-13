@@ -1,0 +1,18 @@
+<div id="login-container">
+    {{#if create}}
+    <form action="/users" method="POST">
+        <img src="/public/icon-BORGA.png" alt="BORGA-icon">
+        <input type="text" name="username" id="username" placeholder="username">
+        <input type="password" name="password" id="password" placeholder="password">
+        <input type="submit" value="CREATE">
+    </form>
+    {{else}}
+    <form action="/login" method="POST">
+        <img src="/public/icon-BORGA.png" alt="BORGA-icon">
+        <input type="text" name="username" id="username" placeholder="username">
+        <input type="password" name="password" id="password" placeholder="password">
+        <input type="submit" value="LOGIN">
+        <a href="/users/new"><input type="button" value="New User"></a>
+    </form>
+    {{/if}}
+</div>

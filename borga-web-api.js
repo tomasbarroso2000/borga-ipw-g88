@@ -43,7 +43,8 @@ module.exports = function (services) {
 	async function createUser(req, res) {
 		try {
 			const username = req.body.username;
-			const userRes = await services.createUser(username);
+			const password = req.body.password;
+			const userRes = await services.createUser(username, password);
 			return res.json(userRes);
 		} catch (err) {
 			onError(req, res, err);
