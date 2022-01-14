@@ -21,6 +21,10 @@ describe('Integration Tests', () => {
 
     const app = server(es_spec, config.guest);
 
+    beforeEach(async () => {
+        jest.setTimeout(10000);
+    });
+
     afterAll(async () => {
         const response = await request(app)
             .get('/api/my/groups')
@@ -35,7 +39,6 @@ describe('Integration Tests', () => {
                 .expect('Content-Type', 'application/json; charset=utf-8');
         });
     });
-
 
 
     test('Search in global games', async () => {

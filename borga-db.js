@@ -218,7 +218,7 @@ module.exports = function (
     }
 
     async function createGuest() {
-        if (await isUsernameTaken(guest.user)) {
+        if (await isUsernameTaken(guest.username)) {
             return;
         }
         try {
@@ -230,29 +230,29 @@ module.exports = function (
                     {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ [guest.token]: guest.user })
+                    body: JSON.stringify({ [guest.token]: guest.username })
                 }
             );
             const usernameReq = await fetch(
-                `${usersURL}/_doc/${guest.user}`,
+                `${usersURL}/_doc/${guest.username}`,
                 {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ 'username': guest.user , 'password': guest.password})
+                    body: JSON.stringify({ 'username': guest.username , 'password': guest.password})
                 }
             );
 
             const userObj = await fetch(
-                `${userGroupURL(guest.user)}`,
+                `${userGroupURL(guest.username)}`,
                 {
                     method: 'PUT'
                 }
             );
 
             if (usernameReq.ok && userObj.ok) {
-                return successes.USER_ADDED("Username " + guest.user + " added with token " + guest.token);
+                return successes.USER_ADDED("Username " + guest.username + " added with token " + guest.token);
             }
         }
         catch (err) {
@@ -262,18 +262,31 @@ module.exports = function (
 
     async function getUser(username) {
         try {
+            const userObj = {};
             const answer = await fetch(`${usersURL}/_doc/${username}`);
             const response = await answer.json();
-            const userObj = response._source;
-            const tokensResponse = await fetch(`${tokensURL}/_search`);
-            const tokensAnswer = await tokensResponse.json();
-            const tokensArray = await tokensAnswer.hits.hits;
-        
-            const filteredTokens = tokensArray.filter((elem) => elem._source[elem._id] == username);
-            if (filteredTokens.length != 0) {
-                userObj.token = filteredTokens[0]._id;
-            }
-            if(response.found) return userObj;
+            const password = await response._source.password;
+            const tokenAnswer = await fetch(`${tokensURL}/_search`,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "query": {
+                      "query_string": {
+                        "query": username
+                      }
+                    }
+                })
+            });
+            const tokenResponse = await tokenAnswer.json();
+            const tokenArray = await tokenResponse.hits.hits;
+            const token = await tokenArray[0]._id;
+            userObj.username = username;
+            userObj.password = password;
+            userObj.token = token;            
+            return userObj;
         } catch (err) {
             throw errors.FAIL(err);
         }
@@ -320,7 +333,7 @@ module.exports = function (
                         "description": groupDesc,
                         "games": []
                     })
-                },
+                }
 
             );
             return successes.GROUP_CREATED("Group " + groupName + " added");
