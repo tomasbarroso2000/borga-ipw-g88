@@ -2,25 +2,28 @@
 
 <div id="pageContent">
     {{#if group}}
+    <input type="hidden" id="groupId" value="{{groupId}}">
     <div><b>{{group.name}}</b></div>
     <div>{{group.description}}</div>
     {{#each gameObjs}}
-    <a href="/global/games/{{this.id}}/info">
-        <div class="game">
-            <div class="gameimg"><img src='{{this.image}}' alt="this.name"></div>
+        <div class="game" id="game-{{this.id}}">
+            <div class="gameimg"><img src='{{this.image}}' alt="this.name" onclick="window.location='/global/games/{{this.id}}/info';"></div>
             <div class="container">
                 <p><b>{{this.name}}</b></p>
-                <p>{{this.price}}$</p>
-                <form action="/my/groups/{{../groupId}}/{{this.id}}/delete" method="post">
-                    <input value="REMOVE" type="submit" class="gameBtn">
-                </form>
+                <p>{{this.price}}</p>
+                <input value="REMOVE" type="button" class="cls-del-but" id="gam-del-{{id}}">
             </div>
         </div>
-    </a>
     {{/each}}
 
     {{/if}}
 </div>
 {{#if error}}
 <p><strong>ERROR:</strong> {{error}}</p>
+{{/if}}
+{{#if group}}
+<script src="/public/client.js"></script>
+<script>
+    setupForGameDelete();
+</script>
 {{/if}}

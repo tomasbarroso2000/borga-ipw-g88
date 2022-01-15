@@ -246,6 +246,12 @@ table form input[type="submit"]{
     padding: 5px 10px;
 }
 
+table input[type="button"]{
+    border: none;
+    border-radius: 2px;
+    padding: 5px 10px;
+}
+
 table tr{
     margin-left: 25px;
     margin-top: 25px;
@@ -285,6 +291,11 @@ table form input[type="submit"]:hover{
     color: white;
 }
 
+table input[type="button"]:hover{
+    cursor: pointer;
+    color: white;
+}
+
 table form #green{
     background-color: #8ACB88;
     color: white;
@@ -294,6 +305,18 @@ table .cls-del-but{
     z-index: 999;
     background-color: #FF5A5F;
     color: white;
+}
+
+.cls-edt-grp{
+    margin-top: 10px;
+    border-radius: 2px;
+    background-color: #f07b3f;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    position: relative;
+    transition: .4s;
 }
 
 .gameImg {

@@ -454,7 +454,7 @@ module.exports = function (services, guest_token) {
 	// Resource: /my/groups
 	router.get('/my/groups', getGroups);
 	router.post('/my/groups', createGroup);
-	router.post('/my/groups/edit', editGroup);
+	//router.post('/my/groups/edit', editGroup);
 	//router.post('/my/groups/:groupId/delete', deleteGroup);
 	router.get('/my/groups/:groupId/info', getGroupInfo);
 	router.get('/my/groups/:groupId/edit', getGroupNewInfo);
@@ -463,7 +463,7 @@ module.exports = function (services, guest_token) {
 	router.get('/my/groups/:gameId/selection', selectGroup);
 
 	router.post('/my/groups/:groupId/:gameId', addGameToGroup);
-	router.post('/my/groups/:groupId/:gameId/delete', deleteGameFromGroup);
+	//router.post('/my/groups/:groupId/:gameId/delete', deleteGameFromGroup);
 
 	return router;
 };
