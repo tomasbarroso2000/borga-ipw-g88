@@ -7,6 +7,10 @@ const openApiSpec = require('./docs/borga-api-spec.json');
 
 module.exports = function (services) {
 
+	function getUserToken(req) {
+		return req.user && req.user.token;
+	}
+
 	function getBearerToken(req) {
 		const auth = req.header('Authorization');
 		if (auth) {
@@ -77,7 +81,7 @@ module.exports = function (services) {
 
 	async function getGroups(req, res) {
 		try {
-			const token = getBearerToken(req);
+			const token = getUserToken(req);
 			const groupRes = await services.getGroups(token);
 			return res.json(groupRes);
 		} catch (err) {
@@ -89,7 +93,7 @@ module.exports = function (services) {
 		try {
 			const groupName = req.body.name;
 			const groupDesc = req.body.description;
-			const token = getBearerToken(req);
+			const token = getUserToken(req);
 			const groupRes = await services.createGroup(token, groupName, groupDesc);
 			res.json(groupRes);
 		} catch (err) {
@@ -102,7 +106,7 @@ module.exports = function (services) {
 			const groupId = req.body.id;
 			const newGroupName = req.body.name;
 			const newGroupDesc = req.body.description;
-			const token = getBearerToken(req);
+			const token = getUserToken(req);
 			const groupRes = await services.editGroup(token, groupId, newGroupName, newGroupDesc);
 			return res.json(groupRes);
 		} catch (err) {
@@ -113,7 +117,7 @@ module.exports = function (services) {
 	async function deleteGroup(req, res) {
 		try {
 			const groupId = req.params.groupId;
-			const token = getBearerToken(req);
+			const token = getUserToken(req);
 			const groupRes = await services.deleteGroup(token, groupId)
 			res.json(groupRes);
 		} catch (err) {
@@ -124,7 +128,7 @@ module.exports = function (services) {
 	async function getGroupInfo(req, res) {
 		try {
 			const groupId = req.params.groupId;
-			const token = getBearerToken(req);
+			const token = getUserToken(req);
 			const groupRes = await services.getGroupInfo(token, groupId)
 			return res.json(groupRes);
 		} catch (err) {
@@ -148,12 +152,20 @@ module.exports = function (services) {
 		try {
 			const groupId = req.params.groupId;
 			const game = req.params.gameId;
-			const token = getBearerToken(req);
+			const token = getUserToken(req);
 			const gameRes = await services.deleteGame(token, groupId, game);
 			res.json(gameRes);
 		} catch (err) {
 			onError(req, res, err);
 		}
+	}
+
+	function extractToken(req, res, next) {
+		const bearerToken = getBearerToken(req);
+		if (bearerToken) {
+			req.user = { token: bearerToken };
+		}
+		next();
 	}
 
 	//middleware
@@ -163,6 +175,7 @@ module.exports = function (services) {
 	router.get('/docs', openApiUi.setup(openApiSpec));
 
 	router.use(express.json());
+	router.use(extractToken);
 
 	//Resource: /users
 	router.post('/users/new', createUser);

@@ -290,7 +290,8 @@ table form #green{
     color: white;
 }
 
-table form #red{
+table .cls-del-but{
+    z-index: 999;
     background-color: #FF5A5F;
     color: white;
 }

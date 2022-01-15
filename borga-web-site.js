@@ -455,7 +455,7 @@ module.exports = function (services, guest_token) {
 	router.get('/my/groups', getGroups);
 	router.post('/my/groups', createGroup);
 	router.post('/my/groups/edit', editGroup);
-	router.post('/my/groups/:groupId/delete', deleteGroup);
+	//router.post('/my/groups/:groupId/delete', deleteGroup);
 	router.get('/my/groups/:groupId/info', getGroupInfo);
 	router.get('/my/groups/:groupId/edit', getGroupNewInfo);
 	router.get('/my/groups/new', getNewGroupInfo);
