@@ -50,6 +50,7 @@ div#bar{
     width: 100%;
     height: 80px;
     background-color: #ffd460;
+    text-align: center;
 }
 
 div#bar img#logo{
@@ -57,9 +58,27 @@ div#bar img#logo{
     height: auto;
     margin-top: 6px;
     margin-left: 6px;
+    float: left;
 }
 
-div#bar button#login{
+div#bar p#username{
+    display: inline-block;
+    float: right;
+    margin-right: 50px;
+    margin-top: 30px;
+}
+
+div#bar form{
+    margin: 0;
+    padding: 0;
+    float: right;
+    top: 0;
+    right: 0;
+    display: inline-block;
+}
+
+div#bar .login-logout{
+    top: 0;
     color: #2d4059;
     font-family: 'Open Sans', sans-serif;
     float: right;
@@ -70,9 +89,10 @@ div#bar button#login{
     margin-right: 25px;
     border-radius: 2px;
     transition: .2s;
+    display: inline-block;
 }
 
-div#bar button#login:hover{
+div#bar .login-logout:hover{
     cursor: pointer;
     background-color: #2d4059;
     color: white;
@@ -301,6 +321,13 @@ table form #green{
     color: white;
 }
 
+table form #green:hover{
+    transition: 0.4s;
+    background-color: #2C3D55;
+    color: white;
+    cursor: pointer;
+}
+
 table .cls-del-but{
     z-index: 999;
     background-color: #FF5A5F;
@@ -397,6 +424,7 @@ div#login-container{
     vertical-align: middle;
     border-radius: 0.2em;
     box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    text-align: center;
 }
 
 div#login-container input{
@@ -410,7 +438,22 @@ div#login-container input{
     outline: none;
 }
 
+div#login-container input[type="button"]{
+    display: inline-block;
+}
+
+div#login-container input[type="submit"]{
+    display: inline-block;
+}
+
 input[type="submit"]:hover{
+    transition: 0.4s;
+    background-color: #2C3D55;
+    color: white;
+    cursor: pointer;
+}
+
+input[type="button"]:hover{
     transition: 0.4s;
     background-color: #2C3D55;
     color: white;

@@ -13,12 +13,12 @@
     <div id="bar">
         <a href="/"><img id="logo" src="/public/icon-BORGA.png" alt="Borga Icon"></a>
         {{#if username}}
-        <p>{{username}}</p>
         <form action="/logout" method="post">
-            <input type="submit" value="LOGOUT">
+            <input type="submit" class="login-logout" value="LOGOUT">
         </form>
+        <p id="username">{{username}}</p>
         {{else}}
-        <a href="/authentication"><button id="login">LOGIN</button></a>
+        <a href="/authentication"><button class="login-logout">LOGIN</button></a>
         {{/if}}
     </div>
     <nav id="menu">
