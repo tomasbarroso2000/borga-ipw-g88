@@ -6,9 +6,6 @@ const errors = responseCodes.errorList;
 module.exports = function (data_ext, data_int) {
 
 	async function getUsername(token) {
-		if (!token) {
-			throw errors.UNAUTHENTICATED('no token');
-		}
 		const username = await data_int.tokenToUsername(token);
 		if (!username) {
 			throw errors.UNAUTHENTICATED('invalid token');
@@ -77,6 +74,9 @@ module.exports = function (data_ext, data_int) {
 	}
 
 	async function getGroups(token) {
+		if (!token) {
+			throw errors.UNAUTHENTICATED();
+		}
 		const username = await getUsername(token);
 		const group = await data_int.getGroups(
 			username

@@ -29,8 +29,8 @@ module.exports = function (services, guest_token) {
 	
 
 	async function createUser(req, res) {
+		const header = "Create User";
 		try {
-			const header = "Create User";
 			const username = req.body.username;
 			const password = req.body.password;
 			await services.createUser(username, password);
@@ -69,13 +69,13 @@ module.exports = function (services, guest_token) {
 
 	function getLoginPage(req, res) {
 		const header = "Login";
-		res.render('userInfo', {header, creation: false, username: false }  );
+		res.render('userInfo', {header, creation: false, username: false });
 	}
 
 	async function doLogin(req, res){
+		const header = "Login"
 		const username = req.body.username;
 		const password = req.body.password;
-
 		try{
 			const user = await services.checkAndGetUser(username, password);
 			req.login({ username: user.username, token: user.token}, err => {
@@ -85,9 +85,7 @@ module.exports = function (services, guest_token) {
 				res.redirect('/');
 			});
 		} catch (err) {
-			// TO DO : improve error handling
-			console.log('LOGIN EXCEPTION', err);
-			res.redirect('/');
+			res.render('userInfo', {header, creation: false, username: false, error: 'invalid credentials'});
 		}
 	}
 
@@ -213,17 +211,6 @@ module.exports = function (services, guest_token) {
 		}
 	}
 
-	async function deleteGroup(req, res) {
-		try {
-			const groupId = req.params.groupId;
-			const token = getToken(req);
-			await services.deleteGroup(token, groupId);
-			res.redirect(`/my/groups`);
-		} catch (err) {
-			onError(req, res, err);
-		}
-	}
-
 	async function getGroupInfo(req, res) {
 		const header = "Group Information"
 		try {
@@ -264,33 +251,6 @@ module.exports = function (services, guest_token) {
 		try {
 			await services.addGame(token, groupId, gameId);
 			res.redirect(`/my/groups/${gameId}/selection`);
-		} catch (err) {
-			switch (err.name) {
-				case 'MISSING_PARAM':
-					res.status(400).render('games', { header, error: 'no gameId provided', username: getUsername(req) });
-					break;
-				case 'UNAUTHENTICATED':
-					res.status(401).render('games', { header, error: 'login required' });
-					break;
-				case 'NOT_FOUND':
-					res.status(404).render('games', { header, error: `no game found with id ${gameId}`, username: getUsername(req) });
-					break;
-				default:
-					console.log(err);
-					res.status(500).render('games', { header, error: JSON.stringify(err), username: getUsername(req) });
-					break;
-			}
-		}
-	}
-
-	async function deleteGameFromGroup(req, res) {
-		const header = 'Delete Game';
-		const token = getToken(req);
-		const gameId = req.params.gameId;
-		const groupId = req.params.groupId;
-		try {
-			await services.deleteGame(token, groupId, gameId);
-			res.redirect(`/my/groups/${groupId}/info`);
 		} catch (err) {
 			switch (err.name) {
 				case 'MISSING_PARAM':
@@ -411,7 +371,7 @@ module.exports = function (services, guest_token) {
 					);
 					break;
 				case 'UNAUTHENTICATED':
-					res.status(401).render('groupEdit', { header, error: 'login required' });
+					res.status(401).render('groups', { header, error: 'login required' });
 					break;
 				default:
 					res.status(500).render(
@@ -454,8 +414,6 @@ module.exports = function (services, guest_token) {
 	// Resource: /my/groups
 	router.get('/my/groups', getGroups);
 	router.post('/my/groups', createGroup);
-	//router.post('/my/groups/edit', editGroup);
-	//router.post('/my/groups/:groupId/delete', deleteGroup);
 	router.get('/my/groups/:groupId/info', getGroupInfo);
 	router.get('/my/groups/:groupId/edit', getGroupNewInfo);
 	router.get('/my/groups/new', getNewGroupInfo);
@@ -463,7 +421,6 @@ module.exports = function (services, guest_token) {
 	router.get('/my/groups/:gameId/selection', selectGroup);
 
 	router.post('/my/groups/:groupId/:gameId', addGameToGroup);
-	//router.post('/my/groups/:groupId/:gameId/delete', deleteGameFromGroup);
 
 	return router;
 };
