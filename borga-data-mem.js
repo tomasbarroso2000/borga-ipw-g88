@@ -8,13 +8,17 @@ const crypto = require('crypto');
 const games = {};
 
 const tokens = {
-	'1365834658346586': 'guest'
+	'fz3zMebxQXybYskc567j5w': 'guest'
 };
 
-const users = {
+const groups = {
 	'guest': {
-		'12345': { "name": "grupo_teste", "description": "grupo para testes", "games": [] }
+		'12345': {"id": "12345", "name": "grupo_teste", "description": "grupo para testes", "games": [] }
 	}
+}
+
+const users = {
+	'guest': {username: 'guest', password: '1234', token: 'fz3zMebxQXybYskc567j5w'}
 }
 
 const hasGame = async (gameId) => !!games[gameId];
@@ -47,39 +51,39 @@ const listGames = async (group) => {
 	return gamesList;
 }
 
-function createUser(username) {
+function createUser(username, password) {
 	if (!username) {
 		throw errors.MISSING_PARAM("Unspecified username");
 	}
-	const user = users[username];
+	const user = groups[username];
 	if (user) {
 		throw errors.INVALID_PARAM("Username " + username + " already exists");
 	}
 	const newToken = crypto.randomUUID();
 	tokens[newToken] = username;
-	users[username] = {};
+	users[username] = {username: username, password: password, token: newToken};
+	groups[username] = {};
 	return successes.USER_ADDED("Username " + username + " added with token " + newToken);
 }
 
 async function getGroups(username) {
-	const groups = users[username];
-	return groups;
+	return groups[username];
 }
 
 function createGroup(username, groupName, groupDesc) {
 	let groupId = makeGroupId();
-	const user = users[username];
-	while (user[groupId]) {
+	const userGroups = groups[username];
+	while (userGroups[groupId]) {
 		groupId = makeGroupId();
 	}
-	user[groupId] = { 'name': groupName, 'description': groupDesc, 'games': [] };
+	userGroups[groupId] = {'id': groupId, 'name': groupName, 'description': groupDesc, 'games': [] };
 	return successes.GROUP_CREATED('Group ' + groupName + ' created');
 }
 
 async function editGroup(username, groupId, newGroupName, newGroupDesc) {
-	const user = users[username];
-	const group = user[groupId];
-	const hasGroupInUser = await hasGroup(user, groupId);
+	const userGroups = groups[username];
+	const group = userGroups[groupId];
+	const hasGroupInUser = await hasGroup(userGroups, groupId);
 	if (!hasGroupInUser) {
 		throw errors.NOT_FOUND("Group doesn't exist");
 	}
@@ -89,41 +93,44 @@ async function editGroup(username, groupId, newGroupName, newGroupDesc) {
 }
 
 async function deleteGroup(username, groupId) {
-	const user = users[username];
-	const group = user[groupId];
-	const hasGroupInUser = await hasGroup(user, groupId);
+	const userGroups = groups[username];
+	const group = userGroups[groupId];
+	const hasGroupInUser = await hasGroup(userGroups, groupId);
 	if (!hasGroupInUser) {
 		throw errors.NOT_FOUND("Group doesn't exist");
 	}
 	const groupName = group.name;
-	delete user[groupId];
+	delete userGroups[groupId];
 	return successes.GROUP_DELETED("Group " + groupName + " deleted");
 }
 
 async function getGroupInfo(username, groupId) {
-	const user = users[username];
-	const hasGroupInUser = await hasGroup(user, groupId);
+	const userGroups = groups[username];
+	const hasGroupInUser = await hasGroup(userGroups, groupId);
+	console.log(hasGroupInUser);
 	if (!hasGroupInUser) {
 		throw errors.NOT_FOUND("Group doesn't exist");
 	}
-	const group = user[groupId];
+	const group = userGroups[groupId];
+	console.log(group);
 	const groupObj = {
+		id: groupId,
 		name: group.name,
 		description: group.description,
-		games: await listGames(group)
+		games: listGameObjs(username, groupId)
 	};
 	return groupObj;
 }
 
 async function saveGame(username, groupId, gameObj) {
-	const user = users[username];
-	const group = user[groupId];
+	const userGroups = groups[username];
+	const group = userGroups[groupId];
 	const gameId = gameObj.id;
-	const hasGroupInUser = await hasGroup(user, groupId);
+	const hasGroupInUser = await hasGroup(userGroups, groupId);
 	if (!hasGroupInUser) {
 		throw errors.NOT_FOUND("Group doesn't exist");
 	}
-	const hasGameInUserGroup = await hasGameInGroup(user, groupId, gameId);
+	const hasGameInUserGroup = await hasGameInGroup(userGroups, groupId, gameId);
 	if (hasGameInUserGroup) {
 		throw errors.INVALID_PARAM("Game " + gameObj.name + " is already in " + group.name);
 	}
@@ -131,33 +138,48 @@ async function saveGame(username, groupId, gameObj) {
 	if (!hasGameInGlobal) {
 		games[gameId] = gameObj;
 	}
-	user[groupId].games.push(gameId);
+	userGroups[groupId].games.push(gameId);
 	return successes.GAME_ADDED(gameObj.name + " added to group " + group.name);
 }
 
 async function deleteGame(username, groupId, gameId) {
-	const user = users[username];
-	const hasGroupInUser = await hasGroup(user, groupId);
+	const userGroups = groups[username];
+	const hasGroupInUser = await hasGroup(userGroups, groupId);
 	if (!hasGroupInUser) {
 		throw errors.NOT_FOUND("Group doesn't exist");
 	}
-	const hasGameInUserGroup = await hasGameInGroup(user, groupId, gameId);
+	const hasGameInUserGroup = await hasGameInGroup(userGroups, groupId, gameId);
 	if (!hasGameInUserGroup) {
 		throw errors.NOT_FOUND("Game doesn't exist");
 	}
-	const games = user[groupId].games;
+	const games = userGroups[groupId].games;
 	games.splice(games.indexOf(gameId), 1);
-	return successes.GAME_REMOVED("Game removed from group " + user[groupId].name);
+	return successes.GAME_REMOVED("Game removed from group " + userGroups[groupId].name);
+}
+
+function getUser(username){
+	return users[username];
+}
+
+function listGameObjs(username, groupId){
+	const gamesArray = [];
+	const groupGames = groups[username][groupId].games;
+	groupGames.forEach( elem => {
+		gamesArray.push(games[elem])
+	}); 
+	return gamesArray;
 }
 
 module.exports = {
 	saveGame,
 	deleteGame,
-	tokenToUsername,
-	createUser,
-	createGroup,
-	getGroups,
-	editGroup,
 	deleteGroup,
-	getGroupInfo
+	createGroup,
+	editGroup,
+	getGroups,
+	getGroupInfo,
+	getUser,
+	createUser,
+	tokenToUsername,
+	listGameObjs
 };

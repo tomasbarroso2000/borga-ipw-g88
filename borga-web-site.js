@@ -218,6 +218,7 @@ module.exports = function (services, guest_token) {
 			const groupId = req.params.groupId;
 			const gameObjs = await services.listGameObjs(token, groupId);
 			const group = await services.getGroupInfo(token, groupId);
+			console.log(group);
 			res.render(
 				'groupInfo',
 				{ header, group, gameObjs, groupId, username: getUsername(req) }
@@ -235,7 +236,7 @@ module.exports = function (services, guest_token) {
 					break;
 				default:
 					res.status(500).render(
-						'group',
+						'groups',
 						{ header, error: JSON.stringify(err), username: getUsername(req) }
 					);
 					break;
