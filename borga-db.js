@@ -10,7 +10,7 @@ module.exports = function (
     es_spec,
     guest
 ) {
-    const baseURL = `${es_spec.url}`;
+    const baseURL = `${es_spec.url}/`;
 
     const userGroupURL = username => `${baseURL}${es_spec.prefix}_${username.toLowerCase()}_groups`;
     const gamesURL = `${baseURL}${es_spec.prefix}_games`;

@@ -2,7 +2,7 @@
 
 module.exports = {
 
-	devl_es_url: 'http://localhost:9200/',
+	devl_es_url: 'http://localhost:9200',
 
 	guest: {
 		username: 'guest',

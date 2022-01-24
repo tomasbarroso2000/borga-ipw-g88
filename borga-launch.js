@@ -1,12 +1,12 @@
 'use strict'
 
 const default_port = 8888;
-const port = process.argv[2] || default_port;
+const port = process.env["PORT"] || default_port;
 
 const config = require('./borga-config');
 
 const es_spec = {
-	url: config.devl_es_url,
+	url: process.env["BONSAI_URL"] || config.devl_es_url,
 	prefix: 'prod'
 };
 
