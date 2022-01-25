@@ -40,7 +40,23 @@ function setupForGroupDelete() {
 		tableEntry.parentNode.removeChild(tableEntry);
 	}
 }
+/**
+ * ===============================================================================
+ */
 
+function setupForGroupClickable(){
+	const groupButton =
+		document.querySelectorAll('.scroll');
+	groupButton.forEach(group => {
+		group.onclick = onGroupClicked;
+	});
+	return;
+}
+
+async function onGroupClicked() {
+	const groupId = this.id.substr(8);
+	window.location='/my/groups/'+groupId+'/info';
+}
 
 /**
  * ===============================================================================
