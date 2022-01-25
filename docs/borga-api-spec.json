@@ -29,7 +29,7 @@
     }
   ],
   "paths": {
-    "/api/users/create": {
+    "/api/users/new": {
       "post": {
         "tags": [
           "Users"
@@ -37,12 +37,12 @@
         "summary": "Create a user",
         "description": "Creates a user and a token",
         "requestBody": {
-          "description": "Username to be used",
+          "description": "User credentials to be used",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Username"
+                "$ref": "#/components/schemas/UserCred"
               }
             }
           }
@@ -980,17 +980,23 @@
           }
         }
       },
-      "Username": {
+      "UserCred": {
         "type": "object",
         "description": "Username to be used",
         "required": [
-          "username"
+          "username",
+          "password"
         ],
         "properties": {
           "username": {
             "type": "string",
             "description": "Username to be used",
             "example": "UltimateGamer"
+          },
+          "password": {
+            "type": "string",
+            "description": "Password to be used",
+            "example": "UltimatePassword"
           }
         }
       },
