@@ -84,13 +84,30 @@ module.exports = function (data_ext, data_int) {
 		return group;
 	}
 
+	function makeGroupId() {
+		const length = 8;
+		var result = '';
+		var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+		var charactersLength = characters.length;
+		for (var i = 0; i < length; i++) {
+			result += characters.charAt(Math.floor(Math.random() * charactersLength));
+		}
+		return result;
+	}
+
 	async function createGroup(token, groupName, groupDesc) {
 		const username = await getUsername(token);
+
+		let groupId = makeGroupId();
+		while (await data_int.hasGroup(username, groupId)) {
+			groupId = makeGroupId();
+		}
 		if (!groupName) {
 			throw errors.MISSING_PARAM('name');
 		}
 		const group = await data_int.createGroup(
 			username,
+			groupId,
 			groupName,
 			groupDesc
 		)
@@ -134,7 +151,14 @@ module.exports = function (data_ext, data_int) {
 		if (!game) {
 			throw errors.MISSING_PARAM('game');
 		}
+		
 		const username = await getUsername(token);
+		if (! await data_int.hasGroup(username, group)){
+			throw errors.NOT_FOUND("Group does not exist");
+		}
+            
+        if (await data_int.hasGameInGroup(username, group, game))
+            throw errors.INVALID_PARAM("Game already exists in group");
 		try {
 			const gameObj = await data_ext.findGameById(game);
 			const gameRes = data_int.saveGame(username, group, gameObj);

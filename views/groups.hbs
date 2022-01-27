@@ -23,7 +23,7 @@
         <tr id="group-{{id}}">
             <td class="scroll" id="grp-clk-{{id}}"><b>{{this.name}}</b></td>
             <td class="scroll" id="grp-clk-{{id}}">{{this.description}}</td>
-            <td class="scroll" id="grp-clk-{{id}}">
+            <td id="grp-clk-{{id}}" class="non-scroll">
                 <input type="button" value="DELETE" class="cls-del-but" id="grp-del-{{id}}">
                 <form action="/my/groups/{{this.id}}/edit" method="GET">
                     <input type="submit" value="EDIT" id="green">

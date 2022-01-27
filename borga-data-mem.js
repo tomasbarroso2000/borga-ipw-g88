@@ -23,24 +23,16 @@ const users = {
 
 const hasGame = async (gameId) => !!games[gameId];
 
-const hasGroup = async (user, groupId) => !!user[groupId];
+//const hasGroup = async (user, groupId) => !!user[groupId];
 
-const hasGameInGroup = async (user, groupId, gameId) => {
+const hasGroup = async (user, groupId) => !!groups[user][groupId];
+
+/*const hasGameInGroup = async (user, groupId, gameId) => {
 	return user[groupId].games.includes(gameId);
-}
+}*/
+const hasGameInGroup = async (user, groupId, gameId) => groups[user][groupId].games.includes(gameId);
 
 const tokenToUsername = async (token) => tokens[token];
-
-function makeGroupId() {
-	const length = 8;
-	var result = '';
-	var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-	var charactersLength = characters.length;
-	for (var i = 0; i < length; i++) {
-		result += characters.charAt(Math.floor(Math.random() * charactersLength));
-	}
-	return result;
-}
 
 const listGames = async (group) => {
 	const gamesList = [];
@@ -70,20 +62,15 @@ async function getGroups(username) {
 	return groups[username];
 }
 
-function createGroup(username, groupName, groupDesc) {
-	let groupId = makeGroupId();
-	const userGroups = groups[username];
-	while (userGroups[groupId]) {
-		groupId = makeGroupId();
-	}
-	userGroups[groupId] = {'id': groupId, 'name': groupName, 'description': groupDesc, 'games': [] };
+function createGroup(username, groupId, groupName, groupDesc) {
+	groups[username][groupId] = {'id': groupId, 'name': groupName, 'description': groupDesc, 'games': [] };
 	return successes.GROUP_CREATED('Group ' + groupName + ' created');
 }
 
 async function editGroup(username, groupId, newGroupName, newGroupDesc) {
 	const userGroups = groups[username];
 	const group = userGroups[groupId];
-	const hasGroupInUser = await hasGroup(userGroups, groupId);
+	const hasGroupInUser = await hasGroup(username, groupId);
 	if (!hasGroupInUser) {
 		throw errors.NOT_FOUND("Group doesn't exist");
 	}
@@ -95,7 +82,7 @@ async function editGroup(username, groupId, newGroupName, newGroupDesc) {
 async function deleteGroup(username, groupId) {
 	const userGroups = groups[username];
 	const group = userGroups[groupId];
-	const hasGroupInUser = await hasGroup(userGroups, groupId);
+	const hasGroupInUser = await hasGroup(username, groupId);
 	if (!hasGroupInUser) {
 		throw errors.NOT_FOUND("Group doesn't exist");
 	}
@@ -106,13 +93,11 @@ async function deleteGroup(username, groupId) {
 
 async function getGroupInfo(username, groupId) {
 	const userGroups = groups[username];
-	const hasGroupInUser = await hasGroup(userGroups, groupId);
-	console.log(hasGroupInUser);
+	const hasGroupInUser = await hasGroup(username, groupId);
 	if (!hasGroupInUser) {
 		throw errors.NOT_FOUND("Group doesn't exist");
 	}
 	const group = userGroups[groupId];
-	console.log(group);
 	const groupObj = {
 		id: groupId,
 		name: group.name,
@@ -126,14 +111,6 @@ async function saveGame(username, groupId, gameObj) {
 	const userGroups = groups[username];
 	const group = userGroups[groupId];
 	const gameId = gameObj.id;
-	const hasGroupInUser = await hasGroup(userGroups, groupId);
-	if (!hasGroupInUser) {
-		throw errors.NOT_FOUND("Group doesn't exist");
-	}
-	const hasGameInUserGroup = await hasGameInGroup(userGroups, groupId, gameId);
-	if (hasGameInUserGroup) {
-		throw errors.INVALID_PARAM("Game " + gameObj.name + " is already in " + group.name);
-	}
 	const hasGameInGlobal = await hasGame(gameId);
 	if (!hasGameInGlobal) {
 		games[gameId] = gameObj;
@@ -144,11 +121,11 @@ async function saveGame(username, groupId, gameObj) {
 
 async function deleteGame(username, groupId, gameId) {
 	const userGroups = groups[username];
-	const hasGroupInUser = await hasGroup(userGroups, groupId);
+	const hasGroupInUser = await hasGroup(username, groupId);
 	if (!hasGroupInUser) {
 		throw errors.NOT_FOUND("Group doesn't exist");
 	}
-	const hasGameInUserGroup = await hasGameInGroup(userGroups, groupId, gameId);
+	const hasGameInUserGroup = await hasGameInGroup(username, groupId, gameId);
 	if (!hasGameInUserGroup) {
 		throw errors.NOT_FOUND("Game doesn't exist");
 	}
@@ -181,5 +158,7 @@ module.exports = {
 	getUser,
 	createUser,
 	tokenToUsername,
-	listGameObjs
+	listGameObjs,
+	hasGroup,
+	hasGameInGroup
 };

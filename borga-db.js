@@ -17,17 +17,6 @@ module.exports = function (
     const usersURL = `${baseURL}${es_spec.prefix}_users`;
     const tokensURL = `${baseURL}${es_spec.prefix}_tokens`;
 
-    function makeGroupId() {
-        const length = 8;
-        var result = '';
-        var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        var charactersLength = characters.length;
-        for (var i = 0; i < length; i++) {
-            result += characters.charAt(Math.floor(Math.random() * charactersLength));
-        }
-        return result;
-    }
-
     async function checkGamesInit() {
         try {
             const checkGames = await fetch(
@@ -314,12 +303,8 @@ module.exports = function (
         }
     }
 
-    async function createGroup(username, groupName, groupDesc) {
+    async function createGroup(username, groupId, groupName, groupDesc) {
         checkUser(username);
-        let groupId = makeGroupId();
-        while (await hasGroup(username, groupId)) {
-            groupId = makeGroupId();
-        }
         try {
             const response = await fetch(
                 `${userGroupURL(username)}/_doc/${groupId}?refresh=wait_for`,
@@ -425,10 +410,6 @@ module.exports = function (
     async function saveGame(username, groupId, gameObj) {
         checkUser(username);
         const gameId = gameObj.id;
-        if (! await hasGroup(username, groupId))
-            throw errors.NOT_FOUND("Group does not exist");
-        if (await hasGameInGroup(username, groupId, gameId))
-            throw errors.INVALID_PARAM("Game already exists in group");
         try {
             if (! await hasGame(gameId)) {
                 const response = await fetch(
@@ -573,6 +554,8 @@ module.exports = function (
         getUser,
         createUser,
         tokenToUsername,
-        listGameObjs
+        listGameObjs,
+        hasGroup,
+        hasGameInGroup
     }
 }
