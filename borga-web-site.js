@@ -26,17 +26,21 @@ module.exports = function (services, guest_token) {
 			);
 		}
 	}
-	
 
 	async function createUser(req, res) {
 		const header = "Create User";
 		try {
-			console.log("in cration");
 			const username = req.body.username;
 			const password = req.body.password;
 			const created = await services.createUser(username, password);
 			if (created) {
-				await doLogin(req, res);
+				const user = await services.checkAndGetUser(username, password);
+				req.login({ username: user.username, token: user.token }, err => {
+					if (err) {
+						console.log('LOGIN ERROR', err);
+					}
+					res.redirect('/');
+				});
 			}
 		} catch (err) {
 			switch (err.name) {
@@ -60,40 +64,39 @@ module.exports = function (services, guest_token) {
 			{ header, games, username: getUsername(req) }
 		);
 	}
-	
-	
+
+
 	function getAboutPage(req, res) {
-		res.render('about', {username: getUsername(req)})
+		res.render('about', { username: getUsername(req) })
 	}
 
 	function getSearchPage(req, res) {
-		res.render('search', {username: getUsername(req)})
+		res.render('search', { username: getUsername(req) })
 	}
 
 	function getLoginPage(req, res) {
 		const header = "Login";
-		res.render('userInfo', {header, create: false, username: false });
+		res.render('userInfo', { header, create: false, username: false });
 	}
 
-	async function doLogin(req, res){
+	async function doLogin(req, res) {
 		const header = "Login"
 		const username = req.body.username;
 		const password = req.body.password;
-		try{
+		try {
 			const user = await services.checkAndGetUser(username, password);
-			console.log(user);
-			req.login({ username: user.username, token: user.token}, err => {
+			req.login({ username: user.username, token: user.token }, err => {
 				if (err) {
 					console.log('LOGIN ERROR', err);
 				}
 				res.redirect('/');
 			});
 		} catch (err) {
-			res.render('userInfo', {header, create: false, username: false, error: 'invalid credentials'});
+			res.render('userInfo', { header, create: false, username: false, error: 'invalid credentials' });
 		}
 	}
 
-	function doLogout(req, res){
+	function doLogout(req, res) {
 		req.logout();
 		res.redirect('/');
 	}
@@ -110,14 +113,14 @@ module.exports = function (services, guest_token) {
 			}
 			res.render(
 				'games',
-				{ header, query, games, username: getUsername(req)}
+				{ header, query, games, username: getUsername(req) }
 			);
 		} catch (err) {
 			switch (err.name) {
 				case 'NOT_FOUND':
 					res.status(404).render(
 						'games',
-						{ header, query, error: 'no game found for this query', username: getUsername(req)}
+						{ header, query, error: 'no game found for this query', username: getUsername(req) }
 					);
 					break;
 				default:
@@ -153,7 +156,7 @@ module.exports = function (services, guest_token) {
 				default:
 					res.status(500).render(
 						'groups',
-						{ header, error: JSON.stringify(err),  username: getUsername(req)}
+						{ header, error: JSON.stringify(err), username: getUsername(req) }
 					);
 					break;
 			}
@@ -222,7 +225,6 @@ module.exports = function (services, guest_token) {
 			const groupId = req.params.groupId;
 			const gameObjs = await services.listGameObjs(token, groupId);
 			const group = await services.getGroupInfo(token, groupId);
-			console.log(group);
 			res.render(
 				'groupInfo',
 				{ header, group, gameObjs, groupId, username: getUsername(req) }

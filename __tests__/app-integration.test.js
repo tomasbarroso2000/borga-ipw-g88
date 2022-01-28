@@ -12,7 +12,7 @@ const es_spec = {
 };
 
 test('Confirm database is running', async () => {
-    const response = await fetch(`${es_spec.url}_cat/health`); //cat health lists the status of the cluster
+    const response = await fetch(`${es_spec.url}/_cat/health`); //cat health lists the status of the cluster
     expect(response.status).toBe(200);
 });
 

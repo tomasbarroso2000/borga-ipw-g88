@@ -1,6 +1,5 @@
 'use strict';
 
-
 function setupForGroupDelete() {
 	const deleteButtons =
 		document.querySelectorAll('.cls-del-but');

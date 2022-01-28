@@ -103,7 +103,7 @@ module.exports = function (services) {
 
 	async function editGroup(req, res) {
 		try {
-			const groupId = req.body.id;	
+			const groupId = req.body.id;
 			const newGroupName = req.body.name;
 			const newGroupDesc = req.body.description;
 			const token = getUserToken(req);

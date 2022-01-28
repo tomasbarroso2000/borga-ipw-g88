@@ -162,7 +162,7 @@ module.exports = function (
         try {
             const newToken = crypto.randomUUID();
             const token = await fetch(
-                `${tokensURL}/_doc/${newToken}`,
+                `${tokensURL}/_doc/${newToken}?refresh=wait_for`,
                 {
                     method: 'PUT',
                     headers:
@@ -173,7 +173,7 @@ module.exports = function (
                 }
             );
             const usernameReq = await fetch(
-                `${usersURL}/_doc/${username}`,
+                `${usersURL}/_doc/${username}?refresh=wait_for`,
                 {
                     method: 'PUT',
                     headers: {
@@ -206,7 +206,7 @@ module.exports = function (
         }
         try {
             const token = await fetch(
-                `${tokensURL}/_doc/${guest.token}`,
+                `${tokensURL}/_doc/${guest.token}?refresh=wait_for`,
                 {
                     method: 'PUT',
                     headers:
@@ -217,13 +217,13 @@ module.exports = function (
                 }
             );
             const usernameReq = await fetch(
-                `${usersURL}/_doc/${guest.username}`,
+                `${usersURL}/_doc/${guest.username}?refresh=wait_for`,
                 {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ 'username': guest.username , 'password': guest.password})
+                    body: JSON.stringify({ 'username': guest.username, 'password': guest.password })
                 }
             );
 
@@ -250,25 +250,25 @@ module.exports = function (
             const response = await answer.json();
             const password = await response._source.password;
             const tokenAnswer = await fetch(`${tokensURL}/_search`,
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    "query": {
-                      "query_string": {
-                        "query": username
-                      }
-                    }
-                })
-            });
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        "query": {
+                            "query_string": {
+                                "query": username
+                            }
+                        }
+                    })
+                });
             const tokenResponse = await tokenAnswer.json();
             const tokenArray = await tokenResponse.hits.hits;
             const token = await tokenArray[0]._id;
             userObj.username = username;
             userObj.password = password;
-            userObj.token = token;            
+            userObj.token = token;
             return userObj;
         } catch (err) {
             throw errors.FAIL(err);
@@ -390,7 +390,7 @@ module.exports = function (
         }
     }
 
-    async function getGameInGlobal(gameId){
+    async function getGameInGlobal(gameId) {
         try {
             const response = await fetch(
                 `${gamesURL}/_doc/${gameId}`

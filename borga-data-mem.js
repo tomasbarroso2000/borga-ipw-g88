@@ -13,12 +13,12 @@ const tokens = {
 
 const groups = {
 	'guest': {
-		'12345': {"id": "12345", "name": "grupo_teste", "description": "grupo para testes", "games": [] }
+		'12345': { "id": "12345", "name": "grupo_teste", "description": "grupo para testes", "games": [] }
 	}
 }
 
 const users = {
-	'guest': {username: 'guest', password: '1234', token: 'fz3zMebxQXybYskc567j5w'}
+	'guest': { username: 'guest', password: '1234', token: 'fz3zMebxQXybYskc567j5w' }
 }
 
 const hasGame = async (gameId) => !!games[gameId];
@@ -52,7 +52,7 @@ function createUser(username, password) {
 	}
 	const newToken = crypto.randomUUID();
 	tokens[newToken] = username;
-	users[username] = {username: username, password: password, token: newToken};
+	users[username] = { username: username, password: password, token: newToken };
 	groups[username] = {};
 	return successes.USER_ADDED("Username " + username + " added with token " + newToken);
 }
@@ -62,16 +62,20 @@ async function getGroups(username) {
 }
 
 function createGroup(username, groupId, groupName, groupDesc) {
-	groups[username][groupId] = {'id': groupId, 'name': groupName, 'description': groupDesc, 'games': [] };
+	groups[username][groupId] = { 'id': groupId, 'name': groupName, 'description': groupDesc, 'games': [] };
 	return successes.GROUP_CREATED('Group ' + groupName + ' created');
 }
 
 async function editGroup(username, groupId, newGroupName, newGroupDesc) {
 	const userGroups = groups[username];
 	const group = userGroups[groupId];
-	group.description = newGroupDesc;
-	group.name = newGroupName;
-	return successes.GROUP_MODIFIED("Group Name: " + newGroupName + " | Group Description: " + newGroupDesc);
+	if (newGroupDesc) {
+		group.description = newGroupDesc;
+	}
+	if (newGroupName) {
+		group.name = newGroupName;
+	}
+	return successes.GROUP_MODIFIED("Group Name: " + group.name + " | Group Description: " + group.description);
 }
 
 async function deleteGroup(username, groupId) {
@@ -113,16 +117,16 @@ async function deleteGame(username, groupId, gameId) {
 	return successes.GAME_REMOVED("Game removed from group " + userGroups[groupId].name);
 }
 
-function getUser(username){
+function getUser(username) {
 	return users[username];
 }
 
-function listGameObjs(username, groupId){
+function listGameObjs(username, groupId) {
 	const gamesArray = [];
 	const groupGames = groups[username][groupId].games;
-	groupGames.forEach( elem => {
+	groupGames.forEach(elem => {
 		gamesArray.push(games[elem])
-	}); 
+	});
 	return gamesArray;
 }
 

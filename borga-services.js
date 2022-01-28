@@ -12,7 +12,7 @@ module.exports = function (data_ext, data_int) {
 		}
 		return username;
 	}
- 
+
 	async function checkAndGetUser(username, password) {
 		if (!username || !password) {
 			throw errors.MISSING_PARAM('missing credentials');
@@ -22,7 +22,7 @@ module.exports = function (data_ext, data_int) {
 			throw errors.UNAUTHENTICATED(username);
 		}
 		return user;
-	} 
+	}
 
 	async function createUser(username, password) {
 		if (!username) {
@@ -32,8 +32,8 @@ module.exports = function (data_ext, data_int) {
 			throw errors.MISSING_PARAM('password');
 		}
 		if (await data_int.isUsernameTaken(username)) {
-            throw errors.INVALID_PARAM("Username " + username + " already exists");
-        }
+			throw errors.INVALID_PARAM("Username " + username + " already exists");
+		}
 		const user = await data_int.createUser(username, password);
 		return user;
 	}
@@ -70,9 +70,9 @@ module.exports = function (data_ext, data_int) {
 		}
 
 		let game = await data_int.getGameInGlobal(gameId);
-			if(! await data_int.hasGame(game)) {
-				game = await data_ext.findGameById(gameId);
-			}
+		if (! await data_int.hasGame(game)) {
+			game = await data_ext.findGameById(gameId);
+		}
 
 		const newMechanics = await data_ext.getMechanics(game.mechanics);
 		const newCategories = await data_ext.getCategories(game.categories);
@@ -141,8 +141,8 @@ module.exports = function (data_ext, data_int) {
 		}
 
 		if (! await data_int.hasGroup(username, groupId)) {
-            throw errors.NOT_FOUND('This group does not exist');
-        }
+			throw errors.NOT_FOUND('This group does not exist');
+		}
 
 		const group = await data_int.deleteGroup(
 			username,
@@ -158,8 +158,8 @@ module.exports = function (data_ext, data_int) {
 		}
 
 		if (! await data_int.hasGroup(username, groupId)) {
-            throw errors.NOT_FOUND("Group doesn't exist");
-        }
+			throw errors.NOT_FOUND("Group doesn't exist");
+		}
 
 		const group = await data_int.getGroupInfo(username, groupId);
 		return group;
@@ -172,18 +172,18 @@ module.exports = function (data_ext, data_int) {
 		if (!game) {
 			throw errors.MISSING_PARAM('game');
 		}
-		
+
 		const username = await getUsername(token);
-		if (! await data_int.hasGroup(username, group)){
+		if (! await data_int.hasGroup(username, group)) {
 			throw errors.NOT_FOUND("Group does not exist");
 		}
-            
-        if (await data_int.hasGameInGroup(username, group, game))
-            throw errors.INVALID_PARAM("Game already exists in group");
+
+		if (await data_int.hasGameInGroup(username, group, game))
+			throw errors.INVALID_PARAM("Game already exists in group");
 
 		try {
 			let gameObj = await data_int.getGameInGlobal(game);
-			if(! await data_int.hasGame(game)) {
+			if (! await data_int.hasGame(game)) {
 				gameObj = await data_ext.findGameById(game);
 			}
 			const gameRes = await data_int.saveGame(username, group, gameObj);
@@ -209,11 +209,11 @@ module.exports = function (data_ext, data_int) {
 		}
 
 		if (! await data_int.hasGroup(username, group))
-            throw errors.NOT_FOUND("Group does not exist");
-        if (! await data_int.hasGameInGroup(username, group, game))
-            throw errors.NOT_FOUND("Game does not exist in group");
-        if (! await data_int.hasGame(game))
-            throw errors.NOT_FOUND("Game does not exist");
+			throw errors.NOT_FOUND("Group does not exist");
+		if (! await data_int.hasGameInGroup(username, group, game))
+			throw errors.NOT_FOUND("Game does not exist in group");
+		if (! await data_int.hasGame(game))
+			throw errors.NOT_FOUND("Game does not exist");
 
 		const gameRes = data_int.deleteGame(username, group, game);
 		return gameRes;
