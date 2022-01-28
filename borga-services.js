@@ -159,9 +159,13 @@ module.exports = function (data_ext, data_int) {
             
         if (await data_int.hasGameInGroup(username, group, game))
             throw errors.INVALID_PARAM("Game already exists in group");
+
 		try {
-			const gameObj = await data_ext.findGameById(game);
-			const gameRes = data_int.saveGame(username, group, gameObj);
+			let gameObj = await data_int.getGameInGlobal(game);
+			if(! await data_int.hasGame(game)) {
+				gameObj = await data_ext.findGameById(game);
+			}
+			const gameRes = await data_int.saveGame(username, group, gameObj);
 			return gameRes;
 		} catch (err) {
 			if (err.name === 'NOT_FOUND') {

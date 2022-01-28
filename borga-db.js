@@ -89,7 +89,7 @@ module.exports = function (
                 `${gamesURL}/_doc/${gameId}`
             );
             const answer = await response.json();
-            return answer.found;
+            return await answer.found;
         } catch (err) {
             console.log(err);
             throw errors.NOT_FOUND(err);
@@ -407,6 +407,19 @@ module.exports = function (
         }
     }
 
+    async function getGameInGlobal(gameId){
+        try {
+            const response = await fetch(
+                `${gamesURL}/_doc/${gameId}`
+            );
+            const answer = await response.json();
+            return await answer._source;
+        } catch (err) {
+            console.log(err);
+            throw errors.NOT_FOUND(err);
+        }
+    }
+
     async function saveGame(username, groupId, gameObj) {
         checkUser(username);
         const gameId = gameObj.id;
@@ -447,7 +460,7 @@ module.exports = function (
                 if (response.ok) {
                     return successes.GAME_ADDED("Game added");
                 } else {
-                    throw errors.FAIL('Could not add game2');
+                    throw errors.FAIL('Could not add game');
                 }
             }
         } catch (err) {
@@ -556,6 +569,8 @@ module.exports = function (
         tokenToUsername,
         listGameObjs,
         hasGroup,
-        hasGameInGroup
+        hasGameInGroup,
+        getGameInGlobal,
+        hasGame
     }
 }

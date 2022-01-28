@@ -43,6 +43,10 @@ const listGames = async (group) => {
 	return gamesList;
 }
 
+function getGameInGlobal(gameId){
+	return games[gameId];
+}
+
 function createUser(username, password) {
 	if (!username) {
 		throw errors.MISSING_PARAM("Unspecified username");
@@ -160,5 +164,7 @@ module.exports = {
 	tokenToUsername,
 	listGameObjs,
 	hasGroup,
-	hasGameInGroup
+	hasGameInGroup,
+	getGameInGlobal,
+	hasGame
 };
