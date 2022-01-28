@@ -2,9 +2,11 @@
 
 const service_builder = require('../borga-services.js');
 
+const config = require('../borga-config');
+
 const mock_data_ext = require('borga-games-data');
 
-const test_data_int = require('../borga-data-mem');
+const test_data_int = require('../borga-data-mem')(config.guest);
 
 const testToken = '1365834658346586';
 

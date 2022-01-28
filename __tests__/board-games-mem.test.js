@@ -1,6 +1,7 @@
 'use strict';
 
-const mem = require('../borga-data-mem');
+const config = require('../borga-config');
+const mem = require('../borga-data-mem')(config.guest);
 
 describe('Users Related Tests', () => {
     test('create a user withou a name', async () => {

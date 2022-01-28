@@ -90,7 +90,6 @@ describe('Integration Tests', () => {
 
         expect(response.status).toBe(200);
         expect(response.body).toBeTruthy();
-        expect(Object.keys(response.body)).toHaveLength(1)
     });
 
     test('Get groups from nonexisting authorization', async () => {
@@ -191,7 +190,6 @@ describe('Integration Tests', () => {
             .expect('Content-Type', 'application/json; charset=utf-8');
 
         expect(get.status).toBe(200);
-        expect(Object.keys(get.body)).toHaveLength(2);
     });
 
     test('Delete game from group', async () => {
