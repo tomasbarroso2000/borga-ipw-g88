@@ -162,9 +162,6 @@ module.exports = function (
     }
 
     async function createUser(username, password) {
-        if (await isUsernameTaken(username)) {
-            throw errors.INVALID_PARAM("Username " + username + " already exists");
-        }
         try {
             const newToken = crypto.randomUUID();
             const token = await fetch(
@@ -330,10 +327,6 @@ module.exports = function (
     async function editGroup(username, groupId, newGroupName, newGroupDesc) {
         checkUser(username);
         try {
-            if (! await hasGroup(username, groupId)) {
-                throw errors.NOT_FOUND("Group doesn't exist");
-            }
-
             const group = await getGroupInfo(username, groupId);
             let updatedGroupName = group.name;
             let updatedGroupDescription = group.description;
@@ -363,10 +356,6 @@ module.exports = function (
 
     async function deleteGroup(username, groupId) {
         checkUser(username);
-        if (! await hasGroup(username, groupId)) {
-            throw errors.NOT_FOUND('This group does not exist');
-        }
-
         try {
             const response = await fetch(
                 `${userGroupURL(username)}/_doc/${groupId}?refresh=wait_for`,
@@ -385,9 +374,6 @@ module.exports = function (
 
     async function getGroupInfo(username, groupId) {
         checkUser(username);
-        if (! await hasGroup(username, groupId)) {
-            throw errors.NOT_FOUND("Group doesn't exist");
-        }
         try {
             const response = await fetch(
                 `${userGroupURL(username)}/_doc/${groupId}`
@@ -471,12 +457,6 @@ module.exports = function (
 
     async function deleteGame(username, groupId, gameId) {
         checkUser(username);
-        if (! await hasGroup(username, groupId))
-            throw errors.NOT_FOUND("Group does not exist");
-        if (! await hasGameInGroup(username, groupId, gameId))
-            throw errors.NOT_FOUND("Game does not exist in group");
-        if (! await hasGame(gameId))
-            throw errors.NOT_FOUND("Game does not exist");
         try {
             const response = await fetch(
                 `${userGroupURL(username)}/_update/${groupId}?refresh=wait_for`,
@@ -571,6 +551,7 @@ module.exports = function (
         hasGroup,
         hasGameInGroup,
         getGameInGlobal,
-        hasGame
+        hasGame,
+        isUsernameTaken
     }
 }

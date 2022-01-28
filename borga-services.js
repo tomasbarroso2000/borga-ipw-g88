@@ -31,6 +31,9 @@ module.exports = function (data_ext, data_int) {
 		if (!password) {
 			throw errors.MISSING_PARAM('password');
 		}
+		if (await data_int.isUsernameTaken(username)) {
+            throw errors.INVALID_PARAM("Username " + username + " already exists");
+        }
 		const user = await data_int.createUser(username, password);
 		return user;
 	}
@@ -65,7 +68,12 @@ module.exports = function (data_ext, data_int) {
 		if (!gameId) {
 			throw errors.MISSING_PARAM('gameId');
 		}
-		const game = await data_ext.findGameById(gameId);
+
+		let game = await data_int.getGameInGlobal(gameId);
+			if(! await data_int.hasGame(game)) {
+				game = await data_ext.findGameById(gameId);
+			}
+
 		const newMechanics = await data_ext.getMechanics(game.mechanics);
 		const newCategories = await data_ext.getCategories(game.categories);
 		game.mechanics = newMechanics;
@@ -119,6 +127,9 @@ module.exports = function (data_ext, data_int) {
 		if (!groupId) {
 			throw errors.MISSING_PARAM('id');
 		}
+		if (! await data_int.hasGroup(username, groupId)) {
+			throw errors.NOT_FOUND("Group doesn't exist");
+		}
 		const group = await data_int.editGroup(username, groupId, newGroupName, newGroupDesc);
 		return group;
 	}
@@ -128,6 +139,11 @@ module.exports = function (data_ext, data_int) {
 		if (!groupId) {
 			throw errors.MISSING_PARAM('groupId');
 		}
+
+		if (! await data_int.hasGroup(username, groupId)) {
+            throw errors.NOT_FOUND('This group does not exist');
+        }
+
 		const group = await data_int.deleteGroup(
 			username,
 			groupId,
@@ -140,6 +156,11 @@ module.exports = function (data_ext, data_int) {
 		if (!groupId) {
 			throw errors.MISSING_PARAM('group');
 		}
+
+		if (! await data_int.hasGroup(username, groupId)) {
+            throw errors.NOT_FOUND("Group doesn't exist");
+        }
+
 		const group = await data_int.getGroupInfo(username, groupId);
 		return group;
 	}
@@ -186,6 +207,14 @@ module.exports = function (data_ext, data_int) {
 		if (!game) {
 			throw errors.MISSING_PARAM('game');
 		}
+
+		if (! await data_int.hasGroup(username, group))
+            throw errors.NOT_FOUND("Group does not exist");
+        if (! await data_int.hasGameInGroup(username, group, game))
+            throw errors.NOT_FOUND("Game does not exist in group");
+        if (! await data_int.hasGame(game))
+            throw errors.NOT_FOUND("Game does not exist");
+
 		const gameRes = data_int.deleteGame(username, group, game);
 		return gameRes;
 	}
@@ -213,6 +242,6 @@ module.exports = function (data_ext, data_int) {
 		getGroupInfo,
 		createUser,
 		listGameObjs,
-		getGameInfo,
+		getGameInfo
 	};
 };
