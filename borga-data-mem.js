@@ -8,11 +8,15 @@ const crypto = require('crypto');
 const games = {};
 
 const tokens = {
-	'fz3zMebxQXybYskc567j5w': 'guest'
+	'fz3zMebxQXybYskc567j5w': 'guest',
+	'1365834658346586' : 'membroTeste'
 };
 
 const groups = {
 	'guest': {
+		'12345': { "id": "12345", "name": "grupo_teste", "description": "grupo para testes", "games": [] }
+	},
+	'membroTeste': {
 		'12345': { "id": "12345", "name": "grupo_teste", "description": "grupo para testes", "games": [] }
 	}
 }

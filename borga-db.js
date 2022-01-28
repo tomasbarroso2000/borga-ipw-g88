@@ -152,9 +152,13 @@ module.exports = function (
     async function tokenToUsername(token) {
         const dbInit = await checkDbInit();
         return Promise.all([dbInit]).then(async () => {
-            const answer = await fetch(`${tokensURL}/_doc/${token}`);
-            const response = await answer.json();
-            return response._source[token];
+            try{
+                const answer = await fetch(`${tokensURL}/_doc/${token}`);
+                const response = await answer.json();
+                return response._source[token];
+            } catch (err) {
+                throw errors.FAIL();
+            }
         });
     }
 

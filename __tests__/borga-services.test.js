@@ -10,7 +10,7 @@ const testToken = '1365834658346586';
 
 const testUser = {
     'membroTeste': {
-        '12345': { "name": "grupo_teste", "description": "grupo para testes", "games": [] }
+        '12345': { "id": "12345", "name": "grupo_teste", "description": "grupo para testes", "games": [] }
     }
 }
 
@@ -117,7 +117,7 @@ describe('Group Related Tests', () => {
             };
             const sut = await services.addGame(testToken, group, game);
         } catch (err) {
-            expect(err.name).toEqual('INVALID_PARAM');
+            expect(err.name).toEqual('NOT_FOUND');
             return;
         }
     });
@@ -208,6 +208,6 @@ describe('User Related Tests', () => {
     test('get the username of a user using the token', async () => {
         const services = default_services;
         const username = await services.getUsername(testToken);
-        expect(username).toEqual('guest');
+        expect(username).toEqual('membroTeste');
     });
 });

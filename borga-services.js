@@ -86,9 +86,7 @@ module.exports = function (data_ext, data_int) {
 			throw errors.UNAUTHENTICATED();
 		}
 		const username = await getUsername(token);
-		const group = await data_int.getGroups(
-			username
-		)
+		const group = await data_int.getGroups(username);
 		return group;
 	}
 

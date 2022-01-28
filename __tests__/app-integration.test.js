@@ -12,7 +12,7 @@ const es_spec = {
 };
 
 test('Confirm database is running', async () => {
-    const response = await fetch(`${es_spec.url}/_cat/health`); //cat health lists the status of the cluster
+    const response = await fetch(`${es_spec.url}/_cat/health`);
     expect(response.status).toBe(200);
 });
 
@@ -93,14 +93,13 @@ describe('Integration Tests', () => {
         expect(Object.keys(response.body)).toHaveLength(1)
     });
 
-    test('Get groups from nonexisting user', async () => {
+    test('Get groups from nonexisting authorization', async () => {
         const response = await request(app)
             .get('/api/my/groups')
-            .set('Authorization', `Bearer alexandre_alemao`)
             .set('Accept', 'application/json')
             .expect('Content-Type', 'application/json; charset=utf-8');
 
-        expect(response.status).toBe(404);
+        expect(response.status).toBe(401);
         expect(response.body).toBeTruthy();
     });
 
