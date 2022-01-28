@@ -25,9 +25,12 @@
 {{#if error}}
 <p><strong>ERROR:</strong> {{error}}</p>
 {{/if}}
-{{#if groupId}}
 <script src="/public/client.js"></script>
+{{#if groupId}}
 <script>
     setupForGroupEdit();
 </script>
 {{/if}}
+<script>
+    setupForInput();
+</script>

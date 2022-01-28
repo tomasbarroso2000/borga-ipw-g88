@@ -40,11 +40,8 @@ function setupForGroupDelete() {
 		tableEntry.parentNode.removeChild(tableEntry);
 	}
 }
-/**
- * ===============================================================================
- */
 
-function setupForGroupClickable(){
+function setupForGroupClickable() {
 	const groupButton =
 		document.querySelectorAll('.scroll');
 	groupButton.forEach(group => {
@@ -55,27 +52,35 @@ function setupForGroupClickable(){
 
 async function onGroupClicked() {
 	const groupId = this.id.substr(8);
-	window.location='/my/groups/'+groupId+'/info';
+	window.location = '/my/groups/' + groupId + '/info';
 }
 
-/**
- * ===============================================================================
- */
+function setupForInput() {
+	const inputs =
+		document.querySelectorAll('input[type="submit"]');
+	inputs.forEach(input => {
+		input.onclick = () => {
+			input.form.submit();
+			input.disabled = true
+		}
+	});
+	return;
+}
 
 function setupForGroupEdit() {
 	const editButton =
 		document.querySelector('.cls-edt-grp');
-		
+
 	editButton.onclick = onEditGroup;
 	return;
-	
+
 	async function onEditGroup() {
 		const newName = document.querySelector('#name').value;
 		const newDesc = document.querySelector('#description').value;
 		const groupId = this.id.substr(8);
 		try {
 			await apiEditGroup(groupId, newName, newDesc);
-			window.location='/my/groups';
+			window.location = '/my/groups';
 		} catch (err) {
 			alert(err);
 		}
@@ -84,13 +89,13 @@ function setupForGroupEdit() {
 	async function apiEditGroup(groupId, newName, newDesc) {
 		const edtReqRes = await fetch(
 			'/api/my/groups',
-			{ 
+			{
 				method: 'PUT',
 				headers:
-					{
-						'Content-Type': 'application/json'
-					},
-				body: JSON.stringify({ id: groupId, name: newName, description: newDesc})
+				{
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({ id: groupId, name: newName, description: newDesc })
 			});
 		if (edtReqRes.status === 200) {
 			return;
@@ -102,12 +107,7 @@ function setupForGroupEdit() {
 	}
 }
 
-
-/**
- * =====================================================================
- */
-
- function setupForGameDelete() {
+function setupForGameDelete() {
 	const groupId = document.querySelector('#groupId').value;
 	const deleteButtons = document.querySelectorAll('.cls-del-but');
 	deleteButtons.forEach(butDel => {

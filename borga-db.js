@@ -154,9 +154,6 @@ module.exports = function (
         return Promise.all([dbInit]).then(async () => {
             const answer = await fetch(`${tokensURL}/_doc/${token}`);
             const response = await answer.json();
-            if (!response.found) {
-                throw errors.NOT_FOUND('Token does not exist');
-            }
             return response._source[token];
         });
     }

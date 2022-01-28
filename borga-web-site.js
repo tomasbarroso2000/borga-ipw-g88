@@ -31,18 +31,21 @@ module.exports = function (services, guest_token) {
 	async function createUser(req, res) {
 		const header = "Create User";
 		try {
+			console.log("in cration");
 			const username = req.body.username;
 			const password = req.body.password;
-			await services.createUser(username, password);
-			res.redirect(`/`);
+			const created = await services.createUser(username, password);
+			if (created) {
+				await doLogin(req, res);
+			}
 		} catch (err) {
 			switch (err.name) {
 				case 'MISSING_PARAM':
-					res.status(400).render('userInfo', { header, error: 'no username or password provided', creation: true, username: false });
+					res.status(400).render('userInfo', { header, error: 'no username or password provided', create: true, username: false });
 					break;
 				default:
 					console.log(err);
-					res.status(500).render('userInfo', { header, error: JSON.stringify(err), creation: true, username: false });
+					res.status(500).render('userInfo', { header, error: 'username already in use', create: true, username: false });
 					break;
 			}
 		}
@@ -69,7 +72,7 @@ module.exports = function (services, guest_token) {
 
 	function getLoginPage(req, res) {
 		const header = "Login";
-		res.render('userInfo', {header, creation: false, username: false });
+		res.render('userInfo', {header, create: false, username: false });
 	}
 
 	async function doLogin(req, res){
@@ -78,6 +81,7 @@ module.exports = function (services, guest_token) {
 		const password = req.body.password;
 		try{
 			const user = await services.checkAndGetUser(username, password);
+			console.log(user);
 			req.login({ username: user.username, token: user.token}, err => {
 				if (err) {
 					console.log('LOGIN ERROR', err);
@@ -85,7 +89,7 @@ module.exports = function (services, guest_token) {
 				res.redirect('/');
 			});
 		} catch (err) {
-			res.render('userInfo', {header, creation: false, username: false, error: 'invalid credentials'});
+			res.render('userInfo', {header, create: false, username: false, error: 'invalid credentials'});
 		}
 	}
 
